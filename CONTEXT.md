@@ -138,14 +138,22 @@ PWA (service worker, manifest), dark theme toggle, snackbar. Theme bỏ có ch�
 đích: skill nói ship light-only trừ khi viết hẳn một surface ramp thứ hai, và
 depth dựa trên tint thì không đảo được.
 
-## Một phát hiện về chính bộ checker
+## Base UI, không phải Radix
 
-`controls-check.py` báo `components/ui/select.tsx — the Popup carries no
-padding of its own`, và đó là **false positive**. Checker tìm
-`<SelectPrimitive.Popup>` — API của **Base UI** — còn repo này init bằng
-`shadcn init --base radix`, nơi popup là `SelectPrimitive.Content`. Padding đã
-nằm đúng chỗ. Rule đúng, chỉ là nó giả định một base mà lệnh init có thể không
-chọn.
+Repo khởi tạo nhầm bằng `shadcn init --base radix`; scaffold chuẩn của team
+dùng **Base UI**. Đã migrate toàn bộ mười một wrapper bằng skill
+`migrate-radix-to-base`, `radix-ui` đã gỡ khỏi `package.json`, và
+`components.json` giờ là `base-nova`. Báo cáo từng component nằm ở
+`.migration/`.
+
+Năm chỗ vỡ ở call site, và chỉ một trong số đó biên dịch sạch mà vẫn sai:
+`Select.Value` của Base UI hiện raw value trừ khi `Root` được đưa một map
+`items`, nên nút chọn binaural đọc là `custom` thay vì `Set it yourself`.
+
+`controls-check.py` trước đó báo false positive trên repo Radix vì nó chỉ biết
+`SelectPrimitive.Popup` của Base UI. Đã sửa trong repo skill (branch
+`select-popup-on-either-base`): rule đọc cả hai part và gọi tên đúng cái file
+thực sự dùng.
 
 ## Chạy
 

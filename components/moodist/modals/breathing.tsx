@@ -121,8 +121,11 @@ export function BreathingModal({ onClose, show }: BreathingModalProps) {
         </p>
 
         <Select
+          items={Object.fromEntries(
+            Object.entries(EXERCISES).map(([id, value]) => [id, value.label]),
+          )}
           value={exercise}
-          onValueChange={(next) => setExercise(next as Exercise)}
+          onValueChange={(next) => next && setExercise(next as Exercise)}
         >
           <SelectTrigger className="w-56">
             <SelectValue />

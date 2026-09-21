@@ -35,7 +35,8 @@ export function PlayControls() {
         </Button>
 
         <Tooltip>
-          <TooltipTrigger asChild>
+          <TooltipTrigger
+            render={
               <Button
                 aria-label="Pick four sounds at random"
                 size="icon"
@@ -44,13 +45,15 @@ export function PlayControls() {
               >
                 <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
               </Button>
-          </TooltipTrigger>
+            }
+          />
           <TooltipContent>Surprise me</TooltipContent>
         </Tooltip>
 
         {hasHistory ? (
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger
+              render={
                 <Button
                   aria-label="Bring the last mix back"
                   size="icon"
@@ -59,12 +62,14 @@ export function PlayControls() {
                 >
                   <HugeiconsIcon icon={Undo02Icon} strokeWidth={1.5} />
                 </Button>
-            </TooltipTrigger>
+              }
+            />
             <TooltipContent>Bring it back</TooltipContent>
           </Tooltip>
         ) : (
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger
+              render={
                 <Button
                   aria-label="Clear every sound"
                   disabled={noSelected}
@@ -74,7 +79,8 @@ export function PlayControls() {
                 >
                   <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.5} />
                 </Button>
-            </TooltipTrigger>
+              }
+            />
             <TooltipContent>Clear the mix</TooltipContent>
           </Tooltip>
         )}

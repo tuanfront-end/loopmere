@@ -151,7 +151,11 @@ export function ToneModal({ kind, onClose, show }: ToneModalProps) {
           : "One tone switched on and off. This one works on speakers."
       }
     >
-      <Select value={preset} onValueChange={setPreset}>
+      <Select
+        items={Object.fromEntries(PRESETS.map((item) => [item.id, item.label]))}
+        value={preset}
+        onValueChange={(next) => next && setPreset(next)}
+      >
         <SelectTrigger className="w-full">
           <SelectValue />
         </SelectTrigger>
@@ -212,7 +216,7 @@ export function ToneModal({ kind, onClose, show }: ToneModalProps) {
           min={0}
           step={0.01}
           value={[volume]}
-          onValueChange={([next]) => setVolume(next)}
+          onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}
         />
       </div>
 

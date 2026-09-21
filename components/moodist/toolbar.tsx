@@ -161,14 +161,16 @@ export function Toolbar() {
         <ScrollToTop />
 
         <DropdownMenu modal={false} open={isOpen} onOpenChange={setIsOpen}>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger
+            render={
             <Button aria-label="Tools" className="shadow-soft" size="icon">
               <HugeiconsIcon
                 icon={isOpen ? Cancel01Icon : Menu01Icon}
                 strokeWidth={1.5}
               />
             </Button>
-          </DropdownMenuTrigger>
+            }
+          />
 
           <DropdownMenuContent
             align="end"

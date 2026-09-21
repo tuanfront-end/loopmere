@@ -25,7 +25,8 @@ export function ToolButton({
 }: ToolButtonProps) {
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
+      <TooltipTrigger
+        render={
         <Button
           aria-label={label}
           disabled={disabled}
@@ -35,7 +36,8 @@ export function ToolButton({
         >
           {children}
         </Button>
-      </TooltipTrigger>
+        }
+      />
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>
   );

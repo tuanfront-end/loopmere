@@ -26,7 +26,7 @@ export function VolumeSlider({ id, label }: VolumeSliderProps) {
       // The card underneath toggles the sound; a drag must not reach it.
       onClick={(event) => event.stopPropagation()}
       onKeyDown={(event) => event.stopPropagation()}
-      onValueChange={([next]) => setVolume(id, next)}
+      onValueChange={(next) => setVolume(id, Array.isArray(next) ? next[0] : next)}
     />
   );
 }
