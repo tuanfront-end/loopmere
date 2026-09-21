@@ -513,6 +513,73 @@ ngay màn hình đầu. Dải chip cuộn ngang nên không có chip nào bị k
 `pr-14` cho nó chỗ để cuộn chip cuối ra khỏi nút. Bản thân việc một FAB nằm đè
 lên nội dung khi cuộn thì vẫn còn.
 
+### Hai menu mobile thành sheet
+
+Cả hai menu ở bản dưới `xl` đều là dropdown neo vào một nút 36px ở hai góc đối
+nhau: mười hàng đổ xuống từ góc trên phải, mười ba hàng mở ngược lên từ góc
+dưới phải, mỗi cái tự cuộn trong `max-h-[70dvh]`. Sheet bắt đầu ngay ở mép mà
+ngón cái đang ở đó, tự nói nó là cái gì, và đóng được bằng cách hất xuống chứ
+không phải nhắm vào đâu cả. Hàng lên `py-3` — đo lại: **0 hàng dưới 44px**.
+
+Dựng trên **`Drawer` của Base UI**, không phải `vaul` của shadcn: mọi wrapper
+trong `components/ui/` đều là Base UI, và Base UI có sẵn cùng bộ cử chỉ. Thứ
+làm nó giống native là `--bleed`: popup được vẽ cao hơn 3rem so với phần nhìn
+thấy rồi kéo tụt xuống đúng ngần ấy, nên cuộn quá đà ở đáy sheet lòi ra thêm
+sheet chứ không lòi ra trang phía sau.
+
+### Chỗ mà `responsive-check` không nhìn thấy
+
+Gate xanh mà trang vẫn còn dòng cụt. Lý do nằm ở leaf test của nó:
+
+```js
+const leaf = [...el.childNodes].every((n) => n.nodeType === 3);
+```
+
+React chèn **comment separator** (`<!-- -->`) giữa hai text node liền nhau khi
+SSR. Nên bất kỳ đoạn văn nào có một `{...}` cạnh chữ thường — lede của hero là
+đúng một cái — đều không bao giờ được đo. Cộng thêm việc gate cố ý bỏ qua đoạn
+có link inline.
+
+Quét lại với lỗ đó bịt kín, **giữ nguyên sàn 300px của gate** (trong một thẻ
+260px thì không có dòng dài nào để so đuôi), ở 5 bề rộng và cả hai sheet:
+
+| | Trước | |
+|---|---|---|
+| Lede hero @1440 | 189/580px | 33% |
+| Blurb footer @1440 | 28/309px | một chữ |
+| Dòng licence @1024 | 80/**928px** | 8% |
+
+928px là khoảng 150 ký tự một dòng — gấp đôi mức đọc được. Nên chữa hai thứ
+khác nhau: `max-w-[68ch]` cho **measure**, `text-balance` cho **đuôi**.
+
+Và khối licence lên `text-sm`. `type-check` coi một measure đặt trên `text-xs`
+là lỗi phân loại, và nó đúng: khối nào cần chỉ chỗ xuống dòng thì khối đó là
+copy, mà copy dừng ở `text-sm`; `text-xs` dành cho label một dòng. Bậc xuống
+của small print do **mực** gánh, không phải cỡ chữ.
+
+Kết quả: **0 stub** ở 390, 768, 1024, 1280 và 1440, cả trong hai sheet.
+
+### Hover: ba chỗ, cùng một sắc
+
+| | Trước | Sau |
+|---|---|---|
+| Nút tròn của slider | `ring-ring/50` cho cả ba trạng thái | hover `primary/45`, focus `ring/50`, active `primary/70` |
+| Nút `outline` | `hover:bg-muted` | `hover:bg-accent` + `border-primary/60` |
+
+Thứ tự variant quyết định chứ không phải thứ tự viết: Tailwind sắp `hover` <
+`focus-visible` < `active`, nên chuột được quầng brand nhạt, bàn phím giữ
+`--ring` (vốn đã là `--primary-ink`, và là màu focus của cả app), còn thumb
+đang kéo thì đậm lên.
+
+`bg-muted` nằm 6 bậc dưới trang mà nút nghỉ ở 1 bậc **trên**, nên hover rơi 7
+bậc và nút đọc ra thành *đang bị nhấn* chứ không phải *sẵn sàng*. Nó cũng đúng
+là màu nền của track slider và của trái tim — màu duy nhất hover trong app này
+phải tránh. Accent là 2.5 bậc, và viền đi theo sang brand: đúng cặp mà sound
+card và category chip đang dùng.
+
+Đo: nghỉ `rgb(255,255,255)` → hover `rgb(247,246,245)`, trang là
+`rgb(253,252,252)`.
+
 ## Toolbar, toolbox và modals
 
 Mười ba panel, tất cả đi qua **một** `ToolPanel` bọc shadcn `Dialog`: escape,

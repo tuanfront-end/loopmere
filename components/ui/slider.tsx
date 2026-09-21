@@ -65,7 +65,16 @@ function Slider({
             // control and jumped size the moment a sound joined the mix.
             //
             // The ring still comes off: that one is behaviour, not shape.
-            className="relative block size-6 shrink-0 rounded-full bg-card shadow-soft ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none data-disabled:hover:ring-0"
+            //
+            // Three ring colours, and the variant order decides between them
+            // rather than the order they are written in: `focus-visible` is
+            // sorted after `hover`, and `active` after both. So the pointer
+            // gets a faint brand halo, the keyboard keeps `--ring` — which is
+            // the app's focus colour everywhere else and already brand ink —
+            // and a thumb being dragged deepens. It used to be one neutral at
+            // half alpha for all three, which said a control was live without
+            // saying whose.
+            className="relative block size-6 shrink-0 rounded-full bg-card shadow-soft transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 hover:ring-primary/45 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-hidden active:ring-3 active:ring-primary/70 disabled:pointer-events-none data-disabled:hover:ring-0"
           />
         ))}
       </SliderPrimitive.Control>

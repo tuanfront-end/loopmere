@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Coffee02Icon,
   FavouriteIcon,
   Github01Icon,
   ShuffleIcon,
@@ -12,8 +13,8 @@ import { useShallow } from "zustand/react/shallow";
 import { Logo } from "./logo";
 import { SoundIcon } from "./sound-icon";
 
-import { Button } from "@/components/ui/button";
-import { REPO_URL, UPSTREAM_URL } from "@/constants/links";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { COFFEE_URL, REPO_URL, UPSTREAM_URL } from "@/constants/links";
 import { sounds } from "@/data/sounds";
 import { cn } from "@/lib/utils";
 import { useSoundStore } from "@/stores/sound";
@@ -167,19 +168,42 @@ export function LeftRail() {
 
       {/* Straight after the list, not pinned under it: nine shelves leave
           half a screen of nothing between the last one and a button floated
-          to the floor. Only the credit goes down there. */}
-      <Button
-        aria-label="Pick four sounds at random"
-        className="w-full"
-        size="lg"
-        onClick={shuffle}
-      >
-        <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
-        Build me a mix
-      </Button>
+          to the floor. Only the credit goes down there.
+
+          The two sit at `gap-2` inside their own box rather than taking the
+          rail's `gap-6`, because they are a pair — one filled, one outlined —
+          and 24px apart they read as two unrelated decisions. */}
+      <div className="flex flex-col gap-2">
+        <Button
+          aria-label="Pick four sounds at random"
+          className="w-full"
+          size="lg"
+          onClick={shuffle}
+        >
+          <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
+          Build me a mix
+        </Button>
+
+        {/* An anchor wearing the variants, not a `Button render={<a/>}`: Base
+            UI puts `role="button"` on the latter and a screen reader then
+            announces a link out to a payment page as a press. Through `cn`,
+            because `buttonVariants` concatenates and `w-full` has to win. */}
+        <a
+          className={cn(
+            buttonVariants({ size: "lg", variant: "outline" }),
+            "w-full",
+          )}
+          href={COFFEE_URL}
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          <HugeiconsIcon icon={Coffee02Icon} strokeWidth={1.5} />
+          Buy me a coffee
+        </a>
+      </div>
 
       <p className="text-muted-foreground mt-auto px-2.5 text-xs text-balance">
-        A Next.js port of{" "}
+        Built by Boolii Studio. A Next.js port of{" "}
         <a
           className="hover:text-foreground underline underline-offset-4 transition-colors"
           href={UPSTREAM_URL}

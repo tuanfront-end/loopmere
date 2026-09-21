@@ -14,5 +14,9 @@ export const PIXABAY_LICENCE_URL =
   "https://pixabay.com/service/license-summary/";
 export const CC0_URL = "https://creativecommons.org/publicdomain/zero/1.0/";
 
+/** Whoever kept this port going. Named in the rail, because "me" on a button
+    under eight credits to somebody else has no antecedent otherwise. */
+export const COFFEE_URL = "https://buymeacoffee.com/nghiaxchis";
+
 /** Where the sound icons come from, and why they are not in the repo. */
 export const THIINGS_URL = "https://www.thiings.co";
