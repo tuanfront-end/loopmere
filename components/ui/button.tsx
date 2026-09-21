@@ -17,6 +17,11 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
+        // The style's flipped-contrast chip, as a control rather than a
+        // badge: the brand hue weakened to a tint, carrying its own dark ink.
+        // Loud enough to find in a column of white cards, quiet enough that
+        // it is not competing with a primary action.
+        chip: "bg-chip text-primary-ink hover:bg-primary/45",
       },
       size: {
         default:
