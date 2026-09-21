@@ -216,7 +216,9 @@ export function ToneModal({ kind, onClose, show }: ToneModalProps) {
           min={0}
           step={0.01}
           value={[volume]}
-          onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}
+          onValueChange={(next) =>
+            setVolume(Array.isArray(next) ? next[0] : next)
+          }
         />
       </div>
 

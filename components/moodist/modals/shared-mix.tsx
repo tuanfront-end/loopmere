@@ -94,9 +94,7 @@ export function SharedMix() {
         <Button
           className="flex-1"
           onClick={() => {
-            override(
-              Object.fromEntries(shared.map((s) => [s.id, s.volume])),
-            );
+            override(Object.fromEntries(shared.map((s) => [s.id, s.volume])));
             play();
             setIsOpen(false);
             toast.success(`Playing ${shared.length} sounds from the link.`);

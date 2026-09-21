@@ -47,11 +47,8 @@ const shelves = sounds.categories.map((category) => ({
 
 function ShelfIcon({ id }: { id: string }) {
   return (
-    <span
-      aria-hidden="true"
-      className="grid size-7 shrink-0 place-items-center"
-    >
-      <SoundIcon id={id} size={16} />
+    <span aria-hidden="true" className="shrink-0">
+      <SoundIcon id={id} size={24} />
     </span>
   );
 }

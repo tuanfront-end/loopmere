@@ -18,9 +18,7 @@ export function CategoryRail() {
     <section className="mx-auto w-full max-w-[1200px] px-6 sm:px-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
         <h2 className="text-2xl tracking-tight">Eight shelves</h2>
-        <p className="text-muted-foreground text-sm">
-          Jump straight to one.
-        </p>
+        <p className="text-muted-foreground text-sm">Jump straight to one.</p>
       </div>
 
       <nav
@@ -29,15 +27,12 @@ export function CategoryRail() {
       >
         {sounds.categories.map((category) => (
           <button
-            className="bg-card hover:bg-accent flex shrink-0 items-center gap-2 rounded-sm border p-2 pr-4 text-sm font-medium transition-colors hover:border-transparent"
+            className="bg-card hover:bg-accent flex shrink-0 items-center gap-2 rounded-sm border p-3 pr-4 text-sm font-medium transition-colors hover:border-transparent"
             key={category.id}
             onClick={() => goto(category.id)}
           >
-            <span
-              aria-hidden="true"
-              className="grid size-8 place-items-center"
-            >
-              <SoundIcon id={category.id} size={18} />
+            <span aria-hidden="true" className="shrink-0">
+              <SoundIcon id={category.id} size={24} />
             </span>
             {category.title}
           </button>

@@ -81,11 +81,11 @@ export function PlayControls() {
                   size="icon"
                   variant="ghost"
                   onClick={() => {
-                  unselectAll(true);
-                  toast("Mix cleared.", {
-                    action: { label: "Undo", onClick: restoreHistory },
-                  });
-                }}
+                    unselectAll(true);
+                    toast("Mix cleared.", {
+                      action: { label: "Undo", onClick: restoreHistory },
+                    });
+                  }}
                 >
                   <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.5} />
                 </Button>

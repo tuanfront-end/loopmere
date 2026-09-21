@@ -101,24 +101,25 @@ export function SoundCard({
       onKeyDown={handleKeyDown}
     >
       <div className="flex items-start justify-between gap-2">
+        {/* No box around the render. It used to sit in a 44px disc at 26px,
+            so with the disc gone the image was still inset nine pixels from
+            the card's padding while the label below started at it — the icon
+            read as nudged out of line with its own card. */}
         <div
           aria-hidden="true"
           className={cn(
-            // The box stays and the ground goes: these renders carry their
-            // own shape, and a disc behind one is a second shape arguing
-            // with it. Sizing only, so nothing moves.
-            "grid size-11 shrink-0 place-items-center transition-colors",
+            "shrink-0 transition-colors",
             isSelected ? "text-primary-ink" : "text-muted-foreground",
           )}
         >
           {isLoading ? (
             <HugeiconsIcon
-              className="size-[18px] animate-spin"
+              className="size-8 animate-spin"
               icon={Loading03Icon}
               strokeWidth={1.5}
             />
           ) : (
-            <SoundIcon id={id} />
+            <SoundIcon id={id} size={32} />
           )}
         </div>
 

@@ -274,12 +274,16 @@ Trước đây card chỉ có hai trạng thái và cả hai đều hỏng ở c
 
 Giờ:
 
-- **Không còn đĩa tròn sau ảnh thiings.** Các render này tự mang hình khối
-  của chúng, nên một cái đĩa đằng sau là hình thứ hai cãi nhau với hình thứ
-  nhất. Ô kích thước vẫn giữ nguyên, nên layout không xê dịch — và vì thẻ ảnh
-  mang `alt=""`, một file PNG khuyết hiện ra là ô trống chứ không phải ảnh vỡ.
-  Đây cũng là chỗ lỗi "đĩa chìm khi hover" từng sống; giờ không còn đĩa thì
-  không còn lỗi.
+- **Không còn đĩa tròn, cũng không còn hộp, sau ảnh thiings.** Các render này
+  tự mang hình khối của chúng, nên một cái đĩa đằng sau là hình thứ hai cãi
+  nhau với hình thứ nhất. Bỏ nền mà giữ hộp thì chưa xong việc: ảnh 26px nằm
+  giữa hộp 44px vẫn thụt vào **9px** so với nhãn ngay dưới nó, và cái thụt đó
+  là thứ đọc ra thành lệch. Giờ ảnh tự định kích thước, đo lại được **0px**.
+  Hai cỡ duy nhất: **32px** cho card và tiêu đề kệ, **24px** cho mọi hàng và
+  mục menu. Chiều cao hàng rail giữ nguyên 44px bằng cách bù padding.
+  Vì thẻ ảnh mang `alt=""`, một file PNG khuyết hiện ra là chỗ trống chứ không
+  phải ảnh vỡ. Đây cũng là chỗ lỗi "đĩa chìm khi hover" từng sống; giờ không
+  còn đĩa thì không còn lỗi.
 - **Tab bo `rounded-sm`, card bo `rounded-lg`.** Radius đọc theo cạnh ngắn
   chứ không theo tên lớp: hàng rail cao 44px nên 24px của `rounded-lg` là 55%
   cạnh ngắn — hết đoạn thẳng giữa hai góc, và nó vẽ ra đúng hình viên thuốc.

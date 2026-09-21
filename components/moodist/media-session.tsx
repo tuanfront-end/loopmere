@@ -25,7 +25,9 @@ export function MediaSession() {
 
     navigator.mediaSession.metadata = new MediaMetadata({
       artist: "Moodist",
-      artwork: [{ sizes: "200x200", src: "/logo-light.png", type: "image/png" }],
+      artwork: [
+        { sizes: "200x200", src: "/logo-light.png", type: "image/png" },
+      ],
       title: "Ambient sound, mixed by you",
     });
   }, [supported, isPlaying]);

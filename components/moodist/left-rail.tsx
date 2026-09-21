@@ -84,7 +84,7 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
     <a
       aria-current={active ? "true" : undefined}
       className={cn(
-        "flex items-center gap-3 rounded-sm py-1.5 pr-4 pl-1.5 text-sm font-medium transition-all",
+        "flex items-center gap-3 rounded-sm px-2.5 py-2.5 text-sm font-medium transition-all",
         // A rail row is a tab, not a card, and the two idioms are kept apart
         // on purpose: a tab tints and stays flat, a card lifts. What both
         // still avoid is `bg-muted`, which is what the icon's own disc is
@@ -97,11 +97,11 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
       <span
         aria-hidden="true"
         className={cn(
-          "grid size-8 shrink-0 place-items-center transition-colors",
+          "shrink-0 transition-colors",
           active && "text-primary-ink",
         )}
       >
-        {icon ?? <SoundIcon id={id} size={18} />}
+        {icon ?? <SoundIcon id={id} size={24} />}
       </span>
       {title}
       <span className="ml-auto text-xs tabular-nums opacity-60">{count}</span>

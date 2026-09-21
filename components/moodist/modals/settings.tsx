@@ -38,7 +38,9 @@ export function SettingsModal({ onClose, show }: SettingsModalProps) {
             min={0}
             step={0.01}
             value={[value]}
-            onValueChange={(next) => setValue(Array.isArray(next) ? next[0] : next)}
+            onValueChange={(next) =>
+              setValue(Array.isArray(next) ? next[0] : next)
+            }
           />
         </div>
       ))}

@@ -27,15 +27,15 @@ export function ToolButton({
     <Tooltip>
       <TooltipTrigger
         render={
-        <Button
-          aria-label={label}
-          disabled={disabled}
-          size="icon-sm"
-          variant={variant}
-          onClick={onClick}
-        >
-          {children}
-        </Button>
+          <Button
+            aria-label={label}
+            disabled={disabled}
+            size="icon-sm"
+            variant={variant}
+            onClick={onClick}
+          >
+            {children}
+          </Button>
         }
       />
       <TooltipContent>{label}</TooltipContent>

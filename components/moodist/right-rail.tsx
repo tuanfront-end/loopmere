@@ -66,11 +66,8 @@ function MixRow({ id }: { id: string }) {
       )}
     >
       <div className="flex items-center gap-2">
-        <span
-          aria-hidden="true"
-          className="text-primary-ink grid size-8 shrink-0 place-items-center"
-        >
-          <SoundIcon id={id} size={18} />
+        <span aria-hidden="true" className="text-primary-ink shrink-0">
+          <SoundIcon id={id} size={24} />
         </span>
 
         <span className="truncate text-sm font-medium">{labels[id]}</span>
