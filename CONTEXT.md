@@ -83,37 +83,32 @@ giữ một ảnh thật ở hero, tức là colour floor vẫn được thoả.
 **2. Icon sound không phải HugeIcons.** Skill nói icon là HugeIcons, nhưng đó
 là bộ icon *giao diện*: nó không có woodpecker, singing bowl hay morse code.
 Cái luật đó thực sự cấm là **trộn nhiều bộ trong một lưới**, và bản gốc trộn
-sáu bộ react-icons. Nên toàn bộ 84 icon sound giờ lấy từ **một** bộ —
-Phosphor. Chrome vẫn HugeIcons, với Heroicons cho chevron và play/pause đúng
-như skill quy định.
+sáu bộ react-icons. Nên 92 icon sound giờ lấy từ **một** bộ — xem mục Icon
+bên dưới.
 
-## Build switch
+## Icon
 
-`components/dev/` giữ một nút cố định ở góc phải dưới, một knob: **Icon set**.
+Một bộ duy nhất: **Thiings**, 92 PNG 3D trong `public/thiings/`, khoá theo id
+của sound. `react-icons` đã gỡ khỏi `package.json`, và field `icon` đã rời
+khỏi `data/sounds/*` — icon là tài sản hiển thị khoá theo id, không phải một
+cột của dữ liệu. Chín file đó giờ là `.ts` vì không còn JSX nào trong chúng.
 
-| Set | Nguồn | Ghi chú |
-|---|---|---|
-| Phosphor | `react-icons/pi`, ship cùng repo | 9.072 icon, nhưng sáu loài chim chia nhau một glyph |
-| Thiings | PNG 3D trong `public/thiings/` | Đủ 92 entry, mỗi sound một icon riêng |
+Chrome vẫn HugeIcons, với Heroicons cho chevron và play/pause. Hàng
+Favourites là category duy nhất không có sound sau cái tên, nên nó mang theo
+glyph trái tim của riêng nó qua prop `icon`.
 
-Hai bộ phủ cùng 92 id, nên bật qua lại không bao giờ rơi vào fallback.
-
-**Licence của Thiings là ràng buộc thật.** thiings.co cho tải lẻ **chỉ để dùng
-cá nhân**; muốn dùng thương mại phải mua licence trọn bộ. Bộ này ở đây để
-nhìn, không để ship.
+**Licence là việc còn mở.** thiings.co cho tải lẻ **chỉ để dùng cá nhân**;
+muốn dùng thương mại phải mua licence trọn bộ. Bản này chạy nội bộ nên không
+sao, nhưng nếu có ngày đem bán thì đó là khoản phải trả trước.
 
 Lấy được từng cái một: site không có API công khai (`/api/things`,
 `/api/search`, `/api/icons` đều 404, danh sách không nằm trong RSC payload),
-và tên khái niệm chỉ sống trong `alt` của mỗi ảnh. Nên quy trình là gõ vào ô
-search, đợi lưới lọc, đọc `alt` + `src`. Ảnh gốc là PNG 1024px — 92 cái là
-149MB, resize xuống 256px còn 5.1MB.
+và tên khái niệm chỉ sống trong `alt` của mỗi ảnh. Ảnh gốc là PNG 1024px —
+92 cái là 149MB, resize xuống 256px còn 5.1MB.
 
 Bốn khái niệm không có trong bộ và phải mượn cái gần nhất: `inside-a-train`
 lấy Tram, `morse-code` lấy Walkie Talkie, `windshield-wipers` lấy Car Wash,
 `pink-noise` lấy Portable Speaker.
-
-Switch là scaffolding: xoá `components/dev/`, hai dòng trong `app/layout.tsx`
-và `data/sound-thiings.ts` là sạch.
 
 ## Chưa port
 

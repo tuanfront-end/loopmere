@@ -6,6 +6,8 @@ import type { Category } from "@/data/types";
 interface CategorySectionProps extends Category {
   blurb?: string;
   functional?: boolean;
+  /** Favourites has no sound of its own, so it brings its own glyph. */
+  icon?: React.ReactNode;
 }
 
 export function CategorySection({
