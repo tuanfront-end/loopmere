@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useEffect, useMemo } from "react";
 
 import { FavoriteButton } from "./favorite-button";
+import { SoundIcon } from "./sound-icon";
 import { VolumeSlider } from "./volume-slider";
 
 import { useKeyboardButton } from "@/hooks/use-keyboard-button";
@@ -25,7 +26,6 @@ interface SoundCardProps extends SoundType {
 export function SoundCard({
   functional,
   hidden,
-  icon,
   id,
   label,
   src,
@@ -106,7 +106,7 @@ export function SoundCard({
             strokeWidth={1.5}
           />
         ) : (
-          icon
+          <SoundIcon id={id} />
         )}
       </div>
 

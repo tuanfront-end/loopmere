@@ -1,4 +1,5 @@
 import { SoundGrid } from "./sound-grid";
+import { SoundIcon } from "./sound-icon";
 
 import type { Category } from "@/data/types";
 
@@ -25,7 +26,7 @@ export function CategorySection({
           aria-hidden="true"
           className="bg-chip text-primary-ink grid size-11 shrink-0 place-items-center rounded-full"
         >
-          {icon}
+          {id === "favorites" ? icon : <SoundIcon id={id} />}
         </div>
 
         <div>

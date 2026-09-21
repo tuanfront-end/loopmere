@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 
+import { IconSetProvider } from "@/components/dev/icon-set";
+import { SwitchControl } from "@/components/dev/switch-control";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -32,7 +34,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${body.variable} ${heading.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+        <IconSetProvider>
+          <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+          {/* Build scaffolding: delete components/dev/ and these two lines. */}
+          <SwitchControl />
+        </IconSetProvider>
         <Toaster />
       </body>
     </html>
