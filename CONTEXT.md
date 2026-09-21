@@ -9,11 +9,11 @@ kiến trúc, không phải để phát hành.
 | | Bản gốc | Bản này |
 |---|---|---|
 | Framework | Astro 7 | Next.js 16.3.5 (App Router, Turbopack) |
-| UI lib | `radix-ui` 1.5 dùng trực tiếp | shadcn/ui (base `radix`, preset `nova`) |
+| UI lib | `radix-ui` 1.5 dùng trực tiếp | shadcn/ui `base-nova` — **Base UI**, không phải Radix |
 | CSS | CSS Modules + PostCSS nesting | Tailwind v4 + token shadcn |
 | Audio | Howler 2.2 | giữ nguyên |
 | State | Zustand 4 + persist | Zustand 5 + persist (API dùng không đổi) |
-| Icons | react-icons 4 | react-icons 5 |
+| Icons | react-icons 4, sáu bộ trộn lẫn | Thiings cho sound, HugeIcons + Heroicons cho chrome |
 
 ## Kiến trúc bản gốc — bốn điểm đáng học
 
@@ -43,11 +43,11 @@ settings store. Card tính `adjustedVolume` rồi truyền xuống `useSound`.
 | Chỗ | Vì sao | Cách xử lý |
 |---|---|---|
 | `helpers/path.ts` | `import.meta.env.BASE_URL` là của Vite/Astro | viết lại, Next serve `public/` ở root |
-| `data/sounds/*.tsx` | import `react-icons/bs/index` (đuôi `/index` để Vite tree-shake) | bỏ `/index` |
+| `data/sounds/*.tsx` | import `react-icons/bs/index` (đuôi `/index` để Vite tree-shake) | bỏ `/index`, rồi sau đó bỏ luôn cả `react-icons` — xem § Icon |
 | `helpers/styles.ts` | `cn` tự viết, trùng với `cn` của shadcn (có `tailwind-merge`) | xoá, dùng `@/lib/utils` |
 | `stores/`, `hooks/` | chạm localStorage và Howler | thêm `'use client'` |
-| `navigator.audioSession` | API draft, không có trong `lib.dom` | khai báo ở `src/types/audio-session.d.ts` |
-| `contexts/snackbar.tsx` | kéo theo một component chưa port | tạm bỏ, dùng `sonner` của shadcn |
+| `navigator.audioSession` | API draft, không có trong `lib.dom` | khai báo ở `types/audio-session.d.ts` |
+| `contexts/snackbar.tsx` | kéo theo một component chưa port | bỏ hẳn, dùng `sonner` — xem § Snackbar |
 
 Bản gốc **không chạy `tsc`** — script `check` của nó là Biome, nên lỗi
 `navigator.audioSession` chưa bao giờ lộ ra. Bản này typecheck sạch.
@@ -59,6 +59,8 @@ Bản gốc **không chạy `tsc`** — script `check` của nó là Biome, nên
 - UI: hero, play controls (play/pause, shuffle, clear, restore), category
   section, sound grid có Show More, sound card, favorite, volume slider.
 - Assets: `public/sounds` (117MB), images, logo, og.
+- Toolbar, mười ba panel, PWA, snackbar và nửa nhận của share link — mỗi thứ
+  có mục riêng bên dưới.
 
 ## Soft Neutral
 
@@ -68,23 +70,50 @@ House style đã áp lên bản port. Palette copy nguyên khối từ
 Sans) — Inter bị loại vì không có row đo trong skill. Button re-scale về
 36/40/44, slider thumb từ 12px lên 24px, lucide bị thay khỏi mọi primitive.
 
-Checker: `palette`, `type`, `controls`, `hover`, `responsive`, `vn-comment`
-đều pass.
+**Không có `.soft-neutral.json` — site brief không áp vào đây.** Hai dial mà
+`/site-brief` ghi ra là dial của một template đem bán: vẽ bao nhiêu, tiêu hue
+dày bao nhiêu. Bản này là port để đọc kiến trúc, nên nó chạy ở notch mặc định,
+tức là chính tài liệu skill. `_dials.py` không cần file đó, và hai checker đọc
+nó thì rơi về mặc định.
 
-### Hai chỗ cố ý lệch khỏi skill
+### Icon sound không phải HugeIcons — cố ý
 
-**1. `page-check` fail, và không sửa.** Luật picture run nói ba section liên
-tiếp không ảnh là hết mức; trang này có tám grid category liên tiếp. Luật đó
-viết cho landing page bán hàng, nơi mỗi section là một lập luận. Moodist là
-app tool: tám grid là tám cái kệ của cùng một thứ, và nhồi một tấm ảnh vào
-mỗi kệ sẽ làm trang đọc như catalogue chứ không phải như bàn trộn. Trang vẫn
-giữ một ảnh thật ở hero, tức là colour floor vẫn được thoả.
+Skill nói icon là HugeIcons, nhưng đó là bộ icon *giao diện*: nó không có
+woodpecker, singing bowl hay morse code. Cái luật đó thực sự cấm là **trộn
+nhiều bộ trong một lưới**, và bản gốc trộn sáu bộ react-icons. Nên 92 icon
+sound giờ lấy từ **một** bộ — xem § Icon.
 
-**2. Icon sound không phải HugeIcons.** Skill nói icon là HugeIcons, nhưng đó
-là bộ icon *giao diện*: nó không có woodpecker, singing bowl hay morse code.
-Cái luật đó thực sự cấm là **trộn nhiều bộ trong một lưới**, và bản gốc trộn
-sáu bộ react-icons. Nên 92 icon sound giờ lấy từ **một** bộ — xem mục Icon
-bên dưới.
+### Một chỗ lệch khỏi scaffold của team
+
+`lib/utils.ts` ở đây là `export { cn } from "cn"`, và mọi wrapper import thẳng
+`from "cn"`. Đó là thứ `shadcn init` viết ra. Scaffold của team thì gỡ gói `cn`
+và tự viết `cn` bằng `clsx` + `tailwind-merge` — xem `_comment` trong
+`template/scaffold.json`. Hai đường cho cùng một kết quả (`cn` 0.3.0 của shadcn
+là drop-in của clsx + tailwind-merge, không có dependency nào), nên chưa đổi;
+nhưng một template đem bán thì phải theo scaffold.
+
+## Gate
+
+`npm run check` gom sáu gate đang xanh — type, palette, responsive, controls,
+hover, vn-comment — cộng `next build` và toàn bộ selftest. **Đỏ ở đó là hồi
+quy thật.**
+
+`npm run check:all` chạy thêm năm gate nữa, và bốn trong số đó đang đỏ. Ba là
+quyết định, một là việc chưa làm:
+
+| Gate | Báo gì | Đọc thế nào |
+|---|---|---|
+| `page-check` | section 2–10: chín cái liên tiếp không ảnh, luật là ba | **quyết định** — xem ngay dưới |
+| `ref-ledger` | 0/2 section ghi `// drawn:` | **quyết định** — không có mark vẽ tay nào, và moodist không đòi |
+| `image-check` | `/logo-light.png` rộng 200px, sàn là 1200px | **false positive** — file đó là artwork của MediaSession, không bao giờ vẽ lên trang |
+| `seo-check` | 5 defect | **việc chưa làm** — xem § Việc còn mở |
+
+**`page-check` fail, và không sửa.** Luật picture run nói ba section liên tiếp
+không ảnh là hết mức; trang này có chín grid category liên tiếp. Luật đó viết
+cho landing page bán hàng, nơi mỗi section là một lập luận. Moodist là app
+tool: chín grid là chín cái kệ của cùng một thứ, và nhồi một tấm ảnh vào mỗi kệ
+sẽ làm trang đọc như catalogue chứ không phải như bàn trộn. Trang vẫn giữ một
+ảnh thật ở hero, tức là colour floor vẫn được thoả.
 
 ## Icon
 
@@ -114,7 +143,7 @@ lấy Tram, `morse-code` lấy Walkie Talkie, `windshield-wipers` lấy Car Wash
 
 Mười ba panel, tất cả đi qua **một** `ToolPanel` bọc shadcn `Dialog`: escape,
 focus trap, scroll lock và nút đóng viết một lần thay vì mười ba lần. Bản gốc
-tự dựng Modal bằng Portal + FocusTrap + motion; ở đây Radix lo hết.
+tự dựng Modal bằng Portal + FocusTrap + motion; ở đây Base UI lo hết.
 
 | Nhóm | Panel |
 |---|---|
@@ -189,13 +218,32 @@ Năm chỗ vỡ ở call site, và chỉ một trong số đó biên dịch sạ
 `items`, nên nút chọn binaural đọc là `custom` thay vì `Set it yourself`.
 
 `controls-check.py` trước đó báo false positive trên repo Radix vì nó chỉ biết
-`SelectPrimitive.Popup` của Base UI. Đã sửa trong repo skill (branch
-`select-popup-on-either-base`): rule đọc cả hai part và gọi tên đúng cái file
-thực sự dùng.
+`SelectPrimitive.Popup` của Base UI. Đã sửa trong repo skill: rule đọc cả hai
+part và gọi tên đúng cái file thực sự dùng. Nó cũng bắt được một finding thật
+trên đường đi — base variant đặt padding của Select lên `SelectGroup`, và repo
+này dời nó về popup.
 
-## Chạy
+**Bản sửa đó chưa vào `main`.** Nó nằm ở nhánh `select-popup-on-either-base`
+trong `claude-build-template-skills`, một commit (`46af405`), chưa push, và
+`main` đã đi trước bốn commit kể từ điểm rẽ. Symlink `.claude/skills/` trỏ vào
+working tree của repo skill, nên checker mà session này chạy là bản nào đang
+được checkout ở đó. Xem § Việc còn mở.
 
-```bash
-npm run dev    # cổng 3100 khi test song song với bản gốc (Astro ở 4321)
-npm run build
-```
+## Việc còn mở
+
+Bốn thứ, không cái nào đang chặn:
+
+**1. `seo-check` báo 5 defect.** Thiếu canonical, thiếu cả năm thẻ Open Graph
+(`og:title`, `og:description`, `og:url`, `og:type`, `og:site_name`), thiếu
+`twitter:card`, thiếu `sitemap.xml`, và skip link trỏ vào `#content` mà không
+có gì mang id đó. Bốn cái đầu là vài dòng trong `metadata` của
+`app/layout.tsx`; cái cuối là một `id` trên `<main>`.
+
+**2. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
+Chrome thật để xác nhận vòng install → waiting → reload.
+
+**3. Nhánh `select-popup-on-either-base` chưa merge** ở repo skill. Rebase lên
+`main` rồi mở PR, hoặc bỏ nó đi — nhưng đừng để nó nằm đó: khi nào repo skill
+checkout sang nhánh khác thì checker ở đây đổi hành vi mà không ai báo.
+
+**4. Licence thiings** — § Icon nói rõ. Chỉ thành vấn đề nếu có ngày đem bán.

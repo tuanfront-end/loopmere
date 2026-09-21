@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3100",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start -p 3100",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check": "next build && python3 .claude/skills/soft-neutral/scripts/_dials.py && python3 .claude/skills/soft-neutral/scripts/_repo.py --selftest && python3 .claude/skills/soft-neutral/scripts/palette-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/type-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/responsive-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/page-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/ref-ledger.py --selftest && python3 .claude/skills/soft-neutral/scripts/seo-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/controls-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/hover-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/mark-visibility.py --selftest && python3 .claude/skills/soft-neutral/scripts/find-near-duplicates.py --selftest && python3 .claude/skills/soft-neutral/scripts/type-check.py --errors app components && python3 .claude/skills/soft-neutral/scripts/palette-check.py && python3 .claude/skills/soft-neutral/scripts/responsive-check.py && python3 .claude/skills/soft-neutral/scripts/controls-check.py && python3 .claude/skills/soft-neutral/scripts/hover-check.py && python3 .claude/skills/soft-neutral/scripts/vn-comment-check.py",
+    "check:all": "next build && python3 .claude/skills/soft-neutral/scripts/_dials.py && python3 .claude/skills/soft-neutral/scripts/_repo.py --selftest && python3 .claude/skills/soft-neutral/scripts/palette-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/type-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/responsive-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/page-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/ref-ledger.py --selftest && python3 .claude/skills/soft-neutral/scripts/seo-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/controls-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/hover-check.py --selftest && python3 .claude/skills/soft-neutral/scripts/mark-visibility.py --selftest && python3 .claude/skills/soft-neutral/scripts/find-near-duplicates.py --selftest && python3 .claude/skills/soft-neutral/scripts/type-check.py --errors app components && python3 .claude/skills/soft-neutral/scripts/palette-check.py && python3 .claude/skills/soft-neutral/scripts/responsive-check.py && python3 .claude/skills/soft-neutral/scripts/controls-check.py && python3 .claude/skills/soft-neutral/scripts/hover-check.py && python3 .claude/skills/soft-neutral/scripts/vn-comment-check.py; python3 .claude/skills/soft-neutral/scripts/image-check.py; python3 .claude/skills/soft-neutral/scripts/page-check.py; python3 .claude/skills/soft-neutral/scripts/ref-ledger.py --all; python3 .claude/skills/soft-neutral/scripts/mark-visibility.py; python3 .claude/skills/soft-neutral/scripts/seo-check.py"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -18,10 +21,8 @@
     "deepmerge": "^4.3.1",
     "howler": "^2.2.4",
     "js-confetti": "^0.13.1",
-    "lucide-react": "^1.47.0",
     "motion": "^13.4.0",
     "next": "16.3.5",
-    "next-themes": "^0.4.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hotkeys-hook": "^5.3.3",

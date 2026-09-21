@@ -7,3 +7,22 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## This repo is a port, not a template for sale
+
+moodist-next is an Astro → Next.js port of [remvze/moodist](https://github.com/remvze/moodist),
+built to study its architecture. Nothing here goes to a marketplace, so the
+packaging and sellability rules do not apply to it.
+
+**Read `CONTEXT.md`** before changing ported code, before arguing with a red
+gate, and before touching a `components/ui/` wrapper. It holds what the port
+decided and why — the original's four architectural moves, the fixes the port
+needed, the deliberate departures from Soft Neutral, and the open items.
+
+`npm run check` is the set that is green today: a red one there is a
+regression. `npm run check:all` adds five gates, four of which are red —
+`CONTEXT.md` § Gate says which three are decisions and which one is unfinished
+work.
+
+The `components/ui/` wrappers are **Base UI**, not Radix. One migration report
+per component lives in `.migration/`.

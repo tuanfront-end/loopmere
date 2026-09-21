@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# moodist-next
 
-## Getting Started
+Bản port **Astro → Next.js** của [remvze/moodist](https://github.com/remvze/moodist),
+dựng để **học kiến trúc** — không phải template đem bán, không có kế hoạch phát hành.
 
-First, run the development server:
+Bản gốc nằm cạnh ở `../moodist` (commit `285ecdb`, v3.0.0) và vẫn chạy được, để
+đối chiếu hành vi khi có gì đó không khớp.
+
+## Chạy
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`http://localhost:3100` — cổng 3100 chứ không phải 3000, vì bản gốc chiếm 4321
+và hai bản thường mở song song.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Hai gate, và sự khác nhau giữa chúng là có chủ đích:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run check      # build + sáu gate đang xanh — đỏ ở đây là hồi quy
+npm run check:all  # thêm năm gate nữa, bốn trong số đó đang đỏ
+```
 
-## Learn More
+Bốn gate đỏ đó tên gì và vì sao chưa xanh: **CONTEXT.md § Gate**.
 
-To learn more about Next.js, take a look at the following resources:
+## Đọc gì trước
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| File | Giữ gì |
+|---|---|
+| [`CONTEXT.md`](CONTEXT.md) | Kiến trúc bản gốc, những chỗ phải sửa khi port, các chỗ cố ý lệch khỏi house style, việc còn mở |
+| [`.migration/`](.migration/) | Một báo cáo cho mỗi component khi chuyển Radix → Base UI, cộng `project.md` cho cả lượt |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Repo
 
-## Deploy on Vercel
+Không có remote — repo này chỉ sống trên máy. Nhánh hiện tại là
+`migrate-to-base-ui`, đi trước `main` hai commit.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`public/sounds` (117MB) và `public/thiings` (5.1MB) **được commit**, nên `.git`
+nặng 122MB. Clone là chạy được ngay, đổi lại là không bao giờ nên push nó lên
+một remote công khai: âm thanh thuộc về bản gốc và icon thiings chỉ có licence
+dùng cá nhân.
