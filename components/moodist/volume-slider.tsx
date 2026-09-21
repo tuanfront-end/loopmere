@@ -17,15 +17,15 @@ export function VolumeSlider({ id, label }: VolumeSliderProps) {
 
   return (
     <Slider
-      aria-label={`${label} volume`}
-      className="mt-3 w-full"
+      aria-label={`${label} level`}
+      className="mt-5"
       max={1}
       min={0}
       step={0.01}
       value={[volume]}
-      // The card underneath toggles the sound; dragging must not reach it.
-      onClick={(e) => e.stopPropagation()}
-      onKeyDown={(e) => e.stopPropagation()}
+      // The card underneath toggles the sound; a drag must not reach it.
+      onClick={(event) => event.stopPropagation()}
+      onKeyDown={(event) => event.stopPropagation()}
       onValueChange={([next]) => setVolume(id, next)}
     />
   );

@@ -1,8 +1,9 @@
 "use client";
 
+import { FavouriteIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Howler } from "howler";
 import { useEffect, useMemo } from "react";
-import { BiSolidHeart } from "react-icons/bi";
 import { useShallow } from "zustand/react/shallow";
 
 import { CategorySection } from "./category-section";
@@ -10,6 +11,7 @@ import { PlayControls } from "./play-controls";
 import { StoreConsumer } from "./store-consumer";
 
 import { FADE_OUT } from "@/constants/events";
+import { categoryBlurbs } from "@/data/category-blurbs";
 import { sounds } from "@/data/sounds";
 import { subscribe } from "@/lib/event";
 import { useSoundStore } from "@/stores/sound";
@@ -29,7 +31,7 @@ export function App() {
       .flatMap((category) => category.sounds)
       .filter((sound) => favorites.includes(sound.id));
 
-    // Keep the order the user favorited them in, not the category order.
+    // Keep the order they were favourited in, not the category order.
     return favorites
       .map((favorite) => all.find((sound) => sound.id === favorite))
       .filter(Boolean) as Array<Sound>;
@@ -70,10 +72,10 @@ export function App() {
 
     return [
       {
-        icon: <BiSolidHeart />,
+        icon: <HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />,
         id: "favorites",
         sounds: favoriteSounds,
-        title: "Favorites",
+        title: "Favourites",
       },
       ...categories,
     ];
@@ -83,15 +85,14 @@ export function App() {
     <StoreConsumer>
       <PlayControls />
 
-      <div className="divide-y">
-        {allCategories.map((category) => (
-          <CategorySection
-            key={category.id}
-            {...category}
-            functional={category.id !== "favorites"}
-          />
-        ))}
-      </div>
+      {allCategories.map((category) => (
+        <CategorySection
+          key={category.id}
+          {...category}
+          blurb={categoryBlurbs[category.id]}
+          functional={category.id !== "favorites"}
+        />
+      ))}
     </StoreConsumer>
   );
 }

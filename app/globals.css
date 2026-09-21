@@ -1,0 +1,493 @@
+@import "tailwindcss";
+/* The reference library is a link to a folder outside this repo. Source
+   detection walks it otherwise, and Turbopack then tries to write that path
+   relative to the project root and fails the build — as a CSS parse error,
+   which names neither the link nor the library. Nothing in there is markup. */
+@source not "design-refs";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  /* The heading half of the pair. Undeclared by default, and the fallback is
+     what makes "one family" the resting state: nothing sets --font-heading, so
+     every heading resolves to whatever --font-sans is at that element. A
+     project that pairs sets the variable once, in :root or on the switch's
+     wrapper, and the base rule below carries the rest of the face's row with
+     it. */
+  --font-heading: var(--font-heading, var(--font-sans));
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-brand-art: var(--brand-art);
+  --color-brand-art-soft: var(--brand-art-soft);
+  /* The accent palette. Each is a fill and a readable ink, the same two-token
+     shape `--primary` / `--primary-ink` already teaches. A chip from one is
+     written where it is used — `bg-leaf/15 text-leaf-ink` — rather than given
+     four more tokens of its own. */
+  --color-leaf: var(--leaf);
+  --color-leaf-ink: var(--leaf-ink);
+  --color-sun: var(--sun);
+  --color-sun-ink: var(--sun-ink);
+  --color-coral: var(--coral);
+  --color-coral-ink: var(--coral-ink);
+  --color-iris: var(--iris);
+  --color-iris-ink: var(--iris-ink);
+  --color-lime: var(--lime);
+  --color-lime-ink: var(--lime-ink);
+  --color-sky: var(--sky);
+  --color-sky-ink: var(--sky-ink);
+  /* The mix is inline here rather than behind a --chip variable on :root. A
+     var() nested inside a custom property is substituted where that property
+     is *declared*, so --chip would have been resolved once against :root's
+     primary and its resolved value inherited — a wrapper overriding the hue
+     or the alpha below would have changed nothing. Written here, @theme
+     inline puts the expression into the utility itself, where it resolves
+     against the element that uses it. */
+  --color-chip: color-mix(
+    in oklab,
+    var(--primary) var(--chip-alpha),
+    transparent
+  );
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@theme {
+  /* Softer than Tailwind's shadow-*, which puts a 10% black edge directly under
+     the element and reads as a hard line on surfaces this close to white.
+
+     Each one opens with a hairline ring so the edge is drawn by the shadow
+     itself — that is what lets a raised thing keep a defined edge without a
+     separate border darkening it. Then a wide, low-opacity spread does the
+     lifting.
+
+     Tinted with --foreground rather than pure black: the palette runs at hue
+     30, and a neutral-black shadow reads cold against a warm near-white. */
+  --shadow-soft:
+    0 0 0 1px hsl(30 6% 10% / 0.015), 0 2px 6px -2px hsl(30 6% 10% / 0.05),
+    0 6px 16px -6px hsl(30 6% 10% / 0.06);
+  --shadow-soft-lg:
+    0 0 0 1px hsl(30 6% 10% / 0.015), 0 8px 24px -6px hsl(30 6% 10% / 0.08),
+    0 24px 48px -24px hsl(30 6% 10% / 0.1);
+
+  --animate-marquee: marquee 40s linear infinite;
+
+  /* Each item carries its own trailing space as padding rather than flex gap,
+     so two copies measure exactly 2× one copy and -50% loops seamlessly. */
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/* A scrollbar on a rail inside the page is chrome the design did not draw, and
+   macOS hides it until it is used where Windows does not — so a strip that
+   looks right here ships a grey gutter to half the buyers. The window's own bar
+   is untouched: it is the only thing saying how long the page is. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Soft Neutral ──────────────────────────────────────────────
+   Same variables shadcn generates, different values. HSL because
+   the per-project knob is a hue rotation.
+
+   The brand hue is hsl(30 6% 13%), the palette's own warm near-black,
+   picked by the user from the five the demo switcher offered. It is
+   the one knob a buyer of this template turns: rotate it across
+   --primary, --ring and --chart-1..3 and the whole page restyles.
+   Measured against this palette it lands 16.02 white-on-primary and
+   15.68 against the page — the widest of the five — and its chip
+   reads 1.122 on a card, inside the whisper band, at the thinner
+   alpha the next comment is about.
+
+   A near-black brand is a choice with a cost worth naming: the page
+   has no vivid hue to point with any more, so emphasis is carried by
+   ink weight, size and ground instead, and everything with colour on
+   it — photographs, the pastel status chips — carries all of it.
+
+   --sidebar-primary already held this exact value, so the two now
+   agree; before, they disagreed by a whole hue.
+
+   The page is the top of the surface ladder and every other rung is
+   a distance below it: soft tint 2.5, border 5, muted 6, secondary 8.
+   Move --background and every one of them moves with it, or the
+   components keyed to the page stop separating. Checked by
+   scripts/palette-check.py in the skill.
+
+   --radius is 1.5rem so that rounded-lg lands on 24px (containers)
+   and rounded-sm on ~14px (rows inside a card). This shadcn version
+   derives the radius scale by multiplication, so check the
+   @theme inline block above before changing it.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --radius: 1.5rem;
+
+  /* Plus Jakarta Sans's row from the per-face table in the skill's setup notes, bound once
+     here so that `font-medium` means the emphasis step of whatever face is
+     loaded, `tracking-tight` means as much tightening as that face needs, and a
+     display line that wraps clears its own descenders. Swapping the face is the
+     import in layout.tsx and these three numbers; no component changes. */
+  --font-weight-normal: 500;
+  --font-weight-medium: 600;
+  --tracking-tight: -0.025em;
+  --tracking-tighter: -0.05em;
+  --leading-display: 1;
+  --text-5xl--line-height: var(--leading-display);
+  --text-6xl--line-height: var(--leading-display);
+  --text-7xl--line-height: var(--leading-display);
+
+  /* The heading face's own row. Same four numbers, read by the base rule that
+     scopes them to h1–h6 and .font-heading, so a pair carries two rows rather
+     than one and neither face is set with the other's tracking. Pointed at the
+     body row here, which is the one-family case: swapping to a pair is these
+     five lines and the --font-heading above, and no component changes. */
+  --heading-weight-normal: 500;
+  --heading-weight-medium: 600;
+  --heading-tracking-tight: 0em;
+  --heading-tracking-tighter: -0.025em;
+  --heading-leading-display: var(--leading-display);
+
+  --secondary: hsl(30 6% 91%);
+  --secondary-foreground: hsl(30 6% 10%);
+  --muted: hsl(30 6% 93%);
+  --muted-foreground: hsl(30 4% 40%);
+  --background: hsl(30 25% 99%);
+  --accent: hsl(30 8% 96.5%);
+  --accent-foreground: hsl(30 6% 10%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(30 6% 10%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(30 6% 10%);
+
+  --foreground: hsl(30 6% 10%);
+
+  /* The brand hue does two jobs and they have different floors. As a **fill**
+     — the primary button, the chip, gradient art, the offset slab — it only
+     has to be seen. As **ink** — text-primary, the focus ring, chart-1 — it
+     has to clear 4.5:1 on a near-white page, and a hue light enough to make a
+     good fill often cannot.
+
+     So they are two tokens. For every dark brand the two hold the same value
+     and nothing behaves differently; a light brand is the case that needs the
+     split, and it is the case this style could not ship before. --ring and the
+     chart ramp read the ink, because a ring is a line and a chart dot on a
+     white card is ink by another name.
+
+     This replaces a [data-brand="light"] rule that used to force text-primary
+     back to --foreground. That worked and it threw the hue away: a light brand
+     had no brand-coloured ink at all, only a neutral one. */
+  --primary: hsl(194 42% 32%);
+  --primary-ink: hsl(194 42% 32%);
+  --primary-foreground: hsl(0 0% 100%);
+
+  /* Gradient art is the one mark allowed to fill space with colour, and until
+     now every instance of it carried a hue typed into a component — which is
+     how a palette with a hue knob ends up with art that ignores the knob.
+     These two are that art's only source. Mixed rather than listed so they
+     follow --primary wherever it is rotated to, and mixed toward the page
+     rather than toward white so a warm ground stays warm. */
+  --brand-art: color-mix(in oklab, var(--primary) 46%, var(--background));
+  --brand-art-soft: color-mix(in oklab, var(--primary) 20%, var(--background));
+
+  /* The brand-hued chip, as a token rather than a bg-primary/10 written out in
+     every component. How far that alpha travels depends on how dark the primary
+     is: /10 of the reference green lands 1.150 against a card and whispers, /10
+     of a near-black primary lands 1.216 — past the band and a deeper step than
+     the well itself. So the alpha is the variable, and a palette that changes
+     the hue changes it too. This palette *is* the near-black one, so it takes
+     the thinner alpha: /6 reads 1.122 on a card. The mix itself lives in the
+     @theme block above, for the reason written there. Lime is a light hue,
+     so /10 never reaches the whisper band and the alpha is raised to /30. A
+     mid-dark brand takes the ordinary 10%. */
+  --chip-alpha: 10%;
+
+  /* The accent palette — six hues that are not the brand, and the only six.
+     Four are declared here and the last two below, which is the order they
+     arrived in rather than a rank.
+     They exist because one hue cannot tell four peers apart: a bento of four
+     services, six guild crests, a pie of four categories. Drawing those in one
+     hue at four lightnesses invents a ranking the content does not have.
+
+     Aliases, not transcriptions. `palette-check.py` reads stock Tailwind out of
+     the installed package for exactly this reason, and a copied oklch triple
+     here would be a second source of truth that goes stale on the next release
+     without anything failing.
+
+     Named for the colour rather than for a job. `--chip-ok` could only ever be
+     a success chip; `--leaf` can be a success chip, a guild crest, a mark on a
+     card, or one slice of a pie. The fence was the problem.
+
+     They do not rotate with the brand — green means ok wherever the brand
+     lands, and `brand-hue.py` reports when a rotation brings the brand within
+     30 degrees of one instead of moving it. */
+  --leaf: var(--color-emerald-400);
+  --leaf-ink: var(--color-emerald-700);
+  --sun: var(--color-amber-400);
+  --sun-ink: var(--color-amber-700);
+  --coral: var(--color-rose-400);
+  --coral-ink: var(--color-rose-700);
+  --iris: var(--color-violet-400);
+  --iris-ink: var(--color-violet-700);
+
+  /* Five and six, and they are here because of a rule rather than a taste.
+     `drawn.md` § Palette takes the *count* of distinct colours from the
+     reference and only the *kind* from the project — so a shot telling six
+     things apart with six flat colours needs six of ours, and four left two
+     of them with nowhere to come from.
+
+     They fill the two widest gaps in the wheel the first four leave. Measured
+     at the Tailwind 400 step: rose 350, amber 38, emerald 160, violet 270,
+     which leaves 122 degrees open between amber and emerald and 110 between
+     emerald and violet. Lime lands at 84 and sky at 199, so the six sit
+     roughly 50 degrees apart the whole way round and no pair collapses into
+     one reading.
+
+     Global rather than declared beside whichever component first needed a
+     fifth: two components each inventing their own sixth colour is how a
+     palette stops being one. */
+  --lime: var(--color-lime-400);
+  --lime-ink: var(--color-lime-700);
+  --sky: var(--color-sky-400);
+  --sky-ink: var(--color-sky-700);
+
+  --destructive: hsl(4 62% 40%);
+
+  --border: hsl(30 6% 94%);
+  --input: hsl(30 5% 84%);
+  --ring: var(--primary-ink);
+
+  /* One warm-grey ramp now, 13 → 25 → 37 → 72 → 85 at a steady 6%
+     saturation. The demo switcher derived 2 and 3 by dropping 5 and 11
+     points off the hue's own saturation, which for a 6% hue clamped to
+     1% and 0% — cold greys in a warm palette. Baked in, they keep the
+     6% every other neutral here carries. */
+  --chart-1: hsl(194 42% 32%);
+  --chart-2: hsl(194 37% 44%);
+  --chart-3: hsl(194 31% 56%);
+  --chart-4: hsl(30 6% 72%);
+  --chart-5: hsl(30 6% 85%);
+
+  --sidebar: hsl(30 6% 91%);
+  --sidebar-foreground: hsl(30 6% 10%);
+  --sidebar-primary: hsl(194 42% 32%);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: hsl(30 6% 93.5%);
+  --sidebar-accent-foreground: hsl(30 6% 10%);
+  --sidebar-border: hsl(30 6% 91.5%);
+  --sidebar-ring: hsl(30 6% 13%);
+}
+
+@layer base {
+  /* Every focusable thing gets a visible ring, once, rather than a utility
+     repeated on fifty-six elements. The offset is the point: this style's
+     controls are pills, and a ring drawn flush against a rounded-full edge
+     disappears into it — which quality-floor.md names as the one focus case
+     that actually fails here. shadcn's controls set `outline-none` in their own
+     base and keep their generated ring, so they opt out of this and nothing is
+     drawn twice. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans font-normal;
+  }
+}
+
+@layer base {
+  /* The header is sticky, so anchors need somewhere to land. */
+  html {
+    scroll-padding-top: 6rem;
+  }
+
+  /* The heading face reaches every heading without a utility at the call site,
+     and .font-heading carries it to the display type that is not a heading
+     element — a stat figure, a pull quote, a price.
+
+     The weight and tracking variables are re-declared rather than the
+     properties themselves, because that is what keeps `font-medium` and
+     `tracking-tight` in a component meaning *this face's* emphasis step and
+     *this face's* tightening. font-weight is also set outright: a display
+     heading carries no weight utility at all, so without it the heading would
+     inherit the body face's number through html.
+
+     Plain element selectors rather than :where(). Preflight ships
+     `h1…h6 { font-weight: inherit }`, which at 0,0,1 beats a zero-specificity
+     rule and leaves every display heading on the body face's weight — the
+     variables above still land, so the miss reads as "the pair half works and
+     the other half does not". Nothing is lost by the specificity: base loses
+     to the utilities layer whatever the selector, so a `font-medium` at the
+     call site still wins. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-heading {
+    font-family: var(--font-heading, var(--font-sans));
+    font-weight: var(--heading-weight-normal);
+    --font-weight-normal: var(--heading-weight-normal);
+    --font-weight-medium: var(--heading-weight-medium);
+    --tracking-tight: var(--heading-tracking-tight);
+    --tracking-tighter: var(--heading-tracking-tighter);
+    --text-5xl--line-height: var(--heading-leading-display);
+    --text-6xl--line-height: var(--heading-leading-display);
+    --text-7xl--line-height: var(--heading-leading-display);
+  }
+
+  /* Optical corrections Tailwind does not ship. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer base {
+  /* No focus rule here on purpose. The shadcn stylesheet already ships a
+     global `:focus-visible { outline: 2px solid var(--ring); outline-offset:
+     2px }`, so every control on this page — including the header links, the
+     footer links and the card links that look like they declare nothing — is
+     already ringed, and already ringed with the offset a rounded-full control
+     needs. A second rule here was redundant, and the skill's own instruction
+     is to leave focus rings alone. */
+
+  /* No 300ms wait for a double-tap that is never coming, and no grey flash
+     box over a pill on Android. Both are touch defaults that read as lag. */
+  :where(a, button, summary, label, select, [role="button"]) {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Unlayered on purpose: @layer base loses to the utilities layer, so these
+   overrides have to sit outside the cascade layers to actually win. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+
+  /* The blanket kill. Individual components carry motion-reduce: variants for
+     the motion they own, but a template is going to grow motion this file has
+     never heard of, and the floor is that the page is complete with every
+     animation off. 0.01ms rather than 0s so animationend still fires. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Section reveal. Progressive enhancement, and every part of it is chosen for
+   the failure mode rather than for the effect:
+
+     - The hidden state is keyed to a data attribute that only JavaScript ever
+       sets. No JavaScript, hydration that never lands, a crashed observer —
+       all of them leave the page rendered, which is the one thing this must
+       not be able to break.
+     - reveal.tsx skips any section already on screen when it arms, so nothing
+       above the fold flashes out and back in.
+     - It also skips everything under prefers-reduced-motion, and the blanket
+       rule above is the second line of defence if it somehow does not.
+
+   The alternative was `animation-timeline: view()` — no JavaScript at all, and
+   genuinely the better technique. It is not here because its hidden state is
+   CSS, so a browser that supports the property but resolves the timeline
+   differently renders a blank section, and that is a failure a sold template
+   cannot carry.
+
+   Transform and opacity only: the two a compositor runs without laying out
+   the page again. */
+[data-reveal="pending"] {
+  opacity: 0;
+  transform: translateY(1.25rem);
+}
+
+/* 900ms on a cubic ease-out, and the curve did more of the work than the
+   number. This ran 600ms on cubic-bezier(0.22, 1, 0.36, 1) — a *quintic* ease
+   out, which spends about nine tenths of the distance in the first third of the
+   time, so the rise was perceptually over in a quarter of a second whatever the
+   duration said. Lengthening it alone buys less than it looks: 600 to 900 moves
+   the nine-tenths mark from 254ms to 375. Softening the curve at the same 900
+   moves it to 523, because a cubic rides the distance out instead of bolting
+   and then coasting. */
+[data-reveal="shown"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 900ms cubic-bezier(0.33, 1, 0.68, 1),
+    transform 900ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Printing does not scroll, so nothing ever reveals: every section still
+   pending when the dialog opens would print as a hole in the page. Save as PDF
+   goes through the same path, and in these niches a printed page is a real
+   artefact — a ticket, an itinerary, a booking confirmation, an invoice.
+   !important because print is one-way: there is no second look at the output. */
+@media print {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

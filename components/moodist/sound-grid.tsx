@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { useMemo } from "react";
 
 import { SoundCard } from "./sound-card";
 
@@ -22,20 +23,26 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
   const [showAll, setShowAll] = useLocalStorage(`${id}-show-more`, false);
   const selections = useSoundStore((state) => state.sounds);
 
-  const overflow = sounds.slice(DEFAULT_VISIBLE_SOUNDS);
+  const overflow = useMemo(
+    () => sounds.slice(DEFAULT_VISIBLE_SOUNDS),
+    [sounds],
+  );
 
   /**
-   * A collapsed row can hide a sound that is currently playing. Mark the
-   * toggle so the row does not look inert while something inside it is on.
+   * A collapsed row can hide a sound that is currently playing, so the toggle
+   * says how many rather than leaving the row looking inert.
    */
-  const hasHiddenSelection = useMemo(
-    () => !showAll && overflow.some((sound) => selections[sound.id]?.isSelected),
+  const hiddenPlaying = useMemo(
+    () =>
+      showAll
+        ? 0
+        : overflow.filter((sound) => selections[sound.id]?.isSelected).length,
     [showAll, overflow, selections],
   );
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sounds.map((sound, index) => (
           <SoundCard
             key={sound.id}
@@ -47,13 +54,18 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
       </div>
 
       {sounds.length > DEFAULT_VISIBLE_SOUNDS && (
-        <div className="mt-4 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <Button
             size="sm"
-            variant={hasHiddenSelection ? "default" : "outline"}
-            onClick={() => setShowAll((prev) => !prev)}
+            variant={hiddenPlaying ? "default" : "outline"}
+            onClick={() => setShowAll((previous) => !previous)}
           >
-            {showAll ? "Show Less" : "Show More"}
+            {showAll
+              ? "Fewer"
+              : hiddenPlaying
+                ? `${overflow.length} more · ${hiddenPlaying} playing`
+                : `${overflow.length} more`}
+            {showAll ? <ChevronUpIcon /> : <ChevronDownIcon />}
           </Button>
         </div>
       )}

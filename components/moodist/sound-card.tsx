@@ -1,7 +1,8 @@
 "use client";
 
+import { Loading03Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useEffect, useMemo } from "react";
-import { ImSpinner9 } from "react-icons/im";
 
 import { FavoriteButton } from "./favorite-button";
 import { VolumeSlider } from "./volume-slider";
@@ -16,12 +17,19 @@ import { useSoundStore } from "@/stores/sound";
 import type { Sound as SoundType } from "@/data/types";
 
 interface SoundCardProps extends SoundType {
-  /** Cards in the Favorites row mirror the real ones — they must not play twice. */
+  /** Cards in the Favourites row mirror the real ones; they must not play twice. */
   functional: boolean;
   hidden: boolean;
 }
 
-export function SoundCard({ functional, hidden, icon, id, label, src }: SoundCardProps) {
+export function SoundCard({
+  functional,
+  hidden,
+  icon,
+  id,
+  label,
+  src,
+}: SoundCardProps) {
   const isPlaying = useSoundStore((state) => state.isPlaying);
   const play = useSoundStore((state) => state.play);
   const selectSound = useSoundStore((state) => state.select);
@@ -32,7 +40,10 @@ export function SoundCard({ functional, hidden, icon, id, label, src }: SoundCar
 
   const volume = useSoundStore((state) => state.sounds[id].volume);
   const globalVolume = useSettingsStore((state) => state.globalVolume);
-  const adjustedVolume = useMemo(() => volume * globalVolume, [volume, globalVolume]);
+  const adjustedVolume = useMemo(
+    () => volume * globalVolume,
+    [volume, globalVolume],
+  );
 
   const isLoading = useLoadingStore((state) => state.loaders[src]);
 
@@ -66,10 +77,12 @@ export function SoundCard({ functional, hidden, icon, id, label, src }: SoundCar
       role="button"
       tabIndex={hidden ? -1 : 0}
       className={cn(
-        "group relative cursor-pointer rounded-xl border p-4 text-left transition-all",
-        "bg-card hover:border-foreground/20 hover:shadow-sm",
-        "focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-none",
-        isSelected && "border-foreground/30 bg-accent shadow-sm",
+        "group/sound relative cursor-pointer rounded-lg p-5 transition-colors",
+        // Resting: a hairline, because a white card on this page is a whisper.
+        "bg-card border",
+        "hover:bg-accent hover:border-transparent",
+        // Playing: the tint holds the state, so hover moves the ink instead.
+        isSelected && "bg-accent border-transparent hover:bg-muted",
         hidden && "hidden",
       )}
       onClick={toggle}
@@ -80,14 +93,24 @@ export function SoundCard({ functional, hidden, icon, id, label, src }: SoundCar
       <div
         aria-hidden="true"
         className={cn(
-          "text-xl transition-colors",
-          isSelected ? "text-foreground" : "text-muted-foreground",
+          "grid size-11 place-items-center rounded-full transition-colors",
+          isSelected
+            ? "bg-chip text-primary-ink"
+            : "bg-muted text-muted-foreground group-hover/sound:bg-transparent",
         )}
       >
-        {isLoading ? <ImSpinner9 className="animate-spin" /> : icon}
+        {isLoading ? (
+          <HugeiconsIcon
+            className="size-[18px] animate-spin"
+            icon={Loading03Icon}
+            strokeWidth={1.5}
+          />
+        ) : (
+          icon
+        )}
       </div>
 
-      <div className="mt-2 text-sm font-medium">{label}</div>
+      <div className="mt-4 pr-8 text-sm font-medium">{label}</div>
 
       <VolumeSlider id={id} label={label} />
     </div>
