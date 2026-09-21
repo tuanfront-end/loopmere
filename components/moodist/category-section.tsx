@@ -41,7 +41,10 @@ export function CategorySection({
         </div>
       </div>
 
-      <div className="mt-24">
+      {/* 40, against 16 inside the grid and 128 between sections — the ladder
+          the spacing rule asks for. It was 96, which read as air on a
+          1200px-wide page and as a hole once the centre column narrowed. */}
+      <div className="mt-10">
         <SoundGrid functional={functional} id={id} sounds={sounds} />
       </div>
     </section>
