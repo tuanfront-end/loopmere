@@ -430,6 +430,38 @@ kệ thì `responsive-check` bắt được dòng cuối chỉ dài 62px trên k
 Bản dưới `xl` có cùng cấu trúc: dải chip category kết thúc bằng một vạch dọc
 rồi đến chip Favourites.
 
+### Một mép trái cho cả hai rail
+
+Đo được, không phải áng chừng — `Range.getClientRects()` trên từng nhãn, vì
+`getBoundingClientRect()` của một `<p class="px-1">` trả về mép **hộp** (0) chứ
+không phải mép **chữ** (4):
+
+| | Trước | Sau |
+|---|---|---|
+| Rail trái — wordmark | 0 | 10 |
+| Rail trái — icon kệ | 10 | 10 |
+| Rail trái — divider | 0..238 | 10..228 |
+| Rail trái — credit | 0 | 10 |
+| Rail phải — tiêu đề section | 4 | 10 |
+| Rail phải — nhãn nhóm Tools | 4 | 10 |
+| Rail phải — icon hàng Tools | 10 | 10 |
+
+Luật: **thứ để đọc thì thẳng hàng với thứ để đọc; thứ để bấm thì không bắt
+buộc.** Nền hover của một hàng, nút brand `w-full`, và card có viền trong The
+mix đều chạm mép trong của rail — chúng là *nền*, và một cái nền chạy hết bề
+ngang mới đọc ra là nền. Nhãn và đường kẻ thì vào 10px.
+
+Trước đó divider và nhãn nhóm chỉ "đúng" khi hover, lúc nền hàng vươn ra gặp
+chúng. Đó là canh theo một trạng thái tạm thời.
+
+shadcn cho `SidebarSeparator` bám `mx-2` — tức mép *nền* của menu item chứ
+không phải mép icon. Ở đây chọn mép icon, vì rail này chỉ có một cột nội dung
+và một mép đọc thì dễ theo hơn hai.
+
+Cùng lúc: glyph Favourites ở đầu kệ lấy `size-8`. Để mặc định nó ra 24px trong
+khi `SoundIcon` vẽ đầu kệ ở 32px, nên tâm quang học của nó nằm **cao hơn tâm
+tiêu đề 4px**. Đo lại: delta 0, đúng bằng tám kệ còn lại.
+
 ## Toolbar, toolbox và modals
 
 Mười ba panel, tất cả đi qua **một** `ToolPanel` bọc shadcn `Dialog`: escape,

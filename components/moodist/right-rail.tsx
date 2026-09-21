@@ -34,6 +34,16 @@ const labels: Record<string, string> = Object.fromEntries(
   ),
 );
 
+/**
+ * `px-2.5` on the label and `pl-2.5` on every row below it, so the two start
+ * at the same pixel. A label sitting six pixels left of the icons it names is
+ * the misalignment you cannot unsee once you have seen it — and it only ever
+ * looked right on hover, when the row's ground reached out to meet it.
+ *
+ * What stays at the rail's own edge is a ground: a button, a bordered mix row.
+ * Something you read lines up with what you read; something you press does not
+ * have to.
+ */
 function Section({
   children,
   title,
@@ -43,7 +53,7 @@ function Section({
 }) {
   return (
     <section>
-      <h2 className="text-muted-foreground px-1 text-xs tracking-widest uppercase">
+      <h2 className="text-muted-foreground px-2.5 text-xs tracking-widest uppercase">
         {title}
       </h2>
       <div className="mt-4">{children}</div>
@@ -199,7 +209,7 @@ function TheMix() {
           ))}
         </ul>
       ) : (
-        <p className="text-muted-foreground mt-4 px-1 text-sm">
+        <p className="text-muted-foreground mt-4 px-2.5 text-sm">
           Nothing picked yet. Tap a card in the middle and it starts — every
           sound you add gets its own level here.
         </p>
@@ -221,7 +231,7 @@ function Levels() {
 
   return (
     <Section title="Levels">
-      <div className="flex flex-col gap-5 px-1">
+      <div className="flex flex-col gap-5 px-2.5">
         {rows.map(([label, value, setValue]) => (
           <div key={label}>
             <div className="flex items-baseline justify-between">
@@ -262,7 +272,9 @@ function Tools() {
       <div className="flex flex-col gap-5">
         {groups.map((group) => (
           <div key={group.title}>
-            <p className="text-muted-foreground px-1 text-xs">{group.title}</p>
+            <p className="text-muted-foreground px-2.5 text-xs">
+              {group.title}
+            </p>
 
             <div className="mt-2 flex flex-col gap-1">
               {group.tools.map((tool) => (

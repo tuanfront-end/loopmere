@@ -123,7 +123,7 @@ export function LeftRail() {
   return (
     <div className="flex h-full flex-col gap-6 p-5">
       <a
-        className="hover:bg-muted -ml-2 flex w-fit items-center gap-2 rounded-sm py-1.5 pr-4 pl-2 transition-colors"
+        className="hover:bg-muted flex w-fit items-center gap-2 rounded-sm py-1.5 pr-4 pl-2.5 transition-colors"
         href="#top"
       >
         <Logo className="size-7" />
@@ -152,14 +152,16 @@ export function LeftRail() {
             the last — a row that moves the other eight down by forty pixels
             on a click somewhere else on the page. Empty is a state it can
             perfectly well be in, and the count says so. */}
-        <div className="mt-2 shrink-0 border-t pt-2">
-          <ShelfLink
-            active={active === "favorites"}
-            count={favorites.length}
-            icon={<HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />}
-            id="favorites"
-            title="Favourites"
-          />
+        <div className="mx-2.5 mt-2 shrink-0 border-t pt-2">
+          <div className="-mx-2.5">
+            <ShelfLink
+              active={active === "favorites"}
+              count={favorites.length}
+              icon={<HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />}
+              id="favorites"
+              title="Favourites"
+            />
+          </div>
         </div>
       </nav>
 
@@ -176,7 +178,7 @@ export function LeftRail() {
         Build me a mix
       </Button>
 
-      <p className="text-muted-foreground mt-auto text-xs">
+      <p className="text-muted-foreground mt-auto px-2.5 text-xs">
         A Next.js port of{" "}
         <a
           className="hover:text-foreground underline underline-offset-4 transition-colors"

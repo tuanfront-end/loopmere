@@ -80,7 +80,16 @@ export function App() {
     () => [
       ...categories,
       {
-        icon: <HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />,
+        // 32px, the size `SoundIcon` draws a shelf head at. Left to its own
+        // default this glyph came out 24 and sat four pixels above the centre
+        // of the title beside it.
+        icon: (
+          <HugeiconsIcon
+            className="size-8"
+            icon={FavouriteIcon}
+            strokeWidth={1.5}
+          />
+        ),
         id: "favorites",
         sounds: favoriteSounds,
         title: "Favourites",
