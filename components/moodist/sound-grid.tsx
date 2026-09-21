@@ -57,15 +57,17 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
 
       {sounds.length > DEFAULT_VISIBLE_SOUNDS && (
         <div className="mt-8 flex justify-center">
-          {/* A chip rather than an outline, and the large size rather than
-              the small one: this is the one control in a shelf of eighty
-              cards, and at `sm` in `outline` it read as a footnote to the
-              row above it. Solid brand only when the collapse is hiding
-              something that is currently sounding — that is a state worth
-              a primary, and the rest of the time it is not. */}
+          {/* The large size rather than the small one: this is the one
+              control in a shelf of eighty cards, and at `sm` it read as a
+              footnote to the row above it. The ground stays neutral — a
+              brand tint here was tried and it fought the mix rather than
+              helping it. Solid brand only when the collapse is hiding
+              something that is currently sounding, which is a state worth
+              a primary and the only one here that is. */}
           <Button
+            className="rounded-sm"
             size="lg"
-            variant={hiddenPlaying ? "default" : "chip"}
+            variant={hiddenPlaying ? "default" : "outline"}
             onClick={() => setShowAll((previous) => !previous)}
           >
             {showAll
