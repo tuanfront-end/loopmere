@@ -276,10 +276,18 @@ Giờ:
 
 - **Đĩa không bao giờ trong suốt.** Nó là cái khung mà icon được vẽ để ngồi
   vào; bỏ khung thì ảnh render trôi lơ lửng.
-- **Một luật hover duy nhất cho mọi thứ bấm được: `bg-card` + `shadow-soft`,
-  và nó đi *lên*.** Không bao giờ là `bg-muted` — đó đúng là màu của track
-  slider, của trái tim và của nút pause, nên một card sẫm lại khi hover sẽ
-  kéo theo cả ba.
+- **Hai thành ngữ hover, cố ý không trộn.** Card thì *nhấc lên*: đổi hairline
+  lấy `shadow-soft`, nền giữ nguyên trắng. Tab — hàng rail trái và pill của
+  category rail — thì *nhuộm*: `bg-accent`, phẳng, không bóng. Cả hai đều
+  tránh `bg-muted`, vì đó đúng là màu của track slider, của trái tim và của
+  nút pause.
+- **Trạng thái đang phát là một đường viền, không phải một mảng nền.**
+  `bg-accent` đo được 1.02 so với card trắng — một tiếng thì thầm, lướt qua cả
+  lưới thì đọc ra là không có gì. Muốn tint đủ to tiếng để chữa việc đó thì nó
+  thành một mảng màu brand cỡ section, tức là một luật khác nữa; còn một đường
+  viền thì đọc được ở mọi cỡ và không tiêu diện tích nào. Dùng `ring` chứ
+  không phải `border`, vì hover gỡ border ra, mà viền này là **trạng thái**
+  chứ không phải dấu hiệu đang-nằm-yên.
 - **Slider luôn được vẽ**, và ở trạng thái `disabled` khi sound chưa vào mix.
   Trước đó nó `return null`, nên mỗi lần bấm là card đổi chiều cao và cả kệ
   nhảy một dòng. Bản trung gian chừa chỗ trống — hết giật nhưng card rỗng một
@@ -302,13 +310,13 @@ không bằng mắt:
 | Hover | % pixel đổi | Delta kênh lớn nhất |
 |---|---|---|
 | Card chưa chọn | 6.0% | 16 — đổi hairline lấy bóng |
-| Card đang chọn | 69.4% | 33 — cả nền từ tint về trắng |
-| Rail inactive | 5.4% | 79 — chữ từ muted sang foreground |
-| Rail active | 46.4% | 19 — nền từ muted về trắng |
+| Card đang chọn | 6.6% | 51 — nền giữ trắng, chỉ bóng hiện ra |
+| Rail inactive | 35.2% | 79 — nền accent cộng chữ đậm lên |
+| Rail active | 37.5% | 9 — nền từ muted sang accent |
 
-Card chưa chọn là ô yên nhất trong bốn. Nếu có ngày cần to tiếng hơn thì
-`shadow-soft` → `shadow-soft-lg` là cái núm, chứ đừng động vào nền: nền mà
-sẫm xuống là lại nuốt track slider.
+Card là ô yên nhất. Nếu có ngày cần to tiếng hơn thì `shadow-soft` →
+`shadow-soft-lg` là cái núm, chứ đừng động vào nền: nền mà sẫm xuống là lại
+nuốt track slider.
 
 ## Toolbar, toolbox và modals
 

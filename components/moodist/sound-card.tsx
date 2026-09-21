@@ -79,27 +79,22 @@ export function SoundCard({
       role="button"
       tabIndex={hidden ? -1 : 0}
       className={cn(
-        "group/sound relative cursor-pointer rounded-lg p-5 transition-all",
-        // Resting: a hairline, because a white card on this page is a whisper.
-        "bg-card border",
-        // Hover goes *up* from either state: back to white, with the hairline
-        // traded for a cast. Nothing here darkens — one rung down is
-        // `bg-muted`, which is exactly what the volume track and the two
-        // corner buttons are drawn in, so a card that sank took all three
-        // with it.
-        "hover:bg-card hover:border-transparent",
-        // Which cast depends on how far the ground had to move. An unselected
-        // card is already white, so the shadow is the whole cue and takes the
-        // wider one; a selected card arrives from the tint, which is most of
-        // the card changing colour, and the soft cast is enough on top of it.
+        "group/sound relative cursor-pointer rounded-lg border p-5 transition-all",
+        // Resting takes a hairline, hovering trades it for a cast — the one
+        // says sitting on the surface and the other says lifted off it, and
+        // the style does not allow both at once.
+        "hover:border-transparent hover:shadow-soft",
+        // Playing is an outline, not a ground. `bg-accent` measures 1.02
+        // against a white card — a whisper, and at a glance across a grid it
+        // reads as nothing. A tint loud enough to fix that would be a
+        // section-sized fill of brand colour, which is a different rule
+        // again; an edge reads at any scale and spends no area.
         //
-        // Written on the branches rather than one `hover:shadow-*` overridden
-        // by another: `shadow-soft` and `shadow-soft-lg` are this project's
-        // own tokens, so tailwind-merge does not know they collide and both
-        // would survive into the class string.
-        isSelected
-          ? "bg-accent border-transparent hover:shadow-soft"
-          : "hover:shadow-soft-lg",
+        // A ring rather than a border, because the hover below takes the
+        // border off and the outline is the state, not a resting cue. Two
+        // pixels inset, so the card keeps its own footprint.
+        "bg-card",
+        isSelected && "ring-primary ring-2 ring-inset",
         hidden && "hidden",
       )}
       onClick={toggle}
@@ -111,7 +106,9 @@ export function SoundCard({
           className={cn(
             "grid size-11 shrink-0 place-items-center rounded-full transition-colors",
             // Never transparent on hover. The disc is the frame the icon was
-            // drawn to sit in, and without it the render floats loose.
+            // drawn to sit in, and without it the render floats loose. White
+            // on a playing card, because the card's own ground is the chip
+            // now and a chip disc on a chip ground is no disc at all.
             isSelected
               ? "bg-chip text-primary-ink"
               : "bg-muted text-muted-foreground",

@@ -85,10 +85,11 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
       aria-current={active ? "true" : undefined}
       className={cn(
         "flex items-center gap-3 rounded-full py-1.5 pr-4 pl-1.5 text-sm font-medium transition-all",
-        // The same hover the cards take: up to white, with a soft cast.
-        // Never `bg-muted`, which is what the icon's own disc is drawn in —
-        // the disc used to vanish under the pointer.
-        "hover:bg-card hover:shadow-soft",
+        // A rail row is a tab, not a card, and the two idioms are kept apart
+        // on purpose: a tab tints and stays flat, a card lifts. What both
+        // still avoid is `bg-muted`, which is what the icon's own disc is
+        // drawn in — the disc used to vanish under the pointer.
+        "hover:bg-accent",
         active ? "bg-muted" : "text-muted-foreground hover:text-foreground",
       )}
       href={`#category-${id}`}
