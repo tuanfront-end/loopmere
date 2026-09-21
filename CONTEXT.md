@@ -695,6 +695,23 @@ Breakpoint đọc **cột giữa** chứ không đọc cửa sổ (`@xl`), cùng
 card. Thứ tự trong markup là thứ tự nó xếp chồng: tiêu đề → dòng giải thích →
 hai nút.
 
+Tiêu đề **40px** ở cột giữa — chính là 64px của reference đọc theo tỉ lệ
+container 1316px của nó. Viết bằng arbitrary chứ không phải một bậc của thang,
+để nó mang được leading display mà thang chỉ cấp từ `5xl` trở lên: một tiêu đề
+cỡ này trên leading mặc định sẽ há ra giữa các dòng của chính nó. Hai cột
+`items-end` — reference cho dòng cuối của tiêu đề và hàng nút rơi gần như cùng
+một vạch, và `items-end` giữ điều đó đúng bất kể copy của cột nào đổi.
+
+**Panel trái từng là một lưới tile** vẽ sáu sound đang chọn. Nó chỉ nói lại
+đúng thứ panel bên kia ảnh đã nói, và trên một trang rỗng — tức mọi lần ghé
+đầu tiên — nó không nói gì cả. Giờ là **ba mix dựng sẵn**, bấm một cái là chạy:
+một cái cửa đáng giá hơn một cái gương.
+
+Nó chỉ overlay từ `@3xl`, không phải `@xl`. Lý do là cái **floor**: hai card
+chiếm 26% và 30% của một ảnh 1316px thì chừa lại 44% ảnh, nhưng cũng hai card
+đó ở bề rộng tối thiểu trên một ảnh 548px chỉ chừa **4%**. Đo được: 1280 → một
+overlay, 45%; 1600 → hai, 59%; 1920 → 56%, đúng bằng 55.8% của reference.
+
 **Hai panel được render hai lần chứ không phải di chuyển.** Overlay thì chúng
 phải nằm trong một hộp có `overflow-hidden`, xếp chồng thì phải nằm ngoài hộp
 đó — không có một vị trí DOM nào làm được cả hai. `hidden` gỡ bản thừa khỏi cả

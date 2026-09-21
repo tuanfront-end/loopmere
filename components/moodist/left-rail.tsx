@@ -208,10 +208,18 @@ export function LeftRail() {
           rail's `gap-6`, because they are a pair — one filled, one outlined —
           and 24px apart they read as two unrelated decisions. */}
       <div className="flex flex-col gap-2">
+        {/* Above the pair, not under it. A setting sits with the list it
+            belongs to; the two things you press are the last word in the
+            column. */}
+        <div className="mb-1">
+          <ThemeToggle />
+        </div>
+
         <Button
           aria-label="Pick four sounds at random"
           className="w-full"
           size="lg"
+          variant="outline"
           onClick={shuffle}
         >
           <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
@@ -221,10 +229,15 @@ export function LeftRail() {
         {/* An anchor wearing the variants, not a `Button render={<a/>}`: Base
             UI puts `role="button"` on the latter and a screen reader then
             announces a link out to a payment page as a press. Through `cn`,
-            because `buttonVariants` concatenates and `w-full` has to win. */}
+            because `buttonVariants` concatenates and `w-full` has to win.
+
+            This one carries the brand and the shuffle above it does not. The
+            rail has two buttons and only one of them can be the loud one; a
+            mix is four clicks away in eighty other places on this page, and
+            this is the only door to the thing that keeps it running. */}
         <a
           className={cn(
-            buttonVariants({ size: "lg", variant: "outline" }),
+            buttonVariants({ size: "lg", variant: "default" }),
             "w-full",
           )}
           href={COFFEE_URL}
@@ -234,13 +247,6 @@ export function LeftRail() {
           <HugeiconsIcon icon={Coffee02Icon} strokeWidth={1.5} />
           Buy me a coffee
         </a>
-
-        {/* Under the pair rather than in it: the two above are things to press
-            and this is a setting, so it takes the rail's own row shape and
-            sits a little clear of them. */}
-        <div className="mt-1">
-          <ThemeToggle />
-        </div>
       </div>
 
       <p className="text-muted-foreground mt-auto px-2.5 text-xs text-balance">

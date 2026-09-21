@@ -1,75 +1,81 @@
 "use client";
 
-import { useMemo } from "react";
+import { PlayIcon } from "@heroicons/react/16/solid";
 import { useShallow } from "zustand/react/shallow";
 
 import { SoundIcon } from "./sound-icon";
 
 import { Button } from "@/components/ui/button";
-import { sounds } from "@/data/sounds";
-import { cn } from "@/lib/utils";
-import { count } from "@/lib/sounds";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
-
-/** One from each shelf, so the frame is composed before anybody has picked. */
-const SUGGESTIONS = sounds.categories.map((category) => category.sounds[0].id);
 
 const SHELL = "bg-card/90 shadow-soft-lg rounded-md p-4 backdrop-blur sm:p-5";
 
 /**
- * The frame reads the grid's own store, so what is in it is what is playing —
- * the hero carrying a fragment of the product rather than the headline said
- * twice. Six tiles either way: your picks at full strength, and whatever is
- * left filled in from the shelves at a third of it, so a mix of one still
- * looks like a composition.
+ * Three mixes somebody already made, because the hardest thing about a page
+ * of eighty-four loops is the first click.
  *
- * Two by three when it is overlaid on the photograph and three by two when it
- * has dropped below it — the same `@xl` that decides which of those two
- * happens, read from the centre column both times.
+ * This replaced a panel that drew the six sounds currently picked as a grid of
+ * tiles. That one only ever restated what the panel on the other side of the
+ * photograph already said, and on an empty page — which is every first visit —
+ * it said nothing at all. A door is worth more than a mirror.
  */
-export function HeroMix() {
-  const selected = useSoundStore(
-    useShallow((state) =>
-      Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected),
-    ),
-  );
+const STARTERS: Array<{ label: string; sounds: Record<string, number> }> = [
+  {
+    label: "Rainy study",
+    sounds: { cafe: 0.25, keyboard: 0.3, "light-rain": 0.6 },
+  },
+  {
+    label: "Deep forest",
+    sounds: { campfire: 0.3, river: 0.4, "wind-in-trees": 0.5 },
+  },
+  {
+    label: "Night train",
+    sounds: { clock: 0.2, "inside-a-train": 0.55, "rain-on-window": 0.4 },
+  },
+];
 
-  const tiles = useMemo(() => {
-    const out = selected.slice(0, 6);
-
-    for (const id of SUGGESTIONS) {
-      if (out.length >= 6) break;
-      if (!out.includes(id)) out.push(id);
-    }
-
-    return out;
-  }, [selected]);
+export function HeroStarters() {
+  const override = useSoundStore((state) => state.override);
+  const play = useSoundStore((state) => state.play);
 
   return (
     <div className={SHELL}>
-      <p className="text-muted-foreground text-xs">In the mix</p>
+      <p className="text-muted-foreground text-xs">Start here</p>
 
       <p className="mt-1 text-lg font-medium tracking-tight">
-        {selected.length
-          ? `${selected.length} of ${count()} loops`
-          : "Nothing picked yet"}
+        Three made earlier
       </p>
 
-      <div className="bg-secondary mt-3 grid aspect-[3/2] grid-cols-3 place-items-center gap-3 rounded-sm p-4 @xl:aspect-[313/367] @xl:grid-cols-2">
-        {tiles.map((id) => (
-          <span
-            aria-hidden="true"
-            className={cn(
-              "transition-opacity",
-              !selected.includes(id) && "opacity-35",
-            )}
-            key={id}
-          >
-            <SoundIcon id={id} size={40} />
-          </span>
+      <ul className="mt-3 flex flex-col gap-1">
+        {STARTERS.map((starter) => (
+          <li key={starter.label}>
+            <button
+              aria-label={`Play ${starter.label}, a mix of ${Object.keys(starter.sounds).length} loops`}
+              className="hover:bg-accent flex w-full items-center gap-2 rounded-sm p-2.5 text-left transition-colors"
+              onClick={() => {
+                override(starter.sounds);
+                play();
+              }}
+            >
+              <span aria-hidden="true" className="flex shrink-0 gap-0.5">
+                {Object.keys(starter.sounds).map((id) => (
+                  <SoundIcon id={id} key={id} size={20} />
+                ))}
+              </span>
+
+              <span className="truncate text-sm font-medium">
+                {starter.label}
+              </span>
+
+              <PlayIcon
+                aria-hidden="true"
+                className="text-muted-foreground ml-auto size-3.5 shrink-0"
+              />
+            </button>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

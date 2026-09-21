@@ -1,6 +1,6 @@
 "use client";
 
-import { PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
+import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
 
 import {
   Tooltip,
@@ -41,6 +41,9 @@ export function PauseButton({ className, id, label }: PauseButtonProps) {
           togglePause(id);
         }}
       >
+        {/* Micro rather than the 24px outline: these are drawn at 16 and a
+            24px stroke scaled down to that comes out wiry. A transport glyph
+            is solid by convention anyway. */}
         {isPaused ? (
           <PlayIcon className="size-4" />
         ) : (

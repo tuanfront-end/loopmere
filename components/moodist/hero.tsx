@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { HeroLevels, HeroMix } from "./hero-panels";
+import { HeroLevels, HeroStarters } from "./hero-panels";
 import { ShuffleButton } from "./shuffle-button";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -10,7 +10,11 @@ import { count } from "@/lib/sounds";
 export function Hero() {
   return (
     <section className="mx-auto w-full max-w-[1200px] px-6 pt-10 sm:px-8 sm:pt-14 xl:pt-8">
-      {/* Two columns, and the split is measured rather than guessed: in the
+      {/* Two columns, bottom-aligned — the reference lands the heading's last
+          line and the button row on very nearly the same rule, and `items-end`
+          is what keeps that true whatever either column's copy does.
+
+          The split is measured rather than guessed: in the
           reference the right column opens at 48% of the container and the gap
           between them is 9% of it. Solved for this container that is
           `[0.756fr_1fr]` at `gap-x-18` — not the half-and-half it looks like,
@@ -22,8 +26,13 @@ export function Hero() {
 
           Markup order is stack order — heading, then the line that explains
           it, then the buttons. */}
-      <div className="@xl:grid @xl:grid-cols-[0.756fr_1fr] @xl:items-start @xl:gap-x-18">
-        <h1 className="max-w-[18ch] text-3xl tracking-tighter text-balance sm:text-4xl">
+      <div className="@xl:grid @xl:grid-cols-[0.756fr_1fr] @xl:items-end @xl:gap-x-18">
+        {/* 40px against the centre column, which is the reference's own 64px
+            read as a fraction of its 1316px container. Arbitrary rather than
+            a step, so it carries the display leading the scale gives 5xl and
+            up — a heading at this size on default leading opens gaps between
+            its own lines. */}
+        <h1 className="max-w-[18ch] text-4xl tracking-tighter text-balance @xl:text-[40px]/[var(--leading-display)]">
           Rain on a tent, a train at night, a room full of typing
         </h1>
 
@@ -67,8 +76,18 @@ export function Hero() {
             inside a box with `overflow-hidden` and stacking needs them
             outside it. `hidden` takes the copy out of the accessibility tree
             as well as off the screen, so nothing is announced twice. */}
-        <div className="absolute top-[3.2%] left-[1.4%] hidden w-[26%] @xl:block">
-          <HeroMix />
+        {/* The percentage is the reference's; the floor is ours. 26% of the
+            centre column is 215px and the reference's own 26% was 341px — at
+            the smaller number three sound icons and a name do not both fit,
+            and the names came out as "Rainy s…".
+
+            `@3xl` rather than `@xl`, because the floor is what breaks the
+            composition: two cards that are 26% and 30% of a 1316px image
+            leave 44% of it showing, and the same two at their floors on a
+            548px image leave four per cent. Below that width this one drops
+            into the stack and the photograph gets to be a photograph. */}
+        <div className="absolute top-[3.2%] left-[1.4%] hidden w-[26%] min-w-[236px] @3xl:block">
+          <HeroStarters />
         </div>
 
         <div className="absolute right-[2.4%] bottom-[3.7%] hidden w-[30%] min-w-[248px] @xl:block">
@@ -76,9 +95,12 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 @xl:hidden">
-        <HeroMix />
-        <HeroLevels />
+      <div className="mt-4 grid gap-4 @3xl:hidden">
+        <HeroStarters />
+
+        <div className="@xl:hidden">
+          <HeroLevels />
+        </div>
       </div>
     </section>
   );

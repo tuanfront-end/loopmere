@@ -1,10 +1,7 @@
 "use client";
 
-import {
-  ChevronDownIcon,
-  PauseIcon,
-  PlayIcon,
-} from "@heroicons/react/24/outline";
+import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import {
   Coffee02Icon,
   FavouriteIcon,

@@ -1,6 +1,6 @@
 "use client";
 
-import { PlayIcon } from "@heroicons/react/24/outline";
+import { PlayIcon } from "@heroicons/react/16/solid";
 import { Delete02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
