@@ -9,19 +9,33 @@ import { count } from "@/lib/sounds";
 export function Hero() {
   return (
     <section className="mx-auto w-full max-w-[1200px] px-6 pt-10 sm:px-8 sm:pt-14 xl:pt-8">
-      <div className="text-center">
-        <h1 className="mx-auto max-w-[24ch] text-3xl tracking-tighter text-balance sm:text-4xl">
+      {/* Two columns from `@xl`, and the breakpoint is the *centre column's*
+          rather than the window's — with a rail on each side the viewport
+          stopped being what decides this, the same reason the sound grid reads
+          its container.
+
+          The order in the markup is the order it stacks in: heading, then the
+          line that explains it, then the button. Laying it out as two plain
+          columns would have put the button above the explanation on a phone,
+          which is the arrangement nobody wants and the one a two-column grid
+          gives you for free. So the placement is explicit and only the wide
+          case is told anything. */}
+      <div className="@xl:grid @xl:grid-cols-[1.15fr_1fr] @xl:items-end @xl:gap-x-12">
+        <h1 className="max-w-[22ch] text-3xl tracking-tighter text-balance @xl:col-start-1 @xl:row-start-1 sm:text-4xl">
           Rain on a tent, a train at night, a room full of typing
         </h1>
-      </div>
 
-      <p className="text-muted-foreground mx-auto mt-4 max-w-[58ch] text-center text-base text-balance">
-        {count()} loops you can stack and level to taste. Nothing to sign up
-        for, and the mix you built is still here tomorrow.
-      </p>
+        {/* Spanning both rows and pinned to the floor of them, so its last
+            line sits on the button's line rather than floating beside the
+            heading's first. */}
+        <p className="text-muted-foreground mt-4 max-w-[46ch] text-base text-balance @xl:col-start-2 @xl:row-span-2 @xl:row-start-1 @xl:mt-0 @xl:self-end">
+          {count()} loops you can stack and level to taste. Nothing to sign up
+          for, and the mix you built is still here tomorrow.
+        </p>
 
-      <div className="mt-6 flex justify-center">
-        <ShuffleButton />
+        <div className="mt-6 @xl:col-start-1 @xl:row-start-2">
+          <ShuffleButton />
+        </div>
       </div>
 
       {/* The one saturated moment on the page, and the product sits on top of it. */}

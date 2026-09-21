@@ -619,6 +619,82 @@ bóng để chạy. `translate` chứ không phải `transform`: Tailwind v4 ghi
 `translate-y-px` vào đúng thuộc tính `translate`, và `active:translate-y-px`
 vẫn đo được là `0px 1px`.
 
+### Dark mode
+
+Không có trước đó — và đó không phải "chưa làm", mà là **một lỗi đang chạy**.
+`dark:` của Tailwind mặc định bám `prefers-color-scheme`, nên các utility
+`dark:` mà wrapper shadcn mang sẵn vẫn kích hoạt trên máy để OS tối, trong khi
+không có token dark nào phía sau. Đo được: với `prefers-color-scheme: dark`,
+trang vẫn trắng mà nút outline đã nhận `dark:bg-input/30`.
+
+Nên `@custom-variant dark (&:where(.dark, .dark *))` — bám **class**, vì một
+cái switch không override được media query.
+
+**Thang bậc lật ngược, nhưng whisper band thì giữ.** Bản đầu em dùng thang
+rộng gấp ba (card L12, secondary L21) với giả định: ở gần đen, một bước
+lightness nhỏ không thể cho ra ratio nhỏ. **Giả định đó sai**, và số học nói
+vậy — giữ đúng các ratio của bản sáng trên nền L8 chỉ cần khoảng **6.4 điểm
+lightness**, so với 8 điểm mà bản sáng tự tiêu giữa L99 và L91.
+
+Nên năm rung dưới đây là **chính các ratio của bản sáng giải ngược cho nền
+này**, và bản rộng bị bỏ sau khi render cả hai rồi so:
+
+| | Sáng | Tối |
+|---|---|---|
+| card | 1.021 | 1.027 |
+| accent | 1.057 | 1.069 |
+| border | 1.118 | 1.131 |
+| muted | 1.143 | 1.144 |
+| secondary | 1.197 | 1.196 |
+
+Mực: thấp nhất là `--muted-foreground` trên `--secondary` ở **6.87** — sàn là
+4.5. `--primary-ink` không còn là bản tối của brand nữa mà là bản **sáng hơn**:
+cái split tồn tại vì một brand sáng không clear 4.5:1 trên nền gần trắng; trên
+nền gần đen thì chính brand sáng đó *là* mực.
+
+Bốn chỗ hardcode phải sửa vì chúng chỉ đúng một phía:
+
+| | Vấn đề trên nền tối |
+|---|---|
+| thumb của slider | `bg-card` là đỉnh thang sáng và **đáy** thang tối → thumb tối hơn track, biến mất |
+| backdrop của Drawer | `bg-foreground/25` → `--foreground` gần trắng → màn che **trắng** |
+| backdrop của Dialog | `bg-black/10` trên nền gần đen là không có gì |
+| viên kính của header | `ring-white/50` thành một vạch chói |
+
+`--shadow-soft` cũng dựng lại: bóng gần đen trên trang gần đen là không có gì,
+nên vòng hairline lật sang **mực** — đó là cách một vật nổi giữ được mép ở phía
+này — còn phần toả thì dùng đen thật ở alpha gấp 4–8 lần.
+
+Theme đọc bằng `useSyncExternalStore` chứ không giữ trong React: class nằm trên
+`<html>` **trước khi React tồn tại**, do script chặn trong `layout.tsx` ghi, nên
+lần paint đầu đã đúng màu. Chép nó vào `useState` trong effect nghĩa là render
+sai theme rồi sửa — đúng cái flash mà script sinh ra để tránh, chỉ muộn một
+frame.
+
+### Hero hai cột
+
+Trái là tiêu đề và nút, phải là dòng mô tả. Breakpoint đọc **cột giữa** chứ
+không đọc cửa sổ (`@xl`), cùng lý do với lưới card.
+
+Thứ tự trong markup là thứ tự nó xếp chồng: tiêu đề → dòng giải thích → nút.
+Xếp thành hai cột phẳng sẽ đẩy nút lên trên dòng giải thích ở màn hình điện
+thoại — và đó là thứ mà một grid hai cột cho không. Nên placement được viết
+tường minh và chỉ trường hợp rộng mới được nói gì.
+
+Dòng mô tả span cả hai hàng và `self-end`, nên dòng cuối của nó nằm đúng mép
+dưới của nút — đo được 220 và 220.
+
+### Hai số nhỏ
+
+`MixRow` — thumb chỉ cách mép dưới **3px** dù row khai `p-3`. Không phải lỗi
+của row: control của slider cao đúng bằng track 4px, còn thumb 24px thì tràn ra
+10px mỗi đầu. Chữa ở wrapper bằng `min-h-6` — **chỗ duy nhất biết thumb cao bao
+nhiêu** — chứ không phải ở từng call site, vì mỗi call site đang sai một kiểu.
+Đo lại: 13px.
+
+`Levels` mặc định **90%** thay vì 100. Đầy là đỉnh slider, nên một mix đến đó
+rồi thì chỉ còn đường đi xuống.
+
 ## Toolbar, toolbox và modals
 
 Mười ba panel, tất cả đi qua **một** `ToolPanel` bọc shadcn `Dialog`: escape,

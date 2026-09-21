@@ -14,8 +14,12 @@ interface SettingsStore {
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     set => ({
-      alarmVolume: 1,
-      globalVolume: 1,
+      // 90, not 100. Full is the top of the slider, so a mix that arrives
+      // there has nowhere to go but down — and an alarm at full over a mix at
+      // full is the loudest thing this app can do to somebody who has fallen
+      // asleep wearing headphones.
+      alarmVolume: 0.9,
+      globalVolume: 0.9,
 
       setAlarmVolume(volume: number) {
         set({ alarmVolume: volume });

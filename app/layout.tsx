@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Google_Sans_Flex } from "next/font/google";
 
 import { ServiceWorker } from "@/components/moodist/service-worker";
+import { THEME_SCRIPT } from "@/components/moodist/theme-provider";
 import { Shell } from "@/components/moodist/shell";
 import { StoreConsumer } from "@/components/moodist/store-consumer";
 import { Toolbar } from "@/components/moodist/toolbar";
@@ -32,7 +33,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fdfcfa",
+  // One per scheme, so the browser chrome matches the page it is framing. The
+  // values are `--background` from each block in `globals.css`; a mismatch
+  // here shows as a seam above the status bar on a phone.
+  themeColor: [
+    { color: "#fdfcfa", media: "(prefers-color-scheme: light)" },
+    { color: "#161514", media: "(prefers-color-scheme: dark)" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -40,7 +47,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${sans.variable} h-full antialiased`}
+      // The script below writes `class` and `style` on this element before
+      // React sees it, which is exactly the mismatch this suppresses. It does
+      // not reach any child.
+      suppressHydrationWarning
     >
+      <head>
+        {/* Before the first paint, or the page is drawn light and repainted
+            dark. `beforeInteractive` from `next/script` is not early enough
+            for this one — it has to be the first thing the parser runs. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} id="theme" />
+      </head>
       <body className="flex min-h-full flex-col">
         <TooltipProvider delay={200}>
           {/* The header is a dozen tab stops before the first sound card. */}

@@ -7,6 +7,15 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* `dark:` keys on a class rather than on `prefers-color-scheme`, which is
+   Tailwind's default. Two reasons, and the second is a bug that was already
+   shipping: a switch cannot override a media query, and the `dark:` utilities
+   shadcn's wrappers carry were firing on a dark-OS machine with no dark tokens
+   behind them — an outline button quietly took `dark:bg-input/30` on a page
+   that was still white. The class is set before first paint by the script in
+   `layout.tsx`, and it follows the OS until somebody says otherwise. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -324,6 +333,107 @@
   --sidebar-accent-foreground: hsl(30 6% 10%);
   --sidebar-border: hsl(30 6% 91.5%);
   --sidebar-ring: hsl(30 6% 13%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   The same ladder upside down.
+
+   In the light palette a raised surface is *lighter* than the page and the
+   recessed ones run down from it. Near black there is no room below: the page
+   sits at L8 and a step down is a step into nothing. So on this side every
+   rung is *lighter* than the page, and what the numbers keep is the order —
+   card nearest, then accent, muted, secondary, border — and the whisper, which
+   is a ratio rather than a number of lightness points.
+
+   The whisper band holds. The first cut of this block used a ladder three
+   times as wide — card at L12, secondary at L21 — on the assumption that near
+   black a small lightness step cannot produce a small ratio. That was wrong
+   and the arithmetic says so: holding the light side's own ratios on a page at
+   L8 needs a span of **6.4 lightness points**, against the 8 the light side
+   itself spends between L99 and L91. So the rungs below are the light
+   palette's ratios solved for this ground — card 1.02, accent 1.06, border
+   1.12, muted 1.14, secondary 1.20, the same five numbers — and the wide
+   version was thrown away after both were rendered and compared.
+
+   Read this next to `references/surfaces.md`. The house style is a light one
+   and says nothing about the other side, so nothing here is checked by
+   `palette-check.py`, which reads `:root` and stops. Every number was measured
+   by hand instead: ink on all five grounds, every rung against the page, and
+   the brand as ink on the two surfaces it is drawn on.
+   ───────────────────────────────────────────────────────────── */
+.dark {
+  --background: hsl(30 8% 8%);
+  --foreground: hsl(30 10% 94%);
+
+  --card: hsl(30 7% 9%);
+  --card-foreground: var(--foreground);
+  --popover: hsl(30 7% 9%);
+  --popover-foreground: var(--foreground);
+
+  --accent: hsl(30 7% 10.5%);
+  --accent-foreground: var(--foreground);
+  --muted: hsl(30 6% 13%);
+  --muted-foreground: hsl(30 6% 68%);
+  --secondary: hsl(30 6% 14.4%);
+  --secondary-foreground: var(--foreground);
+
+  --border: hsl(30 6% 12.5%);
+  /* A control's ground rather than a rung, so it is allowed to be seen: this
+     is the off state of a switch and the fill of an input. */
+  --input: hsl(30 6% 24%);
+
+  /* The split the light palette needs collapses here. `--primary-ink` exists
+     because a light brand cannot clear 4.5:1 on a near-white page; on a
+     near-black one that same light brand *is* the ink, and the dark green the
+     light side uses for it would disappear. So ink goes up rather than down. */
+  --primary: hsl(97 76% 60%);
+  --primary-ink: hsl(97 72% 68%);
+  --primary-foreground: hsl(30 6% 10%);
+  --ring: var(--primary-ink);
+
+  /* 30% of a light brand over a white card is a whisper; over a card at L12 it
+     is a slab. The alpha is the variable the light block already says it is. */
+  --chip-alpha: 16%;
+
+  /* The fills stay — a 400 reads on either ground. The inks invert: a 700 on
+     L12 is a hole, so each one goes up to the 300 step, which is where these
+     six are still telling six things apart and still clearing the floor. */
+  --leaf-ink: var(--color-emerald-300);
+  --sun-ink: var(--color-amber-300);
+  --coral-ink: var(--color-rose-300);
+  --iris-ink: var(--color-violet-300);
+  --lime-ink: var(--color-lime-300);
+  --sky-ink: var(--color-sky-300);
+
+  --destructive: hsl(4 72% 66%);
+
+  /* The ramp runs the other way too: 1 is the lightest here, and 4 and 5 are
+     the warm greys that were light on the other side. */
+  --chart-1: hsl(97 72% 68%);
+  --chart-2: hsl(95 50% 54%);
+  --chart-3: hsl(95 42% 41%);
+  --chart-4: hsl(30 6% 40%);
+  --chart-5: hsl(30 6% 27%);
+
+  --sidebar: hsl(30 7% 12%);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: hsl(97 76% 60%);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: hsl(30 7% 16%);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: hsl(30 6% 24%);
+  --sidebar-ring: var(--primary-ink);
+
+  /* A near-black cast on a near-black page is nothing, so both tokens are
+     rebuilt rather than reused: the ring flips to a hairline of the *ink*,
+     which is how a raised thing keeps an edge on this side, and the spread
+     goes to real black at four to eight times the alpha. */
+  --shadow-soft:
+    0 0 0 1px hsl(30 10% 94% / 0.07), 0 2px 6px -2px hsl(0 0% 0% / 0.5),
+    0 6px 16px -6px hsl(0 0% 0% / 0.55);
+  --shadow-soft-lg:
+    0 0 0 1px hsl(30 10% 94% / 0.07), 0 8px 24px -6px hsl(0 0% 0% / 0.6),
+    0 24px 48px -24px hsl(0 0% 0% / 0.7);
 }
 
 @layer base {

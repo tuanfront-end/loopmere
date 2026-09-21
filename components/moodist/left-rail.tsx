@@ -4,7 +4,9 @@ import {
   Coffee02Icon,
   FavouriteIcon,
   Github01Icon,
+  Moon02Icon,
   ShuffleIcon,
+  Sun03Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useState } from "react";
@@ -12,8 +14,10 @@ import { useShallow } from "zustand/react/shallow";
 
 import { Logo } from "./logo";
 import { SoundIcon } from "./sound-icon";
+import { useTheme } from "./theme-provider";
 
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { COFFEE_URL, REPO_URL, UPSTREAM_URL } from "@/constants/links";
 import { sounds } from "@/data/sounds";
 import { cn } from "@/lib/utils";
@@ -110,6 +114,36 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
   );
 }
 
+/**
+ * The row is a `<label>` and the switch is the control inside it, so the text
+ * and the track are one hit target rather than a 32px sliver with a dead word
+ * beside it. Drawn as a rail row — tint on hover, flat, no cast — because that
+ * is what everything else in this column does.
+ */
+function ThemeToggle() {
+  const { resolved, setTheme } = useTheme();
+  const isDark = resolved === "dark";
+
+  return (
+    <label className="hover:bg-accent text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-3 rounded-sm py-2.5 pr-2 pl-2.5 text-sm font-medium transition-colors">
+      <span aria-hidden="true" className="shrink-0">
+        <HugeiconsIcon
+          className="size-5"
+          icon={isDark ? Moon02Icon : Sun03Icon}
+          strokeWidth={1.5}
+        />
+      </span>
+      Dark mode
+      <Switch
+        aria-label="Dark mode"
+        checked={isDark}
+        className="ml-auto"
+        onCheckedChange={(next) => setTheme(next ? "dark" : "light")}
+      />
+    </label>
+  );
+}
+
 export function LeftRail() {
   const shuffle = useSoundStore((state) => state.shuffle);
   const favorites = useSoundStore(useShallow((state) => state.getFavorites()));
@@ -200,6 +234,13 @@ export function LeftRail() {
           <HugeiconsIcon icon={Coffee02Icon} strokeWidth={1.5} />
           Buy me a coffee
         </a>
+
+        {/* Under the pair rather than in it: the two above are things to press
+            and this is a setting, so it takes the rail's own row shape and
+            sits a little clear of them. */}
+        <div className="mt-1">
+          <ThemeToggle />
+        </div>
       </div>
 
       <p className="text-muted-foreground mt-auto px-2.5 text-xs text-balance">

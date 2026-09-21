@@ -48,7 +48,10 @@ function DrawerContent({
         data-slot="drawer-backdrop"
         className={cn(
           BLEED,
-          "fixed inset-0 z-50 min-h-dvh bg-foreground/25 supports-[-webkit-touch-callout:none]:absolute",
+          // A backdrop's job is to darken. `--foreground` is near-black on the
+          // light side and near-white on the dark one, so it can only be the
+          // ink here — on dark it becomes a real black veil instead.
+          "fixed inset-0 z-50 min-h-dvh bg-foreground/25 dark:bg-black/55 supports-[-webkit-touch-callout:none]:absolute",
           // The backdrop fades with the drag rather than on a timer, so the
           // page comes back under your thumb at the speed you pull.
           "opacity-[calc(1-var(--drawer-swipe-progress))] transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
