@@ -127,7 +127,7 @@ export function LeftRail() {
 
       <nav
         aria-label="Shelves"
-        className="no-scrollbar -mx-1 flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-1"
+        className="no-scrollbar -mx-1 flex min-h-0 shrink flex-col gap-1 overflow-y-auto px-1"
       >
         {favorites.length > 0 && (
           <ShelfLink
@@ -150,44 +150,45 @@ export function LeftRail() {
         ))}
       </nav>
 
-      <div className="flex flex-col gap-4">
-        <Button
-          aria-label="Pick four sounds at random"
-          className="w-full"
-          size="lg"
-          onClick={shuffle}
-        >
-          <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
-          Build me a mix
-        </Button>
+      {/* Straight after the list, not pinned under it: nine shelves leave
+          half a screen of nothing between the last one and a button floated
+          to the floor. Only the credit goes down there. */}
+      <Button
+        aria-label="Pick four sounds at random"
+        className="w-full"
+        size="lg"
+        onClick={shuffle}
+      >
+        <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
+        Build me a mix
+      </Button>
 
-        <p className="text-muted-foreground text-xs">
-          A Next.js port of{" "}
-          <a
-            className="hover:text-foreground underline underline-offset-4 transition-colors"
-            href={UPSTREAM_URL}
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            Maze&rsquo;s Moodist
-          </a>
-          , MIT.{" "}
-          <a
-            className="hover:text-foreground inline-flex items-center gap-1 underline underline-offset-4 transition-colors"
-            href={REPO_URL}
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            <HugeiconsIcon
-              aria-hidden="true"
-              className="size-3.5"
-              icon={Github01Icon}
-              strokeWidth={1.5}
-            />
-            Source
-          </a>
-        </p>
-      </div>
+      <p className="text-muted-foreground mt-auto text-xs">
+        A Next.js port of{" "}
+        <a
+          className="hover:text-foreground underline underline-offset-4 transition-colors"
+          href={UPSTREAM_URL}
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          Maze&rsquo;s Moodist
+        </a>
+        , MIT.{" "}
+        <a
+          className="hover:text-foreground inline-flex items-center gap-1 underline underline-offset-4 transition-colors"
+          href={REPO_URL}
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          <HugeiconsIcon
+            aria-hidden="true"
+            className="size-3.5"
+            icon={Github01Icon}
+            strokeWidth={1.5}
+          />
+          Source
+        </a>
+      </p>
     </div>
   );
 }

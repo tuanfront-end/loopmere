@@ -196,11 +196,13 @@ export function SiteHeader() {
               announces a navigation as a press. */}
           <a
             aria-label="Source on GitHub"
-            className={buttonVariants({
-              className: "hidden lg:inline-flex",
-              size: "icon-sm",
-              variant: "ghost",
-            })}
+            // Through `cn`, not bare: `buttonVariants` does not merge, so the
+            // base `inline-flex` and this `hidden` both survive and the wider
+            // rule wins — the link showed at every width.
+            className={cn(
+              buttonVariants({ size: "icon-sm", variant: "ghost" }),
+              "hidden lg:inline-flex",
+            )}
             href={REPO_URL}
             rel="noreferrer noopener"
             target="_blank"
