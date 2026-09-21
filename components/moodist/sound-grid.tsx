@@ -56,7 +56,7 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
       </div>
 
       {sounds.length > DEFAULT_VISIBLE_SOUNDS && (
-        <div className="mt-8 flex justify-center">
+        <div className="mt-6 flex justify-center sm:mt-8">
           {/* The large size rather than the small one: this is the one
               control in a shelf of eighty cards, and at `sm` it read as a
               footnote to the row above it. The ground stays neutral — a

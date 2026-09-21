@@ -105,8 +105,14 @@ export function App() {
 
       {/* Both of these are the left rail's and the right rail's jobs from `xl`
           up, so below that width they are the only place those jobs are done
-          and above it they would be a second copy of them. */}
-      <div className="contents xl:hidden">
+          and above it they would be a second copy of them.
+
+          One box rather than `contents`. As two loose children of `main` they
+          each took a full section gap, which put a 56px-tall tray of buttons
+          alone in the middle of 256px of nothing — a third of a phone screen
+          spent on the space around one control. They are one group and they
+          take one gap; inside it, 32. */}
+      <div className="flex flex-col gap-8 xl:hidden">
         <CategoryRail />
         <PlayControls />
       </div>

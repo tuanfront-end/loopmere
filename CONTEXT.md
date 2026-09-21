@@ -383,6 +383,24 @@ trong tooltip của app này bấm hay bôi đen được, nên nó không có v
 nhận con trỏ. Đo lại: `inTip=false` ở mọi hàng, nền bật từ đúng pixel đầu tiên
 của nút.
 
+**Chưa hết — còn một nửa nữa, và nửa này là animation.** Vẫn báo nhấp nháy sau
+lần sửa trên. `slide-in-from-bottom-2` đặt `--tw-enter-translate-y: 8px` (kiểm
+trong CSS đã build), tức popup **bắt đầu thấp hơn chỗ nó dừng 8px**. Chỗ nó
+dừng là cách nút 4px, mũi tên đã thò sẵn 1px vào trong. Cộng 8 vào:
+
+| | popup ↓ vào nút | mũi tên ↓ vào nút |
+|---|---|---|
+| khung đầu của animation (trước) | +4px | **+9.1px** |
+| lúc nghỉ | −4px | +1.1px |
+
+Nghĩa là mỗi lần tooltip mở, một khối `bg-foreground` **quét xuống một phần tư
+chiều cao nút rồi rút lên** trong ~150ms. Rê vào rê ra vài lần là nháy.
+
+Bỏ `slide-in-from-*` ở cả sáu hướng, giữ fade và zoom. Zoom đã mang chuyển
+động, và nó mang đúng chiều: `--transform-origin` do positioner đặt trỏ về phía
+trigger, nên popup nở **ra xa** control chứ không quét ngang qua. Ghi từng frame
+sau khi sửa: mũi tên đứng yên ở +1.1px từ khung đầu tiên đến khung cuối.
+
 ### Nút pause đã rời khỏi card
 
 Câu hỏi: nút pause trên card có cần không? Trả lời: **không**, và nó còn đang
@@ -461,6 +479,39 @@ và một mép đọc thì dễ theo hơn hai.
 Cùng lúc: glyph Favourites ở đầu kệ lấy `size-8`. Để mặc định nó ra 24px trong
 khi `SoundIcon` vẽ đầu kệ ở 32px, nên tâm quang học của nó nằm **cao hơn tâm
 tiêu đề 4px**. Đo lại: delta 0, đúng bằng tám kệ còn lại.
+
+### Nhịp dọc ở mobile
+
+Đo ở 390×844 rồi mới sửa. Ba chỗ, theo thứ tự nặng dần:
+
+| | Trước | Sau |
+|---|---|---|
+| Khay `PlayControls` — khoảng trống trên/dưới | 128 + 128 | 32 + 96 |
+| Gap giữa các kệ | 128 (15.2% màn hình) | 96 (11.4%) |
+| `padding-bottom` của `main` | 160 | 96 |
+| Đầu kệ → lưới | 40 | 24 |
+| Padding card | 20 | 16 |
+
+Chỗ hỏng nặng nhất **không phải card** mà là khay Play. Nó với dải chip từng là
+`display: contents`, tức hai đứa con rời của `main`, nên **mỗi đứa ăn một gap
+section đầy đủ**: một khay cao 52px nằm giữa 256px trống — một phần ba màn hình
+điện thoại tiêu cho khoảng trắng quanh đúng một control. Giờ chúng là một hộp
+`flex flex-col gap-8`, ăn một gap, bên trong 32.
+
+Gap giữa kệ xuống 96 là **cố ý lệch khỏi bậc 128 của house style**. Chính luật
+đặt ra bậc đó cũng nói: section chỉ nối tiếp nhau là một *run*, mà run thì đọc
+liền mạch khi nó chặt. Chín cái kệ gần như giống hệt nhau là một run, và 128px
+là một phần sáu màn hình 390px, tiêu tám lần. Từ `sm` trả về số của house.
+
+Card lấy `p-4 sm:p-5`: luật compounding nói lớp thứ hai tính từ mép viewport ở
+mobile rơi vào 12–16px, và gutter section 24px là lớp thứ nhất.
+
+Tổng: trang từ ~14.7k xuống **13.4k px**.
+
+Một chỗ còn để lại: nút tools nổi (`fixed right-6 bottom-6`) đè lên dải chip ở
+ngay màn hình đầu. Dải chip cuộn ngang nên không có chip nào bị khoá hẳn, và
+`pr-14` cho nó chỗ để cuộn chip cuối ra khỏi nút. Bản thân việc một FAB nằm đè
+lên nội dung khi cuộn thì vẫn còn.
 
 ## Toolbar, toolbox và modals
 

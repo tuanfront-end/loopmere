@@ -78,7 +78,11 @@ export function SoundCard({
       role="button"
       tabIndex={hidden ? -1 : 0}
       className={cn(
-        "group/sound bg-card relative cursor-pointer rounded-lg border p-5",
+        // `p-4` at mobile: the section's own gutter is the first layer in from the
+        // viewport and this is the second, so it takes the smaller of the two
+        // numbers the spacing rule gives a nested surface. 20 from `sm`, where
+        // the card is no longer most of the screen's width.
+        "group/sound bg-card relative cursor-pointer rounded-lg border p-4 sm:p-5",
         // Named rather than `all`: the card animates a colour and a cast, and
         // a blanket transition also puts every layout property on a timer.
         "transition-[border-color,box-shadow]",

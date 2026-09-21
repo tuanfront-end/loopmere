@@ -41,6 +41,21 @@ function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
+/**
+ * Fade and zoom, and no slide.
+ *
+ * `slide-in-from-bottom-2` starts the popup eight pixels *lower* than where it
+ * settles — and where it settles is four pixels above its trigger, with the
+ * rotated arrow already reaching a pixel past that. Eight pixels of head start
+ * puts the arrow nine pixels inside a 36px button and the popup four: every
+ * time a tooltip opened, a dark shape swept down over the top quarter of the
+ * control and pulled back out. Hover in and out a few times and that is a
+ * blink, which is exactly what it was reported as.
+ *
+ * The zoom already carries the motion, and it carries it the right way:
+ * `--transform-origin` is set by the positioner to point at the trigger, so
+ * the popup grows *away* from the control instead of across it.
+ */
 function TooltipContent({
   className,
   side = "top",
@@ -66,7 +81,7 @@ function TooltipContent({
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
           className={cn(
-            "z-50 inline-flex w-fit origin-(--transform-origin) items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-xs text-background has-data-[slot=kbd]:pr-1.5 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 **:data-[slot=kbd]:relative **:data-[slot=kbd]:isolate **:data-[slot=kbd]:z-50 **:data-[slot=kbd]:rounded-sm data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            "z-50 inline-flex w-fit origin-(--transform-origin) items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-xs text-background has-data-[slot=kbd]:pr-1.5 **:data-[slot=kbd]:relative **:data-[slot=kbd]:isolate **:data-[slot=kbd]:z-50 **:data-[slot=kbd]:rounded-sm data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
             className,
           )}
           {...props}

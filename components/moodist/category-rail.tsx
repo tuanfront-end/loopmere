@@ -38,7 +38,10 @@ export function CategoryRail() {
 
       <nav
         aria-label="Sound categories"
-        className="no-scrollbar -my-3 mt-6 flex gap-3 self-stretch overflow-x-auto py-3"
+        /* `pr-14` at mobile: the floating tools button is fixed at the
+           bottom-right and lands on this strip at the top of the page, so the
+           strip needs somewhere to scroll the last chip clear of it. */
+        className="no-scrollbar -my-3 mt-6 flex gap-3 self-stretch overflow-x-auto py-3 pr-14 sm:pr-0"
       >
         {sounds.categories.map((category) => (
           <button
