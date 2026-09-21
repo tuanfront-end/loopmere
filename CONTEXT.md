@@ -575,24 +575,49 @@ Kết quả: **0 stub** ở 390, 768, 1024, 1280 và 1440, cả trong hai sheet.
 
 ### Hover: ba chỗ, cùng một sắc
 
-| | Trước | Sau |
+| | Trạng thái nghỉ | Hover |
 |---|---|---|
-| Nút tròn của slider | `ring-ring/50` cho cả ba trạng thái | hover `primary/45`, focus `ring/50`, active `primary/70` |
-| Nút `outline` | `hover:bg-muted` | `hover:bg-accent` + `border-primary/60` |
+| Sound card | trắng + hairline | **viền brand nhạt** + `shadow-soft` |
+| Category chip | trắng + hairline | nền accent + **viền brand nhạt** |
+| Hàng rail / hàng sheet | trong suốt | nền accent, phẳng |
+| Nút `outline` | trắng + hairline | **trắng nguyên** + `shadow-soft`, hairline biến mất |
+| Nút tròn của slider | không ring | ring `primary/45` |
+
+**Card có viền brand, nút thì không — và đây là cố ý.** Hover một card là *xem
+trước cú chọn* nó sắp trở thành, nên nó mượn đúng sắc mà `ring` của trạng thái
+đang phát dùng ở cường độ đầy. Một cái nút thì không có trạng thái nào để xem
+trước: bấm xong là xong, nên thứ duy nhất hover của nó cần nói là "cái này bấm
+được" — và nó nói bằng cách **nhấc lên**. Đó cũng là luật depth đọc thẳng: một
+hairline khi nằm trên mặt, một bóng mềm khi đã rời mặt, không bao giờ cả hai.
+
+`outline` đi qua ba phiên bản trước khi đứng lại: `bg-muted` (rơi 7 bậc, đọc ra
+thành *đang bị nhấn*, và trùng đúng màu track slider), rồi `bg-accent` +
+viền brand, rồi mới đến trắng + bóng.
+
+Ring của slider: ba màu, và **thứ tự variant quyết định chứ không phải thứ tự
+viết** — Tailwind sắp `hover` < `focus-visible` < `active`, nên chuột được quầng
+brand nhạt, bàn phím giữ `--ring` (vốn đã là `--primary-ink`, màu focus của cả
+app), thumb đang kéo thì đậm lên `primary/70`.
+
+`ScrollToTop` là ngoại lệ duy nhất: nó nổi trên trang nên **nghỉ đã có
+`shadow-soft`**, và hover đi lên `shadow-soft-lg` thay vì đi ngang — không có
+dòng đó thì hover nút duy nhất trên màn hình không đổi gì cả.
 
 Thứ tự variant quyết định chứ không phải thứ tự viết: Tailwind sắp `hover` <
 `focus-visible` < `active`, nên chuột được quầng brand nhạt, bàn phím giữ
 `--ring` (vốn đã là `--primary-ink`, và là màu focus của cả app), còn thumb
 đang kéo thì đậm lên.
 
-`bg-muted` nằm 6 bậc dưới trang mà nút nghỉ ở 1 bậc **trên**, nên hover rơi 7
-bậc và nút đọc ra thành *đang bị nhấn* chứ không phải *sẵn sàng*. Nó cũng đúng
-là màu nền của track slider và của trái tim — màu duy nhất hover trong app này
-phải tránh. Accent là 2.5 bậc, và viền đi theo sang brand: đúng cặp mà sound
-card và category chip đang dùng.
+Đo nút Show more: nghỉ `rgb(255,255,255)` + hairline `rgb(241,240,239)`, không
+bóng → hover `rgb(255,255,255)`, viền `rgba(0,0,0,0)`, có bóng. Trang là
+`rgb(253,252,252)`, nên nền trắng vẫn tách khỏi nền trang một bậc.
 
-Đo: nghỉ `rgb(255,255,255)` → hover `rgb(247,246,245)`, trang là
-`rgb(253,252,252)`.
+Và `transition-all` ở base của `buttonVariants` đổi thành danh sách tường minh
+— `color, background-color, border-color, box-shadow, opacity, translate`.
+`all` đặt mọi thuộc tính lên timer kể cả layout, và bộ nút này giờ có một cái
+bóng để chạy. `translate` chứ không phải `transform`: Tailwind v4 ghi
+`translate-y-px` vào đúng thuộc tính `translate`, và `active:translate-y-px`
+vẫn đo được là `0px 1px`.
 
 ## Toolbar, toolbox và modals
 

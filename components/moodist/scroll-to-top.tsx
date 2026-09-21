@@ -21,8 +21,11 @@ export function ScrollToTop() {
   return (
     <Button
       aria-label="Back to the top"
+      // This one floats over the page, so it rests with the cast the others
+      // only take on hover. It goes up a step rather than sideways: without
+      // this, hovering the only button on screen changed nothing.
       className={cn(
-        "shadow-soft transition-opacity",
+        "shadow-soft hover:shadow-soft-lg",
         !show && "pointer-events-none opacity-0",
       )}
       size="icon"

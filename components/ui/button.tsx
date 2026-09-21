@@ -15,20 +15,28 @@ import { cn } from "cn";
  * has chosen.
  */
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-sm border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-sm border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-[color,background-color,border-color,box-shadow,opacity,translate] outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        // `bg-accent`, not `bg-muted`. Muted sits six rungs below the page
-        // and the button rests one above it, so hovering fell seven and the
-        // control read as pressed rather than as ready — and `bg-muted` is
-        // also the exact ground of a slider track and a heart, which is the
-        // one colour hover in this app has to stay off. Accent is two and a
-        // half down, and the edge goes brand with it, the same pair a sound
-        // card and a category chip take.
+        // The ground does not move and the edge does not colour: white at
+        // rest, white under the pointer, and what changes is that it lifts.
+        // That is the depth rule read straight — a hairline where something
+        // sits on the surface, one soft shadow where it has left it, never
+        // both — and it is the one hover in this set that spends no colour.
+        //
+        // A card takes a brand edge because hovering one previews the pick it
+        // is about to become. A button has no such state to preview; it is
+        // pressed and it is done, so the only thing its hover has to say is
+        // that it is a thing you can press.
+        //
+        // `bg-muted` was the version before last and it was the worst of the
+        // three: six rungs below the page from a rest one rung above it, so
+        // the control read as already pressed — and it is the exact ground of
+        // a slider track and a heart, the one colour hover here has to avoid.
         outline:
-          "border-border bg-card hover:bg-accent hover:border-primary/60 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "border-border bg-card hover:border-transparent hover:shadow-soft hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:
