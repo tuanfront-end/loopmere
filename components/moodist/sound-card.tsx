@@ -104,14 +104,11 @@ export function SoundCard({
         <div
           aria-hidden="true"
           className={cn(
-            "grid size-11 shrink-0 place-items-center rounded-full transition-colors",
-            // Never transparent on hover. The disc is the frame the icon was
-            // drawn to sit in, and without it the render floats loose. White
-            // on a playing card, because the card's own ground is the chip
-            // now and a chip disc on a chip ground is no disc at all.
-            isSelected
-              ? "bg-chip text-primary-ink"
-              : "bg-muted text-muted-foreground",
+            // The box stays and the ground goes: these renders carry their
+            // own shape, and a disc behind one is a second shape arguing
+            // with it. Sizing only, so nothing moves.
+            "grid size-11 shrink-0 place-items-center transition-colors",
+            isSelected ? "text-primary-ink" : "text-muted-foreground",
           )}
         >
           {isLoading ? (

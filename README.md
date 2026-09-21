@@ -37,11 +37,12 @@ Bốn gate đỏ đó tên gì và vì sao chưa xanh: **CONTEXT.md § Gate**.
 `public/thiings/` **không nằm trong repo này** — thiings.co chỉ cấp licence
 dùng cá nhân cho bản tải lẻ, nên 92 file PNG đó không được phát hành lại.
 
-Repo vẫn build và chạy bình thường khi thiếu chúng: mỗi icon sound ngồi trong
-một đĩa tròn đã có sẵn nền, nên chỗ khuyết hiện ra là một đĩa trơn chứ không
-phải ảnh vỡ. Muốn có icon thì tự tải theo `data/sound-thiings.ts` — file đó
-giữ nguyên bản đồ `id → đường dẫn`, đặt PNG đúng tên vào `public/thiings/` là
-xong. Chi tiết vì sao chọn bộ này: **CONTEXT.md § Icon**.
+Repo vẫn build và chạy bình thường khi thiếu chúng. Mỗi icon nằm trong một ô
+kích thước cố định và thẻ ảnh mang `alt=""`, nên một file khuyết hiện ra là ô
+trống — không phải ảnh vỡ, và không xô lệch gì. Muốn có icon thì tự tải theo
+`data/sound-thiings.ts` — file đó giữ nguyên bản đồ `id → đường dẫn`, đặt PNG
+đúng tên vào `public/thiings/` là xong. Chi tiết vì sao chọn bộ này:
+**CONTEXT.md § Icon**.
 
 ## Licence
 

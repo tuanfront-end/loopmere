@@ -49,7 +49,7 @@ function ShelfIcon({ id }: { id: string }) {
   return (
     <span
       aria-hidden="true"
-      className="bg-muted grid size-7 shrink-0 place-items-center rounded-full"
+      className="grid size-7 shrink-0 place-items-center"
     >
       <SoundIcon id={id} size={16} />
     </span>

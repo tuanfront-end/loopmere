@@ -26,7 +26,7 @@ export function CategorySection({
       <div className="flex items-start gap-4">
         <div
           aria-hidden="true"
-          className="bg-chip text-primary-ink grid size-11 shrink-0 place-items-center rounded-full"
+          className="text-primary-ink grid size-11 shrink-0 place-items-center"
         >
           {id === "favorites" ? icon : <SoundIcon id={id} />}
         </div>

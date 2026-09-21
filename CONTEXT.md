@@ -274,8 +274,12 @@ Trước đây card chỉ có hai trạng thái và cả hai đều hỏng ở c
 
 Giờ:
 
-- **Đĩa không bao giờ trong suốt.** Nó là cái khung mà icon được vẽ để ngồi
-  vào; bỏ khung thì ảnh render trôi lơ lửng.
+- **Không còn đĩa tròn sau ảnh thiings.** Các render này tự mang hình khối
+  của chúng, nên một cái đĩa đằng sau là hình thứ hai cãi nhau với hình thứ
+  nhất. Ô kích thước vẫn giữ nguyên, nên layout không xê dịch — và vì thẻ ảnh
+  mang `alt=""`, một file PNG khuyết hiện ra là ô trống chứ không phải ảnh vỡ.
+  Đây cũng là chỗ lỗi "đĩa chìm khi hover" từng sống; giờ không còn đĩa thì
+  không còn lỗi.
 - **Hai thành ngữ hover, cố ý không trộn.** Card thì *nhấc lên*: đổi hairline
   lấy `shadow-soft`, nền giữ nguyên trắng. Tab — hàng rail trái và pill của
   category rail — thì *nhuộm*: `bg-accent`, phẳng, không bóng. Cả hai đều
