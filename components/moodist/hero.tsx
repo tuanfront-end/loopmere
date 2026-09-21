@@ -15,7 +15,7 @@ export function Hero() {
         </h1>
       </div>
 
-      <p className="text-muted-foreground mx-auto mt-4 max-w-[58ch] text-center text-base">
+      <p className="text-muted-foreground mx-auto mt-4 max-w-[58ch] text-center text-base text-balance">
         {count()} loops you can stack and level to taste. Nothing to sign up
         for, and the mix you built is still here tomorrow.
       </p>

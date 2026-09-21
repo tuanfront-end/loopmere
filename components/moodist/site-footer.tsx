@@ -59,7 +59,7 @@ export function SiteFooter() {
             </span>
           </div>
 
-          <p className="text-muted-foreground mt-4 max-w-[38ch] text-sm">
+          <p className="text-muted-foreground mt-4 max-w-[38ch] text-sm text-balance">
             {count()} loops on {sounds.categories.length} shelves, each with its
             own volume. Whatever you build is written to this browser and sent
             nowhere — there is no account here to send it to.
@@ -106,8 +106,21 @@ export function SiteFooter() {
 
       {/* Sitting 20 below at mobile so the floating tools button has somewhere
           to land that is not on top of the small print. */}
-      <div className="border-border mt-16 flex flex-col gap-2 border-t pt-8 pb-20 text-xs sm:pb-12">
-        <p className="text-muted-foreground">
+      {/* Two things, and the first is the one that matters. Unconstrained,
+          the licence line ran a **928px** measure at 1024 — about 150
+          characters to the line, twice what anybody reads — and then ended on
+          80px of it. `max-w-[68ch]` is the fix for the measure; `text-balance`
+          on each paragraph is the fix for the tail, and it is set on the
+          paragraphs rather than on this box because balancing is a decision a
+          block makes about its own lines.
+
+          And `text-sm`, not `text-xs`: `type-check` reads a measure on
+          `text-xs` as a category error and it is right to. A block that needs
+          telling where to wrap is copy, copy stops at `text-sm`, and `text-xs`
+          is for a label that fits on one line. The step down to small print is
+          carried by the ink instead. */}
+      <div className="border-border mt-16 flex max-w-[68ch] flex-col gap-2 border-t pt-8 pb-20 text-sm sm:pb-12">
+        <p className="text-muted-foreground text-balance">
           Code under the{" "}
           <a
             className={`${linkClass} underline underline-offset-4`}
@@ -147,7 +160,7 @@ export function SiteFooter() {
           , licensed for personal use and therefore kept out of this repository.
         </p>
 
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground text-balance">
           A port kept for study, not for sale: an Astro app rebuilt in Next.js
           without its islands.
         </p>

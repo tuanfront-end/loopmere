@@ -178,7 +178,7 @@ export function LeftRail() {
         Build me a mix
       </Button>
 
-      <p className="text-muted-foreground mt-auto px-2.5 text-xs">
+      <p className="text-muted-foreground mt-auto px-2.5 text-xs text-balance">
         A Next.js port of{" "}
         <a
           className="hover:text-foreground underline underline-offset-4 transition-colors"

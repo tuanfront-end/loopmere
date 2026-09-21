@@ -20,12 +20,21 @@ import { SoundIcon } from "./sound-icon";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+  drawerRow,
+} from "@/components/ui/drawer";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { REPO_URL } from "@/constants/links";
@@ -55,6 +64,7 @@ function ShelfIcon({ id }: { id: string }) {
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
 
   const isPlaying = useSoundStore((state) => state.isPlaying);
   const togglePlay = useSoundStore((state) => state.togglePlay);
@@ -207,10 +217,14 @@ export function SiteHeader() {
             <HugeiconsIcon icon={Github01Icon} strokeWidth={1.5} />
           </a>
 
-          {/* The mobile nav is a menu rather than a Drawer: ten anchors on one
-              route, and the rail below already scrolls the same eight. */}
-          <DropdownMenu>
-            <DropdownMenuTrigger
+          {/* A sheet rather than a menu. Ten rows anchored to a 36px button in
+              the top-right corner is a panel reaching across the screen away
+              from the thumb holding the phone, scrolling inside itself at
+              `max-h-[70dvh]`; the same ten at the bottom edge are where the
+              hand already is, and the sheet can be thrown shut without aiming.
+              The desktop `Shelves` menu above stays a menu: it is pointed at. */}
+          <Drawer open={navOpen} onOpenChange={setNavOpen}>
+            <DrawerTrigger
               render={
                 <Button
                   aria-label="Menu"
@@ -223,42 +237,61 @@ export function SiteHeader() {
               }
             />
 
-            <DropdownMenuContent
-              align="end"
-              className="no-scrollbar max-h-[70dvh] min-w-64 overflow-y-auto"
-              sideOffset={10}
-            >
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Jump to a shelf</DropdownMenuLabel>
-                {shelfItems}
-              </DropdownMenuGroup>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>Jump to a shelf</DrawerTitle>
+                <DrawerDescription>
+                  Eight that came with the app and the one you fill yourself.
+                </DrawerDescription>
+              </DrawerHeader>
 
-              <DropdownMenuSeparator />
+              <div className="flex flex-col gap-1">
+                {shelves.map((shelf) => (
+                  <DrawerClose
+                    className={drawerRow}
+                    key={shelf.id}
+                    render={<a href={shelf.href} />}
+                  >
+                    <ShelfIcon id={shelf.id} />
+                    {shelf.title}
+                    <span className="text-muted-foreground ml-auto text-xs tabular-nums">
+                      {shelf.count}
+                    </span>
+                  </DrawerClose>
+                ))}
+              </div>
 
-              <DropdownMenuGroup>
-                {favorites.length > 0 && (
-                  <DropdownMenuItem
-                    className="gap-2 px-1.5 py-1.5"
+              {/* Under a rule and always there, the way the left rail carries
+                  it from `xl` up. */}
+              <div className="mx-2.5 mt-2 border-t pt-2">
+                <div className="-mx-2.5">
+                  <DrawerClose
+                    className={drawerRow}
                     render={<a href="#category-favorites" />}
                   >
-                    <HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />
+                    <span aria-hidden="true" className="shrink-0">
+                      <HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />
+                    </span>
                     Favourites
                     <span className="text-muted-foreground ml-auto text-xs tabular-nums">
                       {favorites.length}
                     </span>
-                  </DropdownMenuItem>
-                )}
+                  </DrawerClose>
+                </div>
+              </div>
 
-                <DropdownMenuItem
-                  className="gap-2 px-1.5 py-1.5"
-                  onClick={shuffle}
-                >
-                  <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
+              <div className="mt-5 flex flex-col gap-1">
+                <DrawerClose className={drawerRow} onClick={shuffle}>
+                  <HugeiconsIcon
+                    className="size-4 shrink-0"
+                    icon={ShuffleIcon}
+                    strokeWidth={1.5}
+                  />
                   Surprise me
-                </DropdownMenuItem>
+                </DrawerClose>
 
-                <DropdownMenuItem
-                  className="gap-2 px-1.5 py-1.5"
+                <DrawerClose
+                  className={drawerRow}
                   render={
                     <a
                       href={REPO_URL}
@@ -267,12 +300,16 @@ export function SiteHeader() {
                     />
                   }
                 >
-                  <HugeiconsIcon icon={Github01Icon} strokeWidth={1.5} />
+                  <HugeiconsIcon
+                    className="size-4 shrink-0"
+                    icon={Github01Icon}
+                    strokeWidth={1.5}
+                  />
                   Source on GitHub
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </DrawerClose>
+              </div>
+            </DrawerContent>
+          </Drawer>
         </div>
       </div>
     </header>

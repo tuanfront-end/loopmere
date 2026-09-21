@@ -209,7 +209,7 @@ function TheMix() {
           ))}
         </ul>
       ) : (
-        <p className="text-muted-foreground mt-4 px-2.5 text-sm">
+        <p className="text-muted-foreground mt-4 px-2.5 text-sm text-balance">
           Nothing picked yet. Tap a card in the middle and it starts — every
           sound you add gets its own level here.
         </p>
