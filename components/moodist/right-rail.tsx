@@ -11,6 +11,7 @@ import { useMemo } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
+import { PauseButton } from "./pause-button";
 import { SoundIcon } from "./sound-icon";
 import { TOOL_GROUPS, useTools } from "./tools-provider";
 
@@ -22,6 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { sounds } from "@/data/sounds";
+import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
 
@@ -51,11 +53,18 @@ function Section({
 
 function MixRow({ id }: { id: string }) {
   const volume = useSoundStore((state) => state.sounds[id].volume);
+  const isPaused = useSoundStore((state) => state.sounds[id].isPaused);
   const setVolume = useSoundStore((state) => state.setVolume);
   const unselect = useSoundStore((state) => state.unselect);
 
   return (
-    <li className="bg-card rounded-sm border p-3">
+    <li
+      className={cn(
+        "bg-card rounded-sm border p-3 transition-opacity",
+        // Still in the mix, still holding its level, just not sounding.
+        isPaused && "opacity-55",
+      )}
+    >
       <div className="flex items-center gap-2">
         <span
           aria-hidden="true"
@@ -69,6 +78,12 @@ function MixRow({ id }: { id: string }) {
         <span className="text-muted-foreground ml-auto text-xs tabular-nums">
           {Math.round(volume * 100)}%
         </span>
+
+        <PauseButton
+          className="-mr-1 size-8 shrink-0"
+          id={id}
+          label={labels[id]}
+        />
 
         <Button
           aria-label={`Take ${labels[id]} out of the mix`}

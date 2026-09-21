@@ -85,9 +85,14 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
       aria-current={active ? "true" : undefined}
       className={cn(
         "flex items-center gap-3 rounded-full py-1.5 pr-4 pl-1.5 text-sm font-medium transition-colors",
+        // One ladder, and it only ever goes down: nothing → accent → muted →
+        // secondary. Hovering an inactive row used to land on `bg-muted`,
+        // which is what the icon's own disc is drawn in, so the disc vanished
+        // under the pointer; and the active row hovered *up* to accent, which
+        // is the look of a control switching off.
         active
-          ? "bg-muted hover:bg-accent"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+          ? "bg-muted hover:bg-secondary"
+          : "text-muted-foreground hover:bg-accent hover:text-foreground",
       )}
       href={`#category-${id}`}
     >

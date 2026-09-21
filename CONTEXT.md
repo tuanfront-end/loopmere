@@ -234,6 +234,63 @@ Header dùng `buttonVariants` trên `<a>` thật cho hai link trông như nút. 
 `<Button render={<a/>}>` thì Base UI gắn `role="button"` lên thẻ điều hướng, và
 screen reader đọc một cú nhảy trang thành một cú bấm.
 
+## Brand, face và trạng thái của card
+
+**Brand là xanh Envato**, `hsl(97 76% 60%)` — chính là `#87E64B` đọc từ
+elements.envato.com chứ không phải đoán. Đây là hàng `lime` của skill với hue
+nhích hai độ cho khớp, nên các số đo mà hàng đó được nhận vào vẫn còn đúng.
+
+Nó là brand **sáng**, tức là đúng trường hợp mà cặp hai token sinh ra để giải
+quyết: `--primary` làm fill và mang chữ gần-đen (16:1; chữ trắng trên nó chỉ
+1.6 và không đọc được), còn `--primary-ink` là `hsl(95 50% 26%)` — thứ mà
+`--ring` và dải chart đọc.
+
+**Cái giá phải nói ra:** ở 97° brand này cách `--lime` 17°, nên trang nào ở đây
+muốn màu thứ hai thì tiêu một trong năm accent còn lại. `palette-check` báo
+khoảng cách đó mỗi lần chạy.
+
+**Face là Google Sans Flex**, một họ duy nhất cho cả heading lẫn body — trạng
+thái nghỉ của house style và là câu trả lời đúng cho product UI. Fraunces đã
+rời đi cùng lúc. Bốn số của hàng này lấy từ bảng per-face trong `setup.md`, đo
+sẵn chứ không tự chọn: cặp trọng lượng **400/500**, tracking **lỏng một bậc**
+(side bearing của `n` đọc 0.061 so với 0.080 của Geist, tức face này fit chặt
+hơn cái mà luật gốc được viết trên), leading tối thiểu 0.97 nên bind ở 1.
+
+`ss01` **bật, và nó gần như không làm gì trên bản tiếng Anh.** Feature này
+trong Google Sans Flex chỉ thay hai glyph — `ă` và `ạ` — cộng thêm `ā ą ǎ` ở
+subset latin-ext. Đó là lý do subset `vietnamese` được nạp: trên chữ Latin nó
+trơ, còn trên chữ Việt nó là toàn bộ điểm của feature.
+
+### Bốn trạng thái của sound card
+
+Trước đây card chỉ có hai trạng thái và cả hai đều hỏng ở chỗ hover:
+
+| Hỏng gì | Vì sao |
+|---|---|
+| Đĩa tròn sau icon biến mất khi hover | đĩa đặt `group-hover:bg-transparent` |
+| Track của volume slider chìm mất | card đang chọn hover xuống `bg-muted`, đúng màu của track |
+| Layout giật khi chọn / bỏ chọn | slider `return null` khi chưa chọn, nên card đổi chiều cao |
+| Không pause được từng sound | bỏ chọn là cách duy nhất làm im, và nó xoá luôn mức âm lượng |
+
+Giờ:
+
+- **Đĩa không bao giờ trong suốt.** Nó là cái khung mà icon được vẽ để ngồi
+  vào; bỏ khung thì ảnh render trôi lơ lửng.
+- **Card đang chọn hover bằng cách *nhấc lên*, không phải lún xuống.** Một
+  bậc dưới `bg-accent` là `bg-muted`, đúng màu của track và của hai nút góc —
+  cả ba biến mất cùng lúc. Nên hover đổi `shadow-soft` → `shadow-soft-lg` và
+  giữ nguyên nền.
+- **Hàng slider luôn tồn tại**, rỗng hay không. Đổi lại là card chưa chọn có
+  một khoảng trống ở đáy; cái giá đó rẻ hơn việc cả kệ nhảy một dòng mỗi lần
+  bấm.
+- **`isPaused` là một field riêng trong store**, tách khỏi `isSelected` (vẫn
+  trong mix, vẫn giữ mức âm lượng) và tách khỏi `isPlaying` toàn cục (thứ tắt
+  tất cả). Nút có mặt ở cả card lẫn hàng trong cột phải.
+
+Rail bên trái cũng mắc đúng lỗi đĩa chìm và đã sửa bằng cùng một thang: không
+gì → `bg-accent` → `bg-muted` → `bg-secondary`, và nó chỉ đi xuống. Trước đó
+hàng đang active hover *lên* accent, tức là dáng của một control đang tắt đi.
+
 ## Toolbar, toolbox và modals
 
 Mười ba panel, tất cả đi qua **một** `ToolPanel` bọc shadcn `Dialog`: escape,

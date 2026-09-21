@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Google_Sans_Flex } from "next/font/google";
 
 import { ServiceWorker } from "@/components/moodist/service-worker";
 import { Shell } from "@/components/moodist/shell";
@@ -11,13 +11,18 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 import "./globals.css";
 
-/** The Warm pairing: a soft display serif over a wide humanist grotesque. */
-const body = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
-
-const heading = Fraunces({
-  axes: ["opsz"],
-  subsets: ["latin"],
-  variable: "--font-heading",
+/**
+ * One family, which is the style's resting state and the right answer for a
+ * product UI. `--font-heading` is left undeclared on purpose: `globals.css`
+ * falls it back to `--font-sans`, so every heading resolves here too.
+ *
+ * The vietnamese subset is listed because `ss01` is what it is for — the
+ * feature swaps the alternate ă and ạ and nothing else, so on Latin copy it
+ * is inert and on Vietnamese copy it is the whole point.
+ */
+const sans = Google_Sans_Flex({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -34,7 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${body.variable} ${heading.variable} h-full antialiased`}
+      className={`${sans.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <TooltipProvider delay={200}>

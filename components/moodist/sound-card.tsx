@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useEffect, useMemo } from "react";
 
 import { FavoriteButton } from "./favorite-button";
+import { PauseButton } from "./pause-button";
 import { SoundIcon } from "./sound-icon";
 import { VolumeSlider } from "./volume-slider";
 
@@ -36,6 +37,7 @@ export function SoundCard({
   const unselectSound = useSoundStore((state) => state.unselect);
   const setVolume = useSoundStore((state) => state.setVolume);
   const isSelected = useSoundStore((state) => state.sounds[id].isSelected);
+  const isPaused = useSoundStore((state) => state.sounds[id].isPaused);
   const locked = useSoundStore((state) => state.locked);
 
   const volume = useSoundStore((state) => state.sounds[id].volume);
@@ -52,9 +54,9 @@ export function SoundCard({
   useEffect(() => {
     if (locked) return;
 
-    if (isSelected && isPlaying && functional) sound?.play();
+    if (isSelected && isPlaying && !isPaused && functional) sound?.play();
     else sound?.pause();
-  }, [isSelected, sound, isPlaying, functional, locked]);
+  }, [isSelected, isPaused, sound, isPlaying, functional, locked]);
 
   const toggle = useCallback(() => {
     if (locked) return;
@@ -77,42 +79,58 @@ export function SoundCard({
       role="button"
       tabIndex={hidden ? -1 : 0}
       className={cn(
-        "group/sound relative cursor-pointer rounded-lg p-5 transition-colors",
+        "group/sound relative cursor-pointer rounded-lg p-5 transition-all",
         // Resting: a hairline, because a white card on this page is a whisper.
         "bg-card border",
         "hover:bg-accent hover:border-transparent",
-        // Playing: the tint holds the state, so hover moves the ink instead.
-        isSelected && "bg-accent border-transparent hover:bg-muted",
+        // Playing: the tint holds the state. Hovering must not move the ground
+        // again — one rung further down is `bg-muted`, which is exactly what
+        // the volume track and the two corner buttons are drawn in, and all
+        // three vanish into it. So the hover is a lift instead of a step.
+        isSelected &&
+          "bg-accent shadow-soft border-transparent hover:shadow-soft-lg",
         hidden && "hidden",
       )}
       onClick={toggle}
       onKeyDown={handleKeyDown}
     >
-      <FavoriteButton id={id} label={label} />
+      <div className="flex items-start justify-between gap-2">
+        <div
+          aria-hidden="true"
+          className={cn(
+            "grid size-11 shrink-0 place-items-center rounded-full transition-colors",
+            // Never transparent on hover. The disc is the frame the icon was
+            // drawn to sit in, and without it the render floats loose.
+            isSelected
+              ? "bg-chip text-primary-ink"
+              : "bg-muted text-muted-foreground",
+          )}
+        >
+          {isLoading ? (
+            <HugeiconsIcon
+              className="size-[18px] animate-spin"
+              icon={Loading03Icon}
+              strokeWidth={1.5}
+            />
+          ) : (
+            <SoundIcon id={id} />
+          )}
+        </div>
 
-      <div
-        aria-hidden="true"
-        className={cn(
-          "grid size-11 place-items-center rounded-full transition-colors",
-          isSelected
-            ? "bg-chip text-primary-ink"
-            : "bg-muted text-muted-foreground group-hover/sound:bg-transparent",
-        )}
-      >
-        {isLoading ? (
-          <HugeiconsIcon
-            className="size-[18px] animate-spin"
-            icon={Loading03Icon}
-            strokeWidth={1.5}
-          />
-        ) : (
-          <SoundIcon id={id} />
-        )}
+        <div className="-mt-1.5 -mr-1.5 flex items-center">
+          {isSelected && <PauseButton id={id} label={label} />}
+          <FavoriteButton id={id} label={label} />
+        </div>
       </div>
 
-      <div className="mt-4 pr-8 text-sm font-medium">{label}</div>
+      <div className="mt-4 text-sm font-medium">{label}</div>
 
-      <VolumeSlider id={id} label={label} />
+      {/* The row is always here, empty or not. It used to appear with the
+          slider, so every pick and un-pick changed the card's height and
+          shoved the rest of the shelf down a line. */}
+      <div className="mt-4 flex h-6 items-center">
+        {isSelected && <VolumeSlider id={id} label={label} />}
+      </div>
     </div>
   );
 }

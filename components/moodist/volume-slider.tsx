@@ -8,17 +8,18 @@ interface VolumeSliderProps {
   label: string;
 }
 
+/**
+ * The card decides whether this is drawn and reserves the row either way, so
+ * there is no `isSelected` guard here and no margin of its own — both used to
+ * live here, and between them a pick changed the card's height.
+ */
 export function VolumeSlider({ id, label }: VolumeSliderProps) {
   const volume = useSoundStore((state) => state.sounds[id].volume);
-  const isSelected = useSoundStore((state) => state.sounds[id].isSelected);
   const setVolume = useSoundStore((state) => state.setVolume);
-
-  if (!isSelected) return null;
 
   return (
     <Slider
       aria-label={`${label} level`}
-      className="mt-5"
       max={1}
       min={0}
       step={0.01}
@@ -26,7 +27,9 @@ export function VolumeSlider({ id, label }: VolumeSliderProps) {
       // The card underneath toggles the sound; a drag must not reach it.
       onClick={(event) => event.stopPropagation()}
       onKeyDown={(event) => event.stopPropagation()}
-      onValueChange={(next) => setVolume(id, Array.isArray(next) ? next[0] : next)}
+      onValueChange={(next) =>
+        setVolume(id, Array.isArray(next) ? next[0] : next)
+      }
     />
   );
 }

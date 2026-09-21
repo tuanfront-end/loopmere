@@ -29,7 +29,7 @@ export function FavoriteButton({ id, label }: FavoriteButtonProps) {
             : `Save ${label} to favourites`
         }
         className={cn(
-          "absolute top-3 right-3 grid size-9 place-items-center rounded-full transition-colors",
+          "grid size-9 place-items-center rounded-full transition-colors",
           "text-muted-foreground hover:bg-muted hover:text-foreground",
           isFavorite && "text-coral-ink hover:text-coral-ink",
         )}

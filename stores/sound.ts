@@ -9,6 +9,12 @@ import { pickMany, random } from '@/helpers/random';
 
 type SoundValue = {
   isFavorite: boolean;
+  /**
+   * In the mix but silent. Separate from `isSelected` so a sound can be
+   * quietened without leaving the mix and losing the level it was set to,
+   * and separate from the store's global `isPlaying`, which stops everything.
+   */
+  isPaused: boolean;
   isSelected: boolean;
   volume: number;
 };
@@ -29,6 +35,7 @@ interface SoundStore {
   shuffle: () => void;
   sounds: Record<string, SoundValue>;
   toggleFavorite: (id: string) => void;
+  togglePause: (id: string) => void;
   togglePlay: () => void;
   unlock: () => void;
   unselect: (id: string) => void;
@@ -42,6 +49,7 @@ function createInitialSounds() {
     category.sounds.forEach(sound => {
       initialSounds[sound.id] = {
         isFavorite: false,
+        isPaused: false,
         isSelected: false,
         volume: 0.5,
       };
@@ -86,6 +94,7 @@ export const useSoundStore = create<SoundStore>()(
         Object.keys(newSounds).forEach(sound => {
           if (sounds[sound]) {
             sounds[sound].isSelected = true;
+            sounds[sound].isPaused = false;
             sounds[sound].volume = newSounds[sound];
           }
         });
@@ -114,7 +123,9 @@ export const useSoundStore = create<SoundStore>()(
           history: null,
           sounds: {
             ...get().sounds,
-            [id]: { ...get().sounds[id], isSelected: true },
+            // Adding a sound back always sounds: a pause it carried from its
+            // last time in the mix would be a silent card nobody asked for.
+            [id]: { ...get().sounds[id], isPaused: false, isSelected: true },
           },
         });
       },
@@ -134,6 +145,7 @@ export const useSoundStore = create<SoundStore>()(
 
         ids.forEach(id => {
           sounds[id].isSelected = false;
+          sounds[id].isPaused = false;
           sounds[id].volume = 0.5;
         });
 
@@ -159,6 +171,15 @@ export const useSoundStore = create<SoundStore>()(
             ...sounds,
             [id]: { ...sound, isFavorite: !sound.isFavorite },
           },
+        });
+      },
+
+      togglePause(id) {
+        const sounds = get().sounds;
+        const sound = sounds[id];
+
+        set({
+          sounds: { ...sounds, [id]: { ...sound, isPaused: !sound.isPaused } },
         });
       },
 
@@ -195,6 +216,7 @@ export const useSoundStore = create<SoundStore>()(
 
         ids.forEach(id => {
           sounds[id].isSelected = false;
+          sounds[id].isPaused = false;
           sounds[id].volume = 0.5;
         });
 
