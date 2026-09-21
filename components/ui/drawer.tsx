@@ -62,7 +62,14 @@ function DrawerContent({
           data-slot="drawer-content"
           className={cn(
             BLEED,
-            "bg-card text-foreground relative -mb-(--bleed) flex w-full flex-col rounded-t-lg border-t outline-none",
+            // Not a flex container. It was, and its one flex child carried
+            // `min-h-0` — which is exactly the pair that lets a child be
+            // squashed below its content instead of overflowing. The popup
+            // then reported `scrollHeight === clientHeight`, so it never grew
+            // a scrollbar, and the rows past the cap were drawn outside the
+            // sheet and off the bottom of the screen with no way to reach
+            // them. A scrolling box is a block.
+            "bg-card text-foreground relative -mb-(--bleed) block w-full rounded-t-lg border-t outline-none",
             "max-h-[calc(85dvh+var(--bleed))] overflow-y-auto overscroll-contain touch-auto",
             // Safe area for the home indicator, plus the bleed that is never seen.
             "px-6 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px)+var(--bleed))]",
@@ -80,7 +87,7 @@ function DrawerContent({
             className="bg-muted-foreground/25 mx-auto mb-3 h-1 w-10 shrink-0 rounded-full"
           />
 
-          <DrawerPrimitive.Content className="flex min-h-0 flex-col">
+          <DrawerPrimitive.Content className="flex flex-col">
             {children}
           </DrawerPrimitive.Content>
         </DrawerPrimitive.Popup>

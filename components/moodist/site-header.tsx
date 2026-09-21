@@ -6,6 +6,7 @@ import {
   PlayIcon,
 } from "@heroicons/react/24/outline";
 import {
+  Coffee02Icon,
   FavouriteIcon,
   Github01Icon,
   Menu01Icon,
@@ -37,7 +38,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { REPO_URL } from "@/constants/links";
+import { COFFEE_URL, REPO_URL } from "@/constants/links";
 import { sounds } from "@/data/sounds";
 import { cn } from "@/lib/utils";
 import { useSoundStore } from "@/stores/sound";
@@ -306,6 +307,27 @@ export function SiteHeader() {
                     strokeWidth={1.5}
                   />
                   Source on GitHub
+                </DrawerClose>
+
+                {/* A row, not the outline button the rail gives it. Inside a
+                    sheet every other way out is a row, and one button among
+                    them would read as the thing the sheet was opened for. */}
+                <DrawerClose
+                  className={drawerRow}
+                  render={
+                    <a
+                      href={COFFEE_URL}
+                      rel="noreferrer noopener"
+                      target="_blank"
+                    />
+                  }
+                >
+                  <HugeiconsIcon
+                    className="size-4 shrink-0"
+                    icon={Coffee02Icon}
+                    strokeWidth={1.5}
+                  />
+                  Buy me a coffee
                 </DrawerClose>
               </div>
             </DrawerContent>

@@ -1,9 +1,13 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { Coffee02Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 
 import { Logo } from "./logo";
 
+import { buttonVariants } from "@/components/ui/button";
 import {
   CC0_URL,
+  COFFEE_URL,
   PIXABAY_LICENCE_URL,
   REPO_URL,
   THIINGS_URL,
@@ -11,6 +15,7 @@ import {
   UPSTREAM_URL,
 } from "@/constants/links";
 import { sounds } from "@/data/sounds";
+import { cn } from "@/lib/utils";
 import { count } from "@/lib/sounds";
 
 const linkClass =
@@ -64,6 +69,27 @@ export function SiteFooter() {
             own volume. Whatever you build is written to this browser and sent
             nowhere — there is no account here to send it to.
           </p>
+
+          {/* The name first and the button under it. "Buy me a coffee" in a
+              footer that credits MAZE in three other places needs an
+              antecedent, and this is the only column that is about whoever
+              built this one. */}
+          <p className="text-muted-foreground mt-6 text-sm">
+            Built by Boolii Studio.
+          </p>
+
+          <a
+            className={cn(
+              buttonVariants({ size: "sm", variant: "outline" }),
+              "mt-3",
+            )}
+            href={COFFEE_URL}
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            <HugeiconsIcon icon={Coffee02Icon} strokeWidth={1.5} />
+            Buy me a coffee
+          </a>
         </div>
 
         <nav aria-labelledby="footer-shelves">

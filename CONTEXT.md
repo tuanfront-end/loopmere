@@ -527,6 +527,20 @@ làm nó giống native là `--bleed`: popup được vẽ cao hơn 3rem so vớ
 thấy rồi kéo tụt xuống đúng ngần ấy, nên cuộn quá đà ở đáy sheet lòi ra thêm
 sheet chứ không lòi ra trang phía sau.
 
+**Một lỗi đã phải sửa ngay sau đó, và nó im lặng.** Popup từng là `flex
+flex-col`, còn `Drawer.Content` — đứa con flex duy nhất của nó — mang
+`min-h-0`. Đúng cặp đó cho phép một flex item **bị ép nhỏ hơn nội dung** thay
+vì tràn ra. Hệ quả: popup báo `scrollHeight === clientHeight`, tức nó tin là
+vừa, nên **không bao giờ mọc thanh cuộn** — còn các hàng vượt quá cap thì vẫn
+được vẽ, ở ngoài sheet và dưới đáy màn hình, không cách nào với tới.
+
+Sheet tools thừa **236px** kiểu đó: Binaural beat, Isochronic tone và Lofi
+radio nằm ngoài màn hình và cuộn cũng không ra. Không nhìn thấy được bằng ảnh
+chụp — ảnh chụp chỉ cho thấy danh sách bị cắt, đúng như một sheet cuộn được.
+Phải đo `scrollHeight - clientHeight` mới ra.
+
+Chữa: popup thành `block`. **Một hộp cuộn thì là một block.**
+
 ### Chỗ mà `responsive-check` không nhìn thấy
 
 Gate xanh mà trang vẫn còn dòng cụt. Lý do nằm ở leaf test của nó:
