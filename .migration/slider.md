@@ -31,12 +31,18 @@ elements with no primitive behind them, so there is nothing to migrate.
 ## Behavior changes
 
 A disabled slider now recedes part by part rather than under one blanket
-`opacity-50` on the Control: the rail stays `bg-muted`, the indicator drops
-the brand hue for `bg-muted-foreground/25`, and the thumb goes from a raised
-24px white disc to a flat 12px grey one. Every part carries `data-disabled`
-of its own, so none of this needs a group selector. It matters because the
-sound cards draw one of these on every sound that is not in the mix, and a
-green fill there would have claimed something was playing.
+`opacity-50` on the Control: the rail stays `bg-muted` and the indicator
+drops the brand hue for `bg-muted-foreground/25`. Every part carries
+`data-disabled` of its own, so none of this needs a group selector. It
+matters because the sound cards draw one of these on every sound that is not
+in the mix, and a green fill there would have claimed something was playing.
+
+**The thumb is not one of the parts that changes.** It is the same 24px white
+disc with the same cast in both states, so the control keeps one shape and
+only what it sits on says whether it is live. A first attempt shrank it to a
+flat 12px grey dot, which read as a different control and jumped size the
+moment a sound joined the mix. The hover ring still comes off when disabled —
+that one is behaviour rather than shape.
 
 Also one fix landed later, when the three-column shell put
 the Levels sliders permanently on screen: Base UI draws a real

@@ -57,7 +57,15 @@ function Slider({
             data-slot="slider-thumb"
             getAriaLabel={thumbLabel}
             key={index}
-            className="relative block size-6 shrink-0 rounded-full bg-card shadow-soft ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none data-disabled:size-3 data-disabled:bg-muted-foreground/30 data-disabled:shadow-none data-disabled:hover:ring-0"
+            // The thumb is the same object whether the slider is live or not:
+            // same 24px, same white, same cast. Only what it sits on says
+            // which — the indicator behind it keeps the brand hue for a live
+            // slider and drops to a neutral for a disabled one. It used to
+            // shrink to a flat 12px grey dot, which read as a different
+            // control and jumped size the moment a sound joined the mix.
+            //
+            // The ring still comes off: that one is behaviour, not shape.
+            className="relative block size-6 shrink-0 rounded-full bg-card shadow-soft ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none data-disabled:hover:ring-0"
           />
         ))}
       </SliderPrimitive.Control>
