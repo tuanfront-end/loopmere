@@ -9,6 +9,7 @@ import { useShallow } from "zustand/react/shallow";
 import { CategorySection } from "./category-section";
 import { PlayControls } from "./play-controls";
 import { StoreConsumer } from "./store-consumer";
+import { Toolbar } from "./toolbar";
 
 import { FADE_OUT } from "@/constants/events";
 import { categoryBlurbs } from "@/data/category-blurbs";
@@ -93,6 +94,8 @@ export function App() {
           functional={category.id !== "favorites"}
         />
       ))}
+
+      <Toolbar />
     </StoreConsumer>
   );
 }
