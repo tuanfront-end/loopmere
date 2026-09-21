@@ -105,7 +105,7 @@ export function SiteHeader() {
         )}
       >
         <a
-          className="hover:bg-muted -ml-2 flex shrink-0 items-center gap-2 rounded-full py-1.5 pr-3 pl-2 transition-colors"
+          className="hover:bg-muted -ml-2 flex shrink-0 items-center gap-2 rounded-sm py-1.5 pr-3 pl-2 transition-colors"
           href="#top"
         >
           <Logo className="size-6" />

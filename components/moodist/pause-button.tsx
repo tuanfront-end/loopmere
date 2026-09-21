@@ -32,7 +32,7 @@ export function PauseButton({ className, id, label }: PauseButtonProps) {
       <TooltipTrigger
         aria-label={isPaused ? `Bring ${label} back` : `Quieten ${label}`}
         className={cn(
-          "text-muted-foreground hover:bg-muted hover:text-foreground grid size-9 place-items-center rounded-full transition-colors",
+          "text-muted-foreground hover:bg-muted hover:text-foreground grid size-9 place-items-center rounded-sm transition-colors",
           className,
         )}
         onClick={(event) => {

@@ -28,8 +28,11 @@ export function FavoriteButton({ id, label }: FavoriteButtonProps) {
             ? `Remove ${label} from favourites`
             : `Save ${label} to favourites`
         }
+        // Radius matches `buttonVariants` by hand, because this is a
+        // TooltipTrigger rather than a Button — the trigger owns the element.
+        // If a third control ends up in this shape, it becomes a variant.
         className={cn(
-          "grid size-9 place-items-center rounded-full transition-colors",
+          "grid size-9 place-items-center rounded-sm transition-colors",
           "text-muted-foreground hover:bg-muted hover:text-foreground",
           isFavorite && "text-coral-ink hover:text-coral-ink",
         )}

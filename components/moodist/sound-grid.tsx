@@ -65,7 +65,6 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
               something that is currently sounding, which is a state worth
               a primary and the only one here that is. */}
           <Button
-            className="rounded-sm"
             size="lg"
             variant={hiddenPlaying ? "default" : "outline"}
             onClick={() => setShowAll((previous) => !previous)}

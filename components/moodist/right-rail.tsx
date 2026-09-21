@@ -268,7 +268,7 @@ function Tools() {
             <div className="mt-2 flex flex-col gap-1">
               {group.tools.map((tool) => (
                 <button
-                  className="hover:bg-muted disabled:pointer-events-none disabled:opacity-50 flex items-center gap-2.5 rounded-full py-2 pr-4 pl-2.5 text-sm font-medium transition-colors"
+                  className="hover:bg-muted disabled:pointer-events-none disabled:opacity-50 flex items-center gap-2.5 rounded-sm py-2 pr-4 pl-2.5 text-sm font-medium transition-colors"
                   disabled={tool.name === "shareLink" && noSelected}
                   key={tool.name}
                   onClick={() => open(tool.name)}
@@ -314,7 +314,7 @@ export function RightRail() {
               .filter((tool) => tool.name !== "settings")
               .map((tool) => (
                 <button
-                  className="text-muted-foreground hover:bg-muted hover:text-foreground flex items-center gap-2.5 rounded-full py-2 pr-4 pl-2.5 text-sm transition-colors"
+                  className="text-muted-foreground hover:bg-muted hover:text-foreground flex items-center gap-2.5 rounded-sm py-2 pr-4 pl-2.5 text-sm transition-colors"
                   key={tool.name}
                   onClick={() => open(tool.name)}
                 >

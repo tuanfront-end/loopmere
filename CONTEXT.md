@@ -284,6 +284,19 @@ Giờ:
   Vì thẻ ảnh mang `alt=""`, một file PNG khuyết hiện ra là chỗ trống chứ không
   phải ảnh vỡ. Đây cũng là chỗ lỗi "đĩa chìm khi hover" từng sống; giờ không
   còn đĩa thì không còn lỗi.
+- **Một radius cho mọi nút: `rounded-sm`, khai báo ở `buttonVariants`.**
+  Đo trên trang: 84 phần tử bấm được, tất cả 14.4px. Ba cái còn hình viên
+  thuốc là link chữ trong footer — ở đó radius chỉ tạo hình vòng focus, và
+  vòng bo tròn trên chữ inline là đúng.
+  Trái tim và nút pause trên card **không đi qua `buttonVariants`** (chúng là
+  `TooltipTrigger`), nên radius ở đó chép tay; cái thứ ba mang hình này thì
+  phải thành variant.
+  Đây là cách đọc rộng hơn luật radius: luật nói dưới 40px thì `rounded-full`
+  thường hợp hơn, mà một nút icon `size-9` ở đây rơi vào 40% cạnh ngắn chứ
+  không phải một phần ba. Đó là cái giá của việc cả bộ dùng chung một radius.
+  **Container và badge không theo** — viên thuốc kính của header, khay
+  `PlayControls`, chip đếm, và vòng tròn thở đều giữ `rounded-full`, vì chúng
+  không phải nút.
 - **Tab bo `rounded-sm`, card bo `rounded-lg`.** Radius đọc theo cạnh ngắn
   chứ không theo tên lớp: hàng rail cao 44px nên 24px của `rounded-lg` là 55%
   cạnh ngắn — hết đoạn thẳng giữa hai góc, và nó vẽ ra đúng hình viên thuốc.

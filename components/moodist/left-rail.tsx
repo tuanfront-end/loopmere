@@ -121,7 +121,7 @@ export function LeftRail() {
   return (
     <div className="flex h-full flex-col gap-6 p-5">
       <a
-        className="hover:bg-muted -ml-2 flex w-fit items-center gap-2 rounded-full py-1.5 pr-4 pl-2 transition-colors"
+        className="hover:bg-muted -ml-2 flex w-fit items-center gap-2 rounded-sm py-1.5 pr-4 pl-2 transition-colors"
         href="#top"
       >
         <Logo className="size-7" />
