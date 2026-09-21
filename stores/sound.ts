@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import merge from 'deepmerge';
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import merge from "deepmerge";
 
-import { sounds as soundCategories } from '@/data/sounds';
-import { pickMany, random } from '@/helpers/random';
+import { sounds as soundCategories } from "@/data/sounds";
+import { pickMany, random } from "@/helpers/random";
 
 type SoundValue = {
   isFavorite: boolean;
@@ -45,8 +45,8 @@ interface SoundStore {
 function createInitialSounds() {
   const initialSounds: Record<string, SoundValue> = {};
 
-  soundCategories.categories.forEach(category => {
-    category.sounds.forEach(sound => {
+  soundCategories.categories.forEach((category) => {
+    category.sounds.forEach((sound) => {
       initialSounds[sound.id] = {
         isFavorite: false,
         isPaused: false,
@@ -65,7 +65,7 @@ export const useSoundStore = create<SoundStore>()(
       getFavorites() {
         const { sounds } = get();
         const ids = Object.keys(sounds);
-        const favorites = ids.filter(id => sounds[id].isFavorite);
+        const favorites = ids.filter((id) => sounds[id].isFavorite);
 
         return favorites;
       },
@@ -83,7 +83,7 @@ export const useSoundStore = create<SoundStore>()(
         const { sounds } = get();
         const keys = Object.keys(sounds);
 
-        return keys.every(key => !sounds[key].isSelected);
+        return keys.every((key) => !sounds[key].isSelected);
       },
 
       override(newSounds) {
@@ -91,7 +91,7 @@ export const useSoundStore = create<SoundStore>()(
 
         const sounds = get().sounds;
 
-        Object.keys(newSounds).forEach(sound => {
+        Object.keys(newSounds).forEach((sound) => {
           if (sounds[sound]) {
             sounds[sound].isSelected = true;
             sounds[sound].isPaused = false;
@@ -119,13 +119,22 @@ export const useSoundStore = create<SoundStore>()(
       },
 
       select(id) {
+        const sound = get().sounds[id];
+
         set({
           history: null,
           sounds: {
             ...get().sounds,
-            // Adding a sound back always sounds: a pause it carried from its
-            // last time in the mix would be a silent card nobody asked for.
-            [id]: { ...get().sounds[id], isPaused: false, isSelected: true },
+            [id]: {
+              ...sound,
+              // Adding a sound back always sounds: a pause it carried from its
+              // last time in the mix would be a silent card nobody asked for,
+              // and so would a level someone had dragged to nought before
+              // taking it out — taking it out no longer resets that level.
+              isPaused: false,
+              isSelected: true,
+              volume: sound.volume > 0 ? sound.volume : 0.5,
+            },
           },
         });
       },
@@ -143,7 +152,7 @@ export const useSoundStore = create<SoundStore>()(
         const sounds = get().sounds;
         const ids = Object.keys(sounds);
 
-        ids.forEach(id => {
+        ids.forEach((id) => {
           sounds[id].isSelected = false;
           sounds[id].isPaused = false;
           sounds[id].volume = 0.5;
@@ -151,7 +160,7 @@ export const useSoundStore = create<SoundStore>()(
 
         const randomIDs = pickMany(ids, 4);
 
-        randomIDs.forEach(id => {
+        randomIDs.forEach((id) => {
           sounds[id].isSelected = true;
           sounds[id].volume = random(0.2, 1);
         });
@@ -214,7 +223,7 @@ export const useSoundStore = create<SoundStore>()(
 
         const ids = Object.keys(sounds);
 
-        ids.forEach(id => {
+        ids.forEach((id) => {
           sounds[id].isSelected = false;
           sounds[id].isPaused = false;
           sounds[id].volume = 0.5;
@@ -230,8 +239,8 @@ export const useSoundStore = create<SoundStore>()(
           // @ts-expect-error
           persisted,
         ),
-      name: 'moodist-sounds',
-      partialize: state => ({
+      name: "moodist-sounds",
+      partialize: (state) => ({
         sounds: state.sounds,
       }),
       skipHydration: true,

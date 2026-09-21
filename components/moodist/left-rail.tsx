@@ -84,7 +84,7 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
     <a
       aria-current={active ? "true" : undefined}
       className={cn(
-        "flex items-center gap-3 rounded-sm px-2.5 py-2.5 text-sm font-medium transition-all",
+        "flex items-center gap-3 rounded-sm px-2.5 py-2.5 text-sm font-medium transition-colors",
         // A rail row is a tab, not a card, and the two idioms are kept apart
         // on purpose: a tab tints and stays flat, a card lifts. What both
         // still avoid is `bg-muted`, which is what the icon's own disc is
@@ -113,9 +113,11 @@ export function LeftRail() {
   const shuffle = useSoundStore((state) => state.shuffle);
   const favorites = useSoundStore(useShallow((state) => state.getFavorites()));
 
+  // Page order, because the highlight is read off the page. Favourites is
+  // last on both.
   const active = useActiveShelf([
-    "favorites",
     ...sounds.categories.map((category) => category.id),
+    "favorites",
   ]);
 
   return (
@@ -128,11 +130,29 @@ export function LeftRail() {
         <span className="font-heading text-lg tracking-tight">Moodist</span>
       </a>
 
-      <nav
-        aria-label="Shelves"
-        className="no-scrollbar -mx-1 flex min-h-0 shrink flex-col gap-1 overflow-y-auto px-1"
-      >
-        {favorites.length > 0 && (
+      <nav aria-label="Shelves" className="flex min-h-0 shrink flex-col">
+        {/* The negative margin and the padding cancel: without them the focus
+            ring on a row is clipped by the scroller it sits in. */}
+        <div className="no-scrollbar -mx-1 flex min-h-0 flex-col gap-1 overflow-y-auto px-1">
+          {sounds.categories.map((category) => (
+            <ShelfLink
+              active={active === category.id}
+              count={category.sounds.length}
+              id={category.id}
+              key={category.id}
+              title={category.title}
+            />
+          ))}
+        </div>
+
+        {/* Below the rule and outside the scroller, so it is in the same place
+            every time the rail is looked at. It is the one shelf the reader
+            makes rather than the one they are given, and it used to appear at
+            the top the moment a first heart was tapped and vanish again with
+            the last — a row that moves the other eight down by forty pixels
+            on a click somewhere else on the page. Empty is a state it can
+            perfectly well be in, and the count says so. */}
+        <div className="mt-2 shrink-0 border-t pt-2">
           <ShelfLink
             active={active === "favorites"}
             count={favorites.length}
@@ -140,17 +160,7 @@ export function LeftRail() {
             id="favorites"
             title="Favourites"
           />
-        )}
-
-        {sounds.categories.map((category) => (
-          <ShelfLink
-            active={active === category.id}
-            count={category.sounds.length}
-            id={category.id}
-            key={category.id}
-            title={category.title}
-          />
-        ))}
+        </div>
       </nav>
 
       {/* Straight after the list, not pinned under it: nine shelves leave

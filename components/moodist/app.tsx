@@ -69,19 +69,25 @@ export function App() {
     });
   }, [pause, lock, unlock]);
 
-  const allCategories = useMemo(() => {
-    if (!favoriteSounds.length) return categories;
-
-    return [
+  /**
+   * Favourites last, and there whether or not anything is in it. The rail
+   * reads its highlight off this order, so the shelf that is pinned to the
+   * foot of the rail is the shelf at the foot of the page; and a shelf that
+   * only exists once it has something in it is a shelf nobody finds out about
+   * until they have already used the feature it holds.
+   */
+  const allCategories = useMemo(
+    () => [
+      ...categories,
       {
         icon: <HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />,
         id: "favorites",
         sounds: favoriteSounds,
         title: "Favourites",
       },
-      ...categories,
-    ];
-  }, [favoriteSounds, categories]);
+    ],
+    [favoriteSounds, categories],
+  );
 
   return (
     <>
@@ -101,6 +107,11 @@ export function App() {
           key={category.id}
           {...category}
           blurb={categoryBlurbs[category.id]}
+          emptyMessage={
+            category.id === "favorites"
+              ? "No hearts yet. Tap one on any card and the sound turns up here, ready for next time."
+              : undefined
+          }
           functional={category.id !== "favorites"}
         />
       ))}

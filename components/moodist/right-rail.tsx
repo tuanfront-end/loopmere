@@ -87,10 +87,9 @@ function MixRow({ id }: { id: string }) {
           className="-mr-1 shrink-0"
           size="icon-sm"
           variant="ghost"
-          onClick={() => {
-            unselect(id);
-            setVolume(id, 0.5);
-          }}
+          // The level stays with the sound; putting it back in the mix from
+          // its card brings the level back with it.
+          onClick={() => unselect(id)}
         >
           <XMarkIcon />
         </Button>

@@ -271,6 +271,7 @@ Trước đây card chỉ có hai trạng thái và cả hai đều hỏng ở c
 | Track của volume slider chìm mất | card đang chọn hover xuống `bg-muted`, đúng màu của track |
 | Layout giật khi chọn / bỏ chọn | slider `return null` khi chưa chọn, nên card đổi chiều cao |
 | Không pause được từng sound | bỏ chọn là cách duy nhất làm im, và nó xoá luôn mức âm lượng |
+| Nền hai nút góc card nhấp nháy | popup tooltip ăn con trỏ ngay trên mép nút — xem mục dưới |
 
 Giờ:
 
@@ -303,11 +304,16 @@ Giờ:
   14px là 33%, vừa đúng ngưỡng để đọc ra hình chữ nhật bo góc. Pill của
   category rail cao 50px, cùng 14px là 29%. Card thì cao 162px nên 24px chỉ
   là 15% — đó là thang container, và nó đúng chỗ.
-- **Hai thành ngữ hover, cố ý không trộn.** Card thì *nhấc lên*: đổi hairline
-  lấy `shadow-soft`, nền giữ nguyên trắng. Tab — hàng rail trái và pill của
-  category rail — thì *nhuộm*: `bg-accent`, phẳng, không bóng. Cả hai đều
-  tránh `bg-muted`, vì đó đúng là màu của track slider, của trái tim và của
-  nút pause.
+- **Hover: nhấc lên, và nhuộm đúng cái hairline.** Card giữ nền trắng, nhận
+  `shadow-soft`, và border đổi từ xám sang `border-primary/60` — đúng sắc brand
+  mà `ring` của trạng thái đang phát dùng ở cường độ đầy, nên hover đọc ra là
+  **bản nháp của cú bấm sắp tới** chứ không phải một trang trí thứ hai. Đây là
+  cách đọc rộng hơn luật depth: luật cho một tín hiệu, mà ở đây bóng gánh toàn
+  bộ phần chiều sâu còn viền brand không gánh tí nào.
+  Tab — hàng rail trái và pill của category rail — thì *nhuộm*: `bg-accent`,
+  phẳng, không bóng; pill cũng lấy `border-primary/60`, card lấy thêm bóng.
+  Cả hai đều tránh `bg-muted`, vì đó đúng là màu của track slider và của trái
+  tim.
 - **Trạng thái đang phát là một đường viền, không phải một mảng nền.**
   `bg-accent` đo được 1.02 so với card trắng — một tiếng thì thầm, lướt qua cả
   lưới thì đọc ra là không có gì. Muốn tint đủ to tiếng để chữa việc đó thì nó
@@ -321,12 +327,17 @@ Giờ:
   phần ba ở đáy; vẽ hẳn một cái disabled thì vừa hết giật vừa nói cho người
   dùng biết mức âm lượng có tồn tại. Giá phải trả đo được: 83 input thừa,
   1860 node cho cả trang, DOMContentLoaded 190ms.
+- **Bỏ chọn không còn xoá mức âm lượng.** Trước đây `toggle()` gọi kèm
+  `setVolume(id, 0.5)`, nên bấm ra rồi bấm vào là mất mức đã chỉnh — và chính
+  cái mất đó là lý do duy nhất nút pause trên card đáng tồn tại. Giờ card là
+  một toggle thật. Một chốt chặn ở `select()`: mức đang là 0 thì quay về 0.5,
+  vì một sound kéo về câm rồi lấy ra, lấy vào lại sẽ đọc ra là hỏng.
 - **`isPaused` là một field riêng trong store**, tách khỏi `isSelected` (vẫn
   trong mix, vẫn giữ mức âm lượng) và tách khỏi `isPlaying` toàn cục (thứ tắt
-  tất cả). Nút có mặt ở cả card lẫn hàng trong cột phải.
+  tất cả). Nút chỉ còn ở hàng trong cột phải — xem mục dưới.
 
 Card đang chọn **không đổ bóng lúc nghỉ** — bóng là dấu của hover, không phải
-của trạng thái. Thứ giữ trạng thái đang phát là nền tint cộng đĩa chip xanh.
+của trạng thái. Thứ giữ trạng thái đang phát là `ring-primary` 2px inset.
 
 Rail bên trái và rail category ở bản dưới `xl` đi theo cùng luật đó.
 
@@ -336,14 +347,88 @@ không bằng mắt:
 
 | Hover | % pixel đổi | Delta kênh lớn nhất |
 |---|---|---|
-| Card chưa chọn | 6.0% | 16 — đổi hairline lấy bóng |
-| Card đang chọn | 6.6% | 51 — nền giữ trắng, chỉ bóng hiện ra |
-| Rail inactive | 35.2% | 79 — nền accent cộng chữ đậm lên |
-| Rail active | 37.5% | 9 — nền từ muted sang accent |
+| Card chưa chọn | 6.3% | 94 — hairline sang brand, cộng bóng |
+| Card đang chọn | 6.6% | 94 — nền giữ trắng, viền brand cộng bóng |
+| Rail inactive | 38.2% | 79 — nền accent cộng chữ đậm lên |
+| Rail active | 38.2% | 9 — nền từ muted sang accent |
 
-Card là ô yên nhất. Nếu có ngày cần to tiếng hơn thì `shadow-soft` →
-`shadow-soft-lg` là cái núm, chứ đừng động vào nền: nền mà sẫm xuống là lại
+Card vẫn là ô động ít pixel nhất — nhưng delta kênh lớn nhất đã từ **16 lên
+94** khi hairline chuyển sang brand: hover đọc rõ hơn hẳn mà không tiêu thêm
+một phần trăm diện tích nào. Nếu có ngày cần to tiếng hơn nữa thì `shadow-soft`
+→ `shadow-soft-lg` là cái núm, chứ đừng động vào nền: nền mà sẫm xuống là lại
 nuốt track slider.
+
+### Tooltip từng ăn con trỏ của chính cái nút nó mô tả
+
+Triệu chứng người dùng báo: rê vào trái tim hoặc nút pause trên card thì **nền
+hai nút đó nhấp nháy**. Đo bằng cách bắn `Input.dispatchMouseEvent` từng pixel
+qua nút rồi đọc `elementFromPoint` cùng `backgroundColor` của trigger:
+
+```
+dy=-1  hit=div  inTip=true   bg=rgba(0,0,0,0)     ← con trỏ nằm trên tooltip
+dy= 0  hit=div  inTip=true   bg=rgba(0,0,0,0)
+dy=+1  hit=button[tooltip-trigger]  bg=rgb(238,237,236)
+```
+
+Popup mở cách trigger 4px, nhưng mũi tên `size-2.5` xoay 45° nên hộp bao của nó
+nở từ 10 lên 14.1px và thò **~1px trở lại vào hàng pixel trên cùng của nút**.
+Base UI mặc định để popup nhận con trỏ (`disableHoverablePopup` mặc định
+`false`), nên hit test trả về tooltip: trigger mất `:hover`, nền tắt; nhích
+xuống 1px thì bật lại. Cùng dải đó nằm đè lên chính card, nên bóng của card
+cũng chớp theo.
+
+Chữa ở **wrapper, một lần**: `disableHoverablePopup` trên Root nói ý định, còn
+`pointer-events-none` trên Positioner mới là thứ chặn hit test. Không có gì
+trong tooltip của app này bấm hay bôi đen được, nên nó không có việc gì phải
+nhận con trỏ. Đo lại: `inTip=false` ở mọi hàng, nền bật từ đúng pixel đầu tiên
+của nút.
+
+### Nút pause đã rời khỏi card
+
+Câu hỏi: nút pause trên card có cần không? Trả lời: **không**, và nó còn đang
+gây hại.
+
+| Vấn đề | |
+|---|---|
+| Layout giật | nút chỉ hiện khi card được chọn, nên mỗi cú bấm đẩy trái tim sang trái 36px — ngay dưới con trỏ đang đặt ở đó |
+| Hai đường đến cùng một kết quả | bấm card = ra khỏi mix (im), bấm pause = trong mix nhưng im. Tai nghe không phân biệt được, mắt chỉ phân biệt được bằng cái ring |
+| Slider đã làm việc đó | kéo về 0 cũng là "trong mix, im", và nó nằm ngay trên cùng card |
+| Chật | hai nút 36px ở góc một card mà nhãn nằm ngay dưới chúng |
+
+Lý do tồn tại duy nhất của nó — giữ mức âm lượng khi làm im — đã được chuyển
+vào chính mô hình: bỏ chọn không xoá mức nữa. Nút ở lại **hàng trong cột
+phải**, nơi nó là thành ngữ mute của bàn trộn: kênh vẫn nằm trên bàn, bấm một
+cái là nghe lại, không phải đi tìm card.
+
+Card đọc trạng thái đó mà không cần thêm control nào: **ring giữ nguyên brand**
+(sound vẫn trong mix), còn ảnh render tụt xuống `opacity-55` — đúng độ mờ hàng
+rail dùng — và nhãn chuyển `text-muted-foreground`. Bản đầu vẽ ring ở
+`ring-primary/30`, và nó đọc ra thành *một card đang được hover*, tức là thứ
+duy nhất trên card này không phải một trạng thái.
+
+### Favourites: luôn có mặt, nằm cuối, sau một đường kẻ
+
+Trước đây hàng Favourites chỉ hiện khi đã có ít nhất một tim, và nó nằm **trên
+cùng** rail. Hai cái sai:
+
+- Một hàng xuất hiện rồi biến mất sẽ **đẩy tám hàng còn lại xuống 40px** vì một
+  cú bấm ở chỗ khác hẳn trên trang.
+- Một kệ chỉ tồn tại sau khi người dùng đã dùng tính năng tạo ra nó thì không
+  ai khám phá ra nó cả.
+
+Giờ nó luôn được vẽ, nằm **ngoài vùng cuộn** của rail và dưới một `border-t`,
+nên vị trí của nó không đổi dù rail cuộn đến đâu; số đếm ghi `0` khi rỗng, đó
+là một trạng thái hợp lệ chứ không phải lỗi. Section trên trang cũng chuyển
+xuống cuối theo — scrollspy đọc thứ tự của trang, nên thứ tự rail **phải** bằng
+thứ tự DOM, nếu không highlight sẽ nhảy lung tung. Đo lại: bấm hàng Favourites
+→ `aria-current` rơi đúng vào nó, và trang chạm đáy.
+
+Kệ rỗng có empty state riêng trên `bg-accent` (không phải viền đứt — không ai
+thả gì vào đây cả), chữ `text-balance` trong `max-w-[42ch]`: để nguyên bề rộng
+kệ thì `responsive-check` bắt được dòng cuối chỉ dài 62px trên khổ 467px.
+
+Bản dưới `xl` có cùng cấu trúc: dải chip category kết thúc bằng một vạch dọc
+rồi đến chip Favourites.
 
 ## Toolbar, toolbox và modals
 

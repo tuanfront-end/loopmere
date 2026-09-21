@@ -5,7 +5,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useEffect, useMemo } from "react";
 
 import { FavoriteButton } from "./favorite-button";
-import { PauseButton } from "./pause-button";
 import { SoundIcon } from "./sound-icon";
 import { VolumeSlider } from "./volume-slider";
 
@@ -35,7 +34,6 @@ export function SoundCard({
   const play = useSoundStore((state) => state.play);
   const selectSound = useSoundStore((state) => state.select);
   const unselectSound = useSoundStore((state) => state.unselect);
-  const setVolume = useSoundStore((state) => state.setVolume);
   const isSelected = useSoundStore((state) => state.sounds[id].isSelected);
   const isPaused = useSoundStore((state) => state.sounds[id].isPaused);
   const locked = useSoundStore((state) => state.locked);
@@ -61,14 +59,15 @@ export function SoundCard({
   const toggle = useCallback(() => {
     if (locked) return;
 
-    if (isSelected) {
-      unselectSound(id);
-      setVolume(id, 0.5);
-    } else {
+    // Taking a sound out leaves its level alone, so the card is a real toggle:
+    // pick it up again and it comes back where you left it. Resetting to half
+    // on the way out is what made a one-sound mute worth a button of its own.
+    if (isSelected) unselectSound(id);
+    else {
       selectSound(id);
       play();
     }
-  }, [isSelected, locked, id, selectSound, unselectSound, setVolume, play]);
+  }, [isSelected, locked, id, selectSound, unselectSound, play]);
 
   const handleKeyDown = useKeyboardButton(toggle);
 
@@ -79,21 +78,28 @@ export function SoundCard({
       role="button"
       tabIndex={hidden ? -1 : 0}
       className={cn(
-        "group/sound relative cursor-pointer rounded-lg border p-5 transition-all",
-        // Resting takes a hairline, hovering trades it for a cast — the one
-        // says sitting on the surface and the other says lifted off it, and
-        // the style does not allow both at once.
-        "hover:border-transparent hover:shadow-soft",
+        "group/sound bg-card relative cursor-pointer rounded-lg border p-5",
+        // Named rather than `all`: the card animates a colour and a cast, and
+        // a blanket transition also puts every layout property on a timer.
+        "transition-[border-color,box-shadow]",
+        // Hover lifts the card and tints its edge. The tint is the state the
+        // click is about to produce, drawn faintly — the same brand hue the
+        // ring below uses at full strength, so hovering reads as a preview of
+        // picking rather than as a second, unrelated decoration.
+        //
+        // Edge and cast at once is a wider reading of the depth rule than the
+        // rule gives: it allows one cue, and here the shadow is carrying all
+        // of the depth while the brand edge is carrying none of it.
+        "hover:border-primary/60 hover:shadow-soft",
         // Playing is an outline, not a ground. `bg-accent` measures 1.02
         // against a white card — a whisper, and at a glance across a grid it
         // reads as nothing. A tint loud enough to fix that would be a
         // section-sized fill of brand colour, which is a different rule
         // again; an edge reads at any scale and spends no area.
         //
-        // A ring rather than a border, because the hover below takes the
-        // border off and the outline is the state, not a resting cue. Two
-        // pixels inset, so the card keeps its own footprint.
-        "bg-card",
+        // A ring rather than a border, because the border is the hover's and
+        // the outline is the state. Two pixels inset, so the card keeps its
+        // own footprint.
         isSelected && "ring-primary ring-2 ring-inset",
         hidden && "hidden",
       )}
@@ -105,11 +111,24 @@ export function SoundCard({
             so with the disc gone the image was still inset nine pixels from
             the card's padding while the label below started at it — the icon
             read as nudged out of line with its own card. */}
+        {/* Quietened from the rail, the ring stays — the sound is still in the
+            mix — and the card recedes inside it: the render drops to the same
+            opacity its row in the rail takes, and the label goes grey. A ring
+            with faded contents reads as on but not sounding. Drawing the ring
+            itself at a third of its strength was the first attempt and it read
+            as a card somebody was hovering, which is the one thing on this
+            card that is not a state at all.
+
+            The ink below is the spinner's: the render is a raster, so a colour
+            set here never reaches it. */}
         <div
           aria-hidden="true"
           className={cn(
-            "shrink-0 transition-colors",
-            isSelected ? "text-primary-ink" : "text-muted-foreground",
+            "shrink-0 transition-opacity",
+            isSelected && !isPaused
+              ? "text-primary-ink"
+              : "text-muted-foreground",
+            isSelected && isPaused && "opacity-55",
           )}
         >
           {isLoading ? (
@@ -123,13 +142,26 @@ export function SoundCard({
           )}
         </div>
 
+        {/* One button, always the same one, always in the same place. A pause
+            used to appear beside it the moment a card was picked, which shoved
+            the heart thirty-six pixels left under whatever pointer was already
+            resting on it — and said nothing the card was not saying twice
+            over, since the card's own click and the slider's nought both end
+            in silence. Quietening without leaving the mix is a mixing-desk
+            move and it lives at the mixing desk, in the rail. */}
         <div className="-mt-1.5 -mr-1.5 flex items-center">
-          {isSelected && <PauseButton id={id} label={label} />}
           <FavoriteButton id={id} label={label} />
         </div>
       </div>
 
-      <div className="mt-4 text-sm font-medium">{label}</div>
+      <div
+        className={cn(
+          "mt-4 text-sm font-medium transition-colors",
+          isSelected && isPaused && "text-muted-foreground",
+        )}
+      >
+        {label}
+      </div>
 
       {/* Always drawn, disabled until the sound is in the mix. It used to
           appear with the pick, so every pick and un-pick changed the card's
