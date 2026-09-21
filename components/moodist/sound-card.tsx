@@ -82,15 +82,24 @@ export function SoundCard({
         "group/sound relative cursor-pointer rounded-lg p-5 transition-all",
         // Resting: a hairline, because a white card on this page is a whisper.
         "bg-card border",
-        // One hover for both states, and it goes *up*: back to white, with the
-        // hairline traded for a soft cast. Nothing here darkens on hover —
-        // one rung down is `bg-muted`, which is exactly what the volume track
-        // and the two corner buttons are drawn in, so a card that sank took
-        // all three with it.
-        "hover:bg-card hover:border-transparent hover:shadow-soft",
-        // Playing: the tint alone holds the state, and the cast stays the
-        // hover's. A resting card here carries a hairline, never a shadow.
-        isSelected && "bg-accent border-transparent",
+        // Hover goes *up* from either state: back to white, with the hairline
+        // traded for a cast. Nothing here darkens — one rung down is
+        // `bg-muted`, which is exactly what the volume track and the two
+        // corner buttons are drawn in, so a card that sank took all three
+        // with it.
+        "hover:bg-card hover:border-transparent",
+        // Which cast depends on how far the ground had to move. An unselected
+        // card is already white, so the shadow is the whole cue and takes the
+        // wider one; a selected card arrives from the tint, which is most of
+        // the card changing colour, and the soft cast is enough on top of it.
+        //
+        // Written on the branches rather than one `hover:shadow-*` overridden
+        // by another: `shadow-soft` and `shadow-soft-lg` are this project's
+        // own tokens, so tailwind-merge does not know they collide and both
+        // would survive into the class string.
+        isSelected
+          ? "bg-accent border-transparent hover:shadow-soft"
+          : "hover:shadow-soft-lg",
         hidden && "hidden",
       )}
       onClick={toggle}
