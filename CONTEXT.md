@@ -276,10 +276,9 @@ Giờ:
 
 - **Đĩa không bao giờ trong suốt.** Nó là cái khung mà icon được vẽ để ngồi
   vào; bỏ khung thì ảnh render trôi lơ lửng.
-- **Card đang chọn hover bằng cách *nhấc lên*, không phải lún xuống.** Một
-  bậc dưới `bg-accent` là `bg-muted`, đúng màu của track và của hai nút góc —
-  cả ba biến mất cùng lúc. Nên hover đổi `shadow-soft` → `shadow-soft-lg` và
-  giữ nguyên nền.
+- **Một luật hover duy nhất cho mọi thứ bấm được: `bg-accent` + `shadow-soft`.**
+  Không bao giờ là `bg-muted` — đó đúng là màu của track slider, của trái tim
+  và của nút pause, nên một card sẫm lại khi hover sẽ kéo theo cả ba.
 - **Hàng slider luôn tồn tại**, rỗng hay không. Đổi lại là card chưa chọn có
   một khoảng trống ở đáy; cái giá đó rẻ hơn việc cả kệ nhảy một dòng mỗi lần
   bấm.
@@ -287,9 +286,16 @@ Giờ:
   trong mix, vẫn giữ mức âm lượng) và tách khỏi `isPlaying` toàn cục (thứ tắt
   tất cả). Nút có mặt ở cả card lẫn hàng trong cột phải.
 
-Rail bên trái cũng mắc đúng lỗi đĩa chìm và đã sửa bằng cùng một thang: không
-gì → `bg-accent` → `bg-muted` → `bg-secondary`, và nó chỉ đi xuống. Trước đó
-hàng đang active hover *lên* accent, tức là dáng của một control đang tắt đi.
+Card đang chọn **không đổ bóng lúc nghỉ** — bóng là dấu của hover, không phải
+của trạng thái. Thứ giữ trạng thái đang phát là nền tint cộng đĩa chip xanh.
+
+Rail bên trái và rail category ở bản dưới `xl` đi theo cùng luật đó. Một chỗ
+đáng biết: hàng đang active của rail nghỉ ở `bg-muted` rồi hover *sáng lên*
+`bg-accent`. Chiều đó ngược với luật "nghỉ sáng, hover sẫm" của house style,
+nhưng có bóng đi kèm nên nó đọc ra là **nhấc lên**, không phải tắt đi.
+
+Đo bằng `CSS.forcePseudoState` chứ không bằng mắt — sáu trạng thái, mỗi
+trạng thái một dòng nền / bóng / đĩa.
 
 ## Toolbar, toolbox và modals
 

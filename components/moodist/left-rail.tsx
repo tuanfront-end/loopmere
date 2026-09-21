@@ -84,15 +84,12 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
     <a
       aria-current={active ? "true" : undefined}
       className={cn(
-        "flex items-center gap-3 rounded-full py-1.5 pr-4 pl-1.5 text-sm font-medium transition-colors",
-        // One ladder, and it only ever goes down: nothing → accent → muted →
-        // secondary. Hovering an inactive row used to land on `bg-muted`,
-        // which is what the icon's own disc is drawn in, so the disc vanished
-        // under the pointer; and the active row hovered *up* to accent, which
-        // is the look of a control switching off.
-        active
-          ? "bg-muted hover:bg-secondary"
-          : "text-muted-foreground hover:bg-accent hover:text-foreground",
+        "flex items-center gap-3 rounded-full py-1.5 pr-4 pl-1.5 text-sm font-medium transition-all",
+        // The same hover the cards take: the whisper tint and a soft cast.
+        // Never `bg-muted`, which is what the icon's own disc is drawn in —
+        // the disc used to vanish under the pointer.
+        "hover:bg-accent hover:shadow-soft",
+        active ? "bg-muted" : "text-muted-foreground hover:text-foreground",
       )}
       href={`#category-${id}`}
     >
