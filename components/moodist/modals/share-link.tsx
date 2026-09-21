@@ -3,6 +3,7 @@
 import { Copy01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { ToolPanel } from "../tool-panel";
 
@@ -55,7 +56,10 @@ export function ShareLinkModal({ onClose, show }: ShareLinkModalProps) {
           aria-label="Copy the link"
           size="icon"
           variant="outline"
-          onClick={() => copy(url)}
+          onClick={() => {
+            copy(url);
+            toast.success("Link copied.");
+          }}
         >
           <HugeiconsIcon
             icon={copying ? Tick02Icon : Copy01Icon}

@@ -7,6 +7,7 @@ import {
   Undo02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -75,7 +76,12 @@ export function PlayControls() {
                   disabled={noSelected}
                   size="icon"
                   variant="ghost"
-                  onClick={() => unselectAll(true)}
+                  onClick={() => {
+                  unselectAll(true);
+                  toast("Mix cleared.", {
+                    action: { label: "Undo", onClick: restoreHistory },
+                  });
+                }}
                 >
                   <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.5} />
                 </Button>

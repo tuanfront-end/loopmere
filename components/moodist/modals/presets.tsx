@@ -4,6 +4,7 @@ import { PlayIcon } from "@heroicons/react/24/outline";
 import { Delete02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { ToolPanel } from "../tool-panel";
 
@@ -52,6 +53,7 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
             ),
           );
           setName("");
+          toast.success(`Saved as ${name}.`);
         }}
       >
         <Input

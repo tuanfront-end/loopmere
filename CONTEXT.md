@@ -132,11 +132,49 @@ Hotkey giữ nguyên bản gốc, cộng `⇧M` mở menu. `MediaSession` cũng 
 Howler phát qua Web Audio API mà phím media của hệ điều hành không thấy được,
 nên một track im lặng chạy vòng làm chỗ bám cho Media Session API.
 
+## PWA
+
+`app/manifest.ts` qua Metadata API của Next, và `public/sw.js` viết tay —
+không thêm dependency nào, vì `@vite-pwa/astro` của bản gốc không có bản Next
+tương đương đáng cài.
+
+Service worker chia hai chiến lược: **cache-first cho `/sounds/`** vì loop là
+lý do người ta cài app này và một file mp3 đã nằm trên đĩa thì không bao giờ
+nên hỏi lại; **network-first cho phần còn lại** vì shell đổi mỗi lần deploy.
+Request `Range` trả 206 nên không cache được nguyên khối — worker bỏ qua
+chúng thay vì lưu một phần.
+
+Worker **không** tự `skipWaiting`. Bản mới chờ, `ServiceWorker` component mời
+reload bằng toast, và chỉ reload sau khi `controllerchange` báo worker mới đã
+tiếp quản. Một trang tự reload dưới tay người đang viết dở ghi chú là một
+trang vừa làm mất ghi chú đó.
+
+**Chưa kiểm được bằng tay.** Browser pane của Claude chặn đăng ký service
+worker — một worker rỗng cũng trả cùng lỗi `An unknown error occurred when
+fetching the script`, nên đó là giới hạn môi trường chứ không phải script.
+Cần mở bằng Chrome thật để xác nhận vòng install → waiting → reload.
+
+## Snackbar
+
+Bỏ context snackbar của bản gốc, dùng `sonner` đã có sẵn trong shadcn. Toast
+chỉ đặt ở những chỗ hành động không để lại dấu vết trên màn hình: copy link,
+copy và tải ghi chú, lưu preset, nhận mix từ link. Hai chỗ có **Undo** vì
+chúng xoá việc người ta đã làm — xoá ghi chú và xoá mix.
+
+Toaster ép `theme="light"` và dùng `--normal-shadow: var(--shadow-soft-lg)`.
+Mặc định nó đọc `next-themes` và sẽ ra dark theo hệ điều hành, mà bản này
+ship light-only.
+
+## Nhận link chia sẻ
+
+`SharedMix` là nửa còn lại của Send this mix, và là thứ bị bỏ quên ở lần port
+đầu: nó đọc `?share=` một lần lúc mount, hiện các loop nhận được, rồi xoá
+tham số khỏi URL để refresh không hỏi lại.
+
 ## Chưa port
 
-PWA (service worker, manifest), dark theme toggle, snackbar. Theme bỏ có chủ
-đích: skill nói ship light-only trừ khi viết hẳn một surface ramp thứ hai, và
-depth dựa trên tint thì không đảo được.
+Dark theme toggle, có chủ đích: skill nói ship light-only trừ khi viết hẳn
+một surface ramp thứ hai, và depth dựa trên tint thì không đảo được.
 
 ## Base UI, không phải Radix
 
