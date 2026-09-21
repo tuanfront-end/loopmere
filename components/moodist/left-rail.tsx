@@ -85,10 +85,10 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
       aria-current={active ? "true" : undefined}
       className={cn(
         "flex items-center gap-3 rounded-full py-1.5 pr-4 pl-1.5 text-sm font-medium transition-all",
-        // The same hover the cards take: the whisper tint and a soft cast.
+        // The same hover the cards take: up to white, with a soft cast.
         // Never `bg-muted`, which is what the icon's own disc is drawn in —
         // the disc used to vanish under the pointer.
-        "hover:bg-accent hover:shadow-soft",
+        "hover:bg-card hover:shadow-soft",
         active ? "bg-muted" : "text-muted-foreground hover:text-foreground",
       )}
       href={`#category-${id}`}

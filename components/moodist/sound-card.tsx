@@ -82,12 +82,12 @@ export function SoundCard({
         "group/sound relative cursor-pointer rounded-lg p-5 transition-all",
         // Resting: a hairline, because a white card on this page is a whisper.
         "bg-card border",
-        // One hover for both states: the whisper tint, and a soft cast that
-        // says it is under the pointer. Deliberately not a second step down —
-        // one rung below `bg-accent` is `bg-muted`, which is exactly what the
-        // volume track and the two corner buttons are drawn in, so a card that
-        // darkened on hover took all three with it.
-        "hover:bg-accent hover:border-transparent hover:shadow-soft",
+        // One hover for both states, and it goes *up*: back to white, with the
+        // hairline traded for a soft cast. Nothing here darkens on hover —
+        // one rung down is `bg-muted`, which is exactly what the volume track
+        // and the two corner buttons are drawn in, so a card that sank took
+        // all three with it.
+        "hover:bg-card hover:border-transparent hover:shadow-soft",
         // Playing: the tint alone holds the state, and the cast stays the
         // hover's. A resting card here carries a hairline, never a shadow.
         isSelected && "bg-accent border-transparent",

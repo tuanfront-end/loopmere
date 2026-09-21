@@ -276,9 +276,10 @@ Giờ:
 
 - **Đĩa không bao giờ trong suốt.** Nó là cái khung mà icon được vẽ để ngồi
   vào; bỏ khung thì ảnh render trôi lơ lửng.
-- **Một luật hover duy nhất cho mọi thứ bấm được: `bg-accent` + `shadow-soft`.**
-  Không bao giờ là `bg-muted` — đó đúng là màu của track slider, của trái tim
-  và của nút pause, nên một card sẫm lại khi hover sẽ kéo theo cả ba.
+- **Một luật hover duy nhất cho mọi thứ bấm được: `bg-card` + `shadow-soft`,
+  và nó đi *lên*.** Không bao giờ là `bg-muted` — đó đúng là màu của track
+  slider, của trái tim và của nút pause, nên một card sẫm lại khi hover sẽ
+  kéo theo cả ba.
 - **Hàng slider luôn tồn tại**, rỗng hay không. Đổi lại là card chưa chọn có
   một khoảng trống ở đáy; cái giá đó rẻ hơn việc cả kệ nhảy một dòng mỗi lần
   bấm.
@@ -289,13 +290,22 @@ Giờ:
 Card đang chọn **không đổ bóng lúc nghỉ** — bóng là dấu của hover, không phải
 của trạng thái. Thứ giữ trạng thái đang phát là nền tint cộng đĩa chip xanh.
 
-Rail bên trái và rail category ở bản dưới `xl` đi theo cùng luật đó. Một chỗ
-đáng biết: hàng đang active của rail nghỉ ở `bg-muted` rồi hover *sáng lên*
-`bg-accent`. Chiều đó ngược với luật "nghỉ sáng, hover sẫm" của house style,
-nhưng có bóng đi kèm nên nó đọc ra là **nhấc lên**, không phải tắt đi.
+Rail bên trái và rail category ở bản dưới `xl` đi theo cùng luật đó.
 
-Đo bằng `CSS.forcePseudoState` chứ không bằng mắt — sáu trạng thái, mỗi
-trạng thái một dòng nền / bóng / đĩa.
+**Hai trạng thái là trắng-trên-trắng**, và chúng vẫn đọc được nhờ đường khác.
+Đo bằng cách chụp cùng một vùng có và không có `:hover` rồi đếm pixel, chứ
+không bằng mắt:
+
+| Hover | % pixel đổi | Delta kênh lớn nhất |
+|---|---|---|
+| Card chưa chọn | 6.0% | 16 — đổi hairline lấy bóng |
+| Card đang chọn | 69.4% | 33 — cả nền từ tint về trắng |
+| Rail inactive | 5.4% | 79 — chữ từ muted sang foreground |
+| Rail active | 46.4% | 19 — nền từ muted về trắng |
+
+Card chưa chọn là ô yên nhất trong bốn. Nếu có ngày cần to tiếng hơn thì
+`shadow-soft` → `shadow-soft-lg` là cái núm, chứ đừng động vào nền: nền mà
+sẫm xuống là lại nuốt track slider.
 
 ## Toolbar, toolbox và modals
 
