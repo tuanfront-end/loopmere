@@ -671,18 +671,44 @@ lần paint đầu đã đúng màu. Chép nó vào `useState` trong effect ngh�
 sai theme rồi sửa — đúng cái flash mà script sinh ra để tránh, chỉ muộn một
 frame.
 
-### Hero hai cột
+### Hero dựng lại theo ảnh tham chiếu
 
-Trái là tiêu đề và nút, phải là dòng mô tả. Breakpoint đọc **cột giữa** chứ
-không đọc cửa sổ (`@xl`), cùng lý do với lưới card.
+Yêu cầu là **chính xác về layout**, chỉ đổi content và ảnh. Nên mọi con số
+dưới đây được đo từ ảnh rồi quy về tỉ lệ của container, không phải ước lượng:
 
-Thứ tự trong markup là thứ tự nó xếp chồng: tiêu đề → dòng giải thích → nút.
-Xếp thành hai cột phẳng sẽ đẩy nút lên trên dòng giải thích ở màn hình điện
-thoại — và đó là thứ mà một grid hai cột cho không. Nên placement được viết
-tường minh và chỉ trường hợp rộng mới được nói gì.
+| | Reference | Bản này |
+|---|---|---|
+| Cột phải mở ở | 48.0% | **48.0%** |
+| Khoảng giữa hai cột | 9.0% | 8.7% |
+| Tỉ lệ ảnh | 1.94 | **1.94** |
+| Card trái — left / top | 1.4% / 3.2% | **1.4% / 3.2%** |
+| Card trái — rộng | 25.9% | 26% |
+| Card phải — right / bottom | 2.4% / 3.7% | **2.4% / 3.7%** |
+| Card phải — rộng | 29.9% | 30% |
 
-Dòng mô tả span cả hai hàng và `self-end`, nên dòng cuối của nó nằm đúng mép
-dưới của nút — đo được 220 và 220.
+Grid ra `[0.756fr_1fr]` ở `gap-x-18` — **không phải** nửa-nửa như nhìn vào
+tưởng, vì tiêu đề là cột *ngắn hơn* mà lại là cột to tiếng hơn. Inset của hai
+card viết bằng phần trăm chứ không phải số px tròn, để chúng giữ đúng tỉ lệ của
+reference ở bất kỳ bề rộng nào cột giữa đang có.
+
+Breakpoint đọc **cột giữa** chứ không đọc cửa sổ (`@xl`), cùng lý do với lưới
+card. Thứ tự trong markup là thứ tự nó xếp chồng: tiêu đề → dòng giải thích →
+hai nút.
+
+**Hai panel được render hai lần chứ không phải di chuyển.** Overlay thì chúng
+phải nằm trong một hộp có `overflow-hidden`, xếp chồng thì phải nằm ngoài hộp
+đó — không có một vị trí DOM nào làm được cả hai. `hidden` gỡ bản thừa khỏi cả
+accessibility tree lẫn màn hình, nên không có gì bị đọc hai lần.
+
+Dưới `@xl` khung ảnh vuông lại và hai panel rơi xuống thành stack: một màn hình
+342px không gánh nổi một card rộng 26% có ảnh bên trong mà vẫn đọc được.
+
+Nội dung của hai panel là **state thật**, không phải chữ trang trí — khung ảnh
+trong panel trái đọc chính cái store mà lưới card ghi vào, các tile được chọn
+sáng rõ còn phần còn lại lấy từ các kệ ở một phần ba cường độ, để một mix chỉ
+có một sound vẫn ra hình. Panel phải là transport cộng một readout của
+`--global-volume`; nó **không** phải slider, vì rail và panel Levels đã là hai
+chỗ chỉnh số đó rồi.
 
 ### Hai số nhỏ
 
