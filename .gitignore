@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# thiings icons — thiings.co licenses single downloads for personal use only,
+# so the 92 PNGs stay out of a public repo. See README § Icons.
+/public/thiings/
