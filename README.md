@@ -57,7 +57,8 @@ Tài sản bên thứ ba đi kèm khác licence:
 
 ## Repo
 
-Nhánh `migrate-to-base-ui` đi trước `main` hai commit.
+[`tuanfront-end/moodist-next`](https://github.com/tuanfront-end/moodist-next),
+công khai. Nhánh `migrate-to-base-ui` đi trước `main` hai commit.
 
 `public/sounds` được commit nên `.git` nặng ~125MB — clone chậm, đổi lại là
 chạy được ngay không cần bước tải thêm.

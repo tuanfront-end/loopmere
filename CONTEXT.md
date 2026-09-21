@@ -106,7 +106,7 @@ quyết định, một là việc chưa làm:
 | `page-check` | section 2–10: chín cái liên tiếp không ảnh, luật là ba | **quyết định** — xem ngay dưới |
 | `ref-ledger` | 0/2 section ghi `// drawn:` | **quyết định** — không có mark vẽ tay nào, và moodist không đòi |
 | `image-check` | `/logo-light.png` rộng 200px, sàn là 1200px | **false positive** — file đó là artwork của MediaSession, không bao giờ vẽ lên trang |
-| `seo-check` | 5 defect | **việc chưa làm** — xem § Việc còn mở |
+| `seo-check` | 4 defect | **việc chưa làm** — xem § Việc còn mở |
 
 **`page-check` fail, và không sửa.** Luật picture run nói ba section liên tiếp
 không ảnh là hết mức; trang này có chín grid category liên tiếp. Luật đó viết
@@ -138,6 +138,40 @@ và tên khái niệm chỉ sống trong `alt` của mỗi ảnh. Ảnh gốc l�
 Bốn khái niệm không có trong bộ và phải mượn cái gần nhất: `inside-a-train`
 lấy Tram, `morse-code` lấy Walkie Talkie, `windshield-wipers` lấy Car Wash,
 `pink-noise` lấy Portable Speaker.
+
+## Header và footer
+
+Trang chỉ có **một route**, nên hai luật chrome của house style không áp dụng
+nguyên văn và cả hai chỗ lệch đều là cố ý:
+
+- **Không có mega menu Explore.** Luật đó viết cho template bán kèm cả chục
+  route, nơi người mua cần thấy mình đã trả tiền cho những trang nào. Ở đây
+  "route" duy nhất là chín cái kệ trên cùng một trang, nên nav là một dropdown
+  **Shelves** dẫn tới chín anchor.
+- **Menu mobile là `DropdownMenu`, không phải Drawer.** Luật Drawer đứng vững
+  khi nav cao bằng màn hình và cuộn bên trong; mười anchor thì không. Đổi lại
+  là không phải kéo một primitive mới vào bản port Base UI — `components/ui/`
+  chưa có `drawer` lẫn `sheet`, và mỗi component thêm vào là một báo cáo
+  `.migration/` nữa.
+
+Anchor thật (`<a href="#category-rain">`) chứ không phải `scrollIntoView`:
+`scroll-padding-top: 6rem` trong `globals.css` đã chừa chỗ cho thanh sticky, nên
+link hạ cánh đúng chỗ **và** vẫn chạy khi không có JavaScript. Đo được 35px
+giữa đáy header và đỉnh section.
+
+**`PlayControls` không còn `sticky` nữa.** Header sticky và giữ play/pause cộng
+số sound đang trong mix, nên hai viên thuốc kính cùng tranh đỉnh màn hình là
+thứ bản trước đã có — viên dưới `z-20` chui xuống dưới viên trên `z-50`. Bộ
+đầy đủ — shuffle, undo, clear — ở lại trong luồng, ngay trên kệ đầu tiên.
+
+Logo là `components/moodist/logo.tsx` chứ không phải `<img src="/logo.svg">`:
+file gốc tô path `#FAFAFA`, vẽ cho nền gần-đen của bản Astro, và một `<img>`
+thì không tô lại được từ bên ngoài. Path vào thẳng component và nhận
+`currentColor`.
+
+Header dùng `buttonVariants` trên `<a>` thật cho hai link trông như nút. Viết
+`<Button render={<a/>}>` thì Base UI gắn `role="button"` lên thẻ điều hướng, và
+screen reader đọc một cú nhảy trang thành một cú bấm.
 
 ## Toolbar, toolbox và modals
 
@@ -233,11 +267,14 @@ working tree của repo skill, nên checker mà session này chạy là bản n�
 
 Bốn thứ, không cái nào đang chặn:
 
-**1. `seo-check` báo 5 defect.** Thiếu canonical, thiếu cả năm thẻ Open Graph
+**1. `seo-check` báo 4 defect.** Thiếu canonical, thiếu cả năm thẻ Open Graph
 (`og:title`, `og:description`, `og:url`, `og:type`, `og:site_name`), thiếu
-`twitter:card`, thiếu `sitemap.xml`, và skip link trỏ vào `#content` mà không
-có gì mang id đó. Bốn cái đầu là vài dòng trong `metadata` của
-`app/layout.tsx`; cái cuối là một `id` trên `<main>`.
+`twitter:card`, thiếu `sitemap.xml`. Tất cả đều là vài dòng trong `metadata`
+của `app/layout.tsx` cộng một `app/sitemap.ts`.
+
+Defect thứ năm — skip link trỏ vào `#content` mà không có gì mang id đó — đã
+hết: `<main>` nhận `id="content"` khi header vào, vì một header có menu là
+hơn chục tab stop đứng trước thẻ sound đầu tiên.
 
 **2. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
 Chrome thật để xác nhận vòng install → waiting → reload.

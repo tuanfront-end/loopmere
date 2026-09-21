@@ -27,7 +27,11 @@ export function PlayControls() {
   const hasHistory = useSoundStore((state) => !!state.history);
 
   return (
-    <div className="sticky top-6 z-20 flex justify-center">
+    /* Not sticky any more. The header is, and it carries play, pause and the
+       count of what is in the mix — two pills fighting for the top of the
+       screen is what this was before. The full set stays here in flow: shuffle,
+       undo and clear are decisions made at the mixing desk, not mid-scroll. */
+    <div className="flex justify-center">
       {/* Floating, so a cast rather than an edge — and the ring is in the token. */}
       <div className="bg-card/85 shadow-soft-lg flex items-center gap-1 rounded-full p-1.5 backdrop-blur">
         <Button disabled={noSelected} onClick={togglePlay}>
