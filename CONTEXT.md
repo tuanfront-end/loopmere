@@ -280,6 +280,12 @@ Giờ:
   mang `alt=""`, một file PNG khuyết hiện ra là ô trống chứ không phải ảnh vỡ.
   Đây cũng là chỗ lỗi "đĩa chìm khi hover" từng sống; giờ không còn đĩa thì
   không còn lỗi.
+- **Tab bo `rounded-sm`, card bo `rounded-lg`.** Radius đọc theo cạnh ngắn
+  chứ không theo tên lớp: hàng rail cao 44px nên 24px của `rounded-lg` là 55%
+  cạnh ngắn — hết đoạn thẳng giữa hai góc, và nó vẽ ra đúng hình viên thuốc.
+  14px là 33%, vừa đúng ngưỡng để đọc ra hình chữ nhật bo góc. Pill của
+  category rail cao 50px, cùng 14px là 29%. Card thì cao 162px nên 24px chỉ
+  là 15% — đó là thang container, và nó đúng chỗ.
 - **Hai thành ngữ hover, cố ý không trộn.** Card thì *nhấc lên*: đổi hairline
   lấy `shadow-soft`, nền giữ nguyên trắng. Tab — hàng rail trái và pill của
   category rail — thì *nhuộm*: `bg-accent`, phẳng, không bóng. Cả hai đều

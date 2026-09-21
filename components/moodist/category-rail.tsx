@@ -29,7 +29,7 @@ export function CategoryRail() {
       >
         {sounds.categories.map((category) => (
           <button
-            className="bg-card hover:bg-accent flex shrink-0 items-center gap-2 rounded-lg border p-2 pr-4 text-sm font-medium transition-colors hover:border-transparent"
+            className="bg-card hover:bg-accent flex shrink-0 items-center gap-2 rounded-sm border p-2 pr-4 text-sm font-medium transition-colors hover:border-transparent"
             key={category.id}
             onClick={() => goto(category.id)}
           >
