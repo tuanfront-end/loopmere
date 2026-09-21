@@ -280,9 +280,12 @@ Giờ:
   và nó đi *lên*.** Không bao giờ là `bg-muted` — đó đúng là màu của track
   slider, của trái tim và của nút pause, nên một card sẫm lại khi hover sẽ
   kéo theo cả ba.
-- **Hàng slider luôn tồn tại**, rỗng hay không. Đổi lại là card chưa chọn có
-  một khoảng trống ở đáy; cái giá đó rẻ hơn việc cả kệ nhảy một dòng mỗi lần
-  bấm.
+- **Slider luôn được vẽ**, và ở trạng thái `disabled` khi sound chưa vào mix.
+  Trước đó nó `return null`, nên mỗi lần bấm là card đổi chiều cao và cả kệ
+  nhảy một dòng. Bản trung gian chừa chỗ trống — hết giật nhưng card rỗng một
+  phần ba ở đáy; vẽ hẳn một cái disabled thì vừa hết giật vừa nói cho người
+  dùng biết mức âm lượng có tồn tại. Giá phải trả đo được: 83 input thừa,
+  1860 node cho cả trang, DOMContentLoaded 190ms.
 - **`isPaused` là một field riêng trong store**, tách khỏi `isSelected` (vẫn
   trong mix, vẫn giữ mức âm lượng) và tách khỏi `isPlaying` toàn cục (thứ tắt
   tất cả). Nút có mặt ở cả card lẫn hàng trong cột phải.

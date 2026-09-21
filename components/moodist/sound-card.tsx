@@ -127,11 +127,12 @@ export function SoundCard({
 
       <div className="mt-4 text-sm font-medium">{label}</div>
 
-      {/* The row is always here, empty or not. It used to appear with the
-          slider, so every pick and un-pick changed the card's height and
-          shoved the rest of the shelf down a line. */}
+      {/* Always drawn, disabled until the sound is in the mix. It used to
+          appear with the pick, so every pick and un-pick changed the card's
+          height and shoved the rest of the shelf down a line — and a card
+          that showed nothing there gave no hint the level existed. */}
       <div className="mt-4 flex h-6 items-center">
-        {isSelected && <VolumeSlider id={id} label={label} />}
+        <VolumeSlider disabled={!isSelected} id={id} label={label} />
       </div>
     </div>
   );

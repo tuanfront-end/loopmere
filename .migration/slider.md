@@ -6,10 +6,14 @@
 
 `components/ui/slider.tsx` — Base UI wraps the track in
 `SliderPrimitive.Control` and renames `Range` to `Indicator`. Took that
-anatomy whole, then carried across the two project changes: track at
-`h-1.5` (a 1px track reads as a hair under a 24px thumb) and the thumb at
-`size-6 bg-card shadow-soft` with no border, which is the style's rule for a
-raised control.
+anatomy whole, then carried across the two project changes: the track height
+and the thumb at `size-6 bg-card shadow-soft` with no border, which is the
+style's rule for a raised control.
+
+The track is `h-1` (4px), down from the `h-1.5` this report first recorded.
+Shipping a disabled slider on every unplayed card is what moved it: eighty of
+them at 6px read as a row of rules across the shelf, where 4 reads as a rail
+the thumb sits on.
 
 `components/moodist/volume-slider.tsx:29`,
 `components/moodist/modals/settings.tsx:41`,
@@ -26,7 +30,15 @@ elements with no primitive behind them, so there is nothing to migrate.
 
 ## Behavior changes
 
-None at migration time. One fix landed later, when the three-column shell put
+A disabled slider now recedes part by part rather than under one blanket
+`opacity-50` on the Control: the rail stays `bg-muted`, the indicator drops
+the brand hue for `bg-muted-foreground/25`, and the thumb goes from a raised
+24px white disc to a flat 12px grey one. Every part carries `data-disabled`
+of its own, so none of this needs a group selector. It matters because the
+sound cards draw one of these on every sound that is not in the mix, and a
+green fill there would have claimed something was playing.
+
+Also one fix landed later, when the three-column shell put
 the Levels sliders permanently on screen: Base UI draws a real
 `<input type="range">` inside each thumb, and that input is what a screen
 reader lands on, so an `aria-label` written at the call site sat on the Root
