@@ -94,12 +94,23 @@ như skill quy định.
 | Set | Nguồn | Ghi chú |
 |---|---|---|
 | Phosphor | `react-icons/pi`, ship cùng repo | 9.072 icon, nhưng sáu loài chim chia nhau một glyph |
-| Thiings | PNG 3D trong `public/thiings/` | Mỗi loài một icon riêng. Mới có nhóm Animals (17 ảnh) |
+| Thiings | PNG 3D trong `public/thiings/` | Đủ 92 entry, mỗi sound một icon riêng |
+
+Hai bộ phủ cùng 92 id, nên bật qua lại không bao giờ rơi vào fallback.
 
 **Licence của Thiings là ràng buộc thật.** thiings.co cho tải lẻ **chỉ để dùng
 cá nhân**; muốn dùng thương mại phải mua licence trọn bộ. Bộ này ở đây để
-nhìn, không để ship. Ảnh gốc là PNG 1024px (29MB cho 17 cái), đã resize
-xuống 256px còn 824KB.
+nhìn, không để ship.
+
+Lấy được từng cái một: site không có API công khai (`/api/things`,
+`/api/search`, `/api/icons` đều 404, danh sách không nằm trong RSC payload),
+và tên khái niệm chỉ sống trong `alt` của mỗi ảnh. Nên quy trình là gõ vào ô
+search, đợi lưới lọc, đọc `alt` + `src`. Ảnh gốc là PNG 1024px — 92 cái là
+149MB, resize xuống 256px còn 5.1MB.
+
+Bốn khái niệm không có trong bộ và phải mượn cái gần nhất: `inside-a-train`
+lấy Tram, `morse-code` lấy Walkie Talkie, `windshield-wipers` lấy Car Wash,
+`pink-noise` lấy Portable Speaker.
 
 Switch là scaffolding: xoá `components/dev/`, hai dòng trong `app/layout.tsx`
 và `data/sound-thiings.ts` là sạch.
