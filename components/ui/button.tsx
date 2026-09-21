@@ -19,9 +19,13 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         // The style's flipped-contrast chip, as a control rather than a
         // badge: the brand hue weakened to a tint, carrying its own dark ink.
-        // Loud enough to find in a column of white cards, quiet enough that
-        // it is not competing with a primary action.
-        chip: "bg-chip text-primary-ink hover:bg-primary/45",
+        //
+        // Thinner than `bg-chip` on purpose. `--chip-alpha` is set at 30% so
+        // a *badge* clears the whisper band, and that band is measured in
+        // luminance — which says nothing about hue, and hue is what carries a
+        // light green. Over a 44px-tall button the same 30% is several times
+        // the area and reads as a filled block. 15% puts it back to a tint.
+        chip: "bg-primary/15 text-primary-ink hover:bg-primary/30",
       },
       size: {
         default:
