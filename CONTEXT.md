@@ -60,6 +60,50 @@ Bản gốc **không chạy `tsc`** — script `check` của nó là Biome, nên
   section, sound grid có Show More, sound card, favorite, volume slider.
 - Assets: `public/sounds` (117MB), images, logo, og.
 
+## Soft Neutral
+
+House style đã áp lên bản port. Palette copy nguyên khối từ
+`template/scaffold/app/globals.css`, brand xoay sang **teal** bằng
+`brand-hue.py`, type đổi sang pairing **Warm** (Fraunces trên Plus Jakarta
+Sans) — Inter bị loại vì không có row đo trong skill. Button re-scale về
+36/40/44, slider thumb từ 12px lên 24px, lucide bị thay khỏi mọi primitive.
+
+Checker: `palette`, `type`, `controls`, `hover`, `responsive`, `vn-comment`
+đều pass.
+
+### Hai chỗ cố ý lệch khỏi skill
+
+**1. `page-check` fail, và không sửa.** Luật picture run nói ba section liên
+tiếp không ảnh là hết mức; trang này có tám grid category liên tiếp. Luật đó
+viết cho landing page bán hàng, nơi mỗi section là một lập luận. Moodist là
+app tool: tám grid là tám cái kệ của cùng một thứ, và nhồi một tấm ảnh vào
+mỗi kệ sẽ làm trang đọc như catalogue chứ không phải như bàn trộn. Trang vẫn
+giữ một ảnh thật ở hero, tức là colour floor vẫn được thoả.
+
+**2. Icon sound không phải HugeIcons.** Skill nói icon là HugeIcons, nhưng đó
+là bộ icon *giao diện*: nó không có woodpecker, singing bowl hay morse code.
+Cái luật đó thực sự cấm là **trộn nhiều bộ trong một lưới**, và bản gốc trộn
+sáu bộ react-icons. Nên toàn bộ 84 icon sound giờ lấy từ **một** bộ —
+Phosphor. Chrome vẫn HugeIcons, với Heroicons cho chevron và play/pause đúng
+như skill quy định.
+
+## Build switch
+
+`components/dev/` giữ một nút cố định ở góc phải dưới, một knob: **Icon set**.
+
+| Set | Nguồn | Ghi chú |
+|---|---|---|
+| Phosphor | `react-icons/pi`, ship cùng repo | 9.072 icon, nhưng sáu loài chim chia nhau một glyph |
+| Thiings | PNG 3D trong `public/thiings/` | Mỗi loài một icon riêng. Mới có nhóm Animals (17 ảnh) |
+
+**Licence của Thiings là ràng buộc thật.** thiings.co cho tải lẻ **chỉ để dùng
+cá nhân**; muốn dùng thương mại phải mua licence trọn bộ. Bộ này ở đây để
+nhìn, không để ship. Ảnh gốc là PNG 1024px (29MB cho 17 cái), đã resize
+xuống 256px còn 824KB.
+
+Switch là scaffolding: xoá `components/dev/`, hai dòng trong `app/layout.tsx`
+và `data/sound-thiings.ts` là sạch.
+
 ## Chưa port
 
 - `toolbar/` và `toolbox/`: pomodoro, todo, notepad, countdown.

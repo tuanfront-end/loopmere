@@ -4,6 +4,8 @@ import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useEffect, useMemo } from "react";
 
+import { useIconSet } from "@/components/dev/icon-set";
+
 import { FavoriteButton } from "./favorite-button";
 import { SoundIcon } from "./sound-icon";
 import { VolumeSlider } from "./volume-slider";
@@ -14,6 +16,8 @@ import { cn } from "@/lib/utils";
 import { useLoadingStore } from "@/stores/loading";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
+
+import { thiingsIcons } from "@/data/sound-thiings";
 
 import type { Sound as SoundType } from "@/data/types";
 
@@ -46,6 +50,11 @@ export function SoundCard({
   );
 
   const isLoading = useLoadingStore((state) => state.loaders[src]);
+  const { set: iconSet } = useIconSet();
+
+  // The 3D set is a kit: the objects share a material and a light angle, so
+  // they hold together on their own and a disc behind them reads as a frame.
+  const drawsDisc = iconSet === "phosphor" || !thiingsIcons[id];
 
   const sound = useSound(src, { loop: true, volume: adjustedVolume });
 
@@ -94,9 +103,10 @@ export function SoundCard({
         aria-hidden="true"
         className={cn(
           "grid size-11 place-items-center rounded-full transition-colors",
-          isSelected
-            ? "bg-chip text-primary-ink"
-            : "bg-muted text-muted-foreground group-hover/sound:bg-transparent",
+          drawsDisc &&
+            (isSelected
+              ? "bg-chip text-primary-ink"
+              : "bg-muted text-muted-foreground group-hover/sound:bg-transparent"),
         )}
       >
         {isLoading ? (
@@ -106,7 +116,7 @@ export function SoundCard({
             strokeWidth={1.5}
           />
         ) : (
-          <SoundIcon id={id} />
+          <SoundIcon id={id} size={drawsDisc ? 20 : 22} />
         )}
       </div>
 
