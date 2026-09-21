@@ -98,7 +98,7 @@ export function SiteHeader() {
   ));
 
   return (
-    <header className="sticky top-0 z-50">
+    <header className="sticky top-0 z-50 xl:hidden">
       <div
         className={cn(
           "mx-auto flex items-center gap-1 transition-all duration-300 ease-out",

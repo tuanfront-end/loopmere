@@ -343,9 +343,18 @@
 }
 
 @layer base {
-  /* The header is sticky, so anchors need somewhere to land. */
+  /* The header is sticky, so anchors need somewhere to land. From `xl` the
+     rails replace it and nothing is pinned over the centre column any more,
+     so the landing clearance drops to the shell's own margin — otherwise an
+     anchor arrives with a screenful of nothing above it. */
   html {
     scroll-padding-top: 6rem;
+  }
+
+  @media (width >= 80rem) {
+    html {
+      scroll-padding-top: 1.5rem;
+    }
   }
 
   /* The heading face reaches every heading without a utility at the call site,

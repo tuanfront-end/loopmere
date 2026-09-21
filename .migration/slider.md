@@ -26,7 +26,14 @@ elements with no primitive behind them, so there is nothing to migrate.
 
 ## Behavior changes
 
-None.
+None at migration time. One fix landed later, when the three-column shell put
+the Levels sliders permanently on screen: Base UI draws a real
+`<input type="range">` inside each thumb, and that input is what a screen
+reader lands on, so an `aria-label` written at the call site sat on the Root
+and never reached it. The wrapper now carries it down through the thumb's
+`getAriaLabel`, and a two-thumb slider numbers them so both do not read as the
+same control. `seo-check` catches this one; it was silent before only because
+no slider was rendered on a freshly loaded page.
 
 ## Verify by hand
 

@@ -2,8 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 
 import { ServiceWorker } from "@/components/moodist/service-worker";
-import { SiteFooter } from "@/components/moodist/site-footer";
-import { SiteHeader } from "@/components/moodist/site-header";
+import { Shell } from "@/components/moodist/shell";
+import { StoreConsumer } from "@/components/moodist/store-consumer";
+import { Toolbar } from "@/components/moodist/toolbar";
+import { ToolsProvider } from "@/components/moodist/tools-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -44,9 +46,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             Skip to the sounds
           </a>
 
-          <SiteHeader />
-          {children}
-          <SiteFooter />
+          <StoreConsumer>
+            <ToolsProvider>
+              <Shell>{children}</Shell>
+              <Toolbar />
+            </ToolsProvider>
+          </StoreConsumer>
         </TooltipProvider>
         <ServiceWorker />
         <Toaster />

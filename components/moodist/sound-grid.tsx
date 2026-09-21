@@ -42,7 +42,9 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Sized against the centre column, not the window: with a rail on
+          each side the viewport stopped being what decides this. */}
+      <div className="grid grid-cols-1 gap-4 @xl:grid-cols-2 @4xl:grid-cols-3">
         {sounds.map((sound, index) => (
           <SoundCard
             key={sound.id}

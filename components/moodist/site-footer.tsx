@@ -50,7 +50,7 @@ export function SiteFooter() {
       {/* The rule the footer always takes off the section above it. */}
       <div className="bg-border h-px" />
 
-      <div className="grid gap-12 pt-16 sm:grid-cols-2 lg:grid-cols-[1.5fr_1.6fr_1fr] lg:gap-10">
+      <div className="grid gap-12 pt-16 @xl:grid-cols-2 @4xl:grid-cols-[1.5fr_1.6fr_1fr] @4xl:gap-10">
         <div>
           <div className="flex items-center gap-2">
             <Logo className="size-6" />
@@ -148,8 +148,8 @@ export function SiteFooter() {
         </p>
 
         <p className="text-muted-foreground">
-          An Astro app rebuilt in Next.js to find out what the architecture does
-          when the islands go away. Nothing here is for sale.
+          A port kept for study, not for sale: an Astro app rebuilt in Next.js
+          without its islands.
         </p>
       </div>
     </footer>

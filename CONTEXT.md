@@ -103,8 +103,8 @@ quyết định, một là việc chưa làm:
 
 | Gate | Báo gì | Đọc thế nào |
 |---|---|---|
-| `page-check` | section 2–10: chín cái liên tiếp không ảnh, luật là ba | **quyết định** — xem ngay dưới |
-| `ref-ledger` | 0/2 section ghi `// drawn:` | **quyết định** — không có mark vẽ tay nào, và moodist không đòi |
+| `page-check` | section 2–9: tám cái liên tiếp không ảnh, luật là ba | **quyết định** — xem ngay dưới |
+| `ref-ledger` | 0/3 section ghi `// drawn:` | **quyết định** — không có mark vẽ tay nào, và moodist không đòi |
 | `image-check` | `/logo-light.png` rộng 200px, sàn là 1200px | **false positive** — file đó là artwork của MediaSession, không bao giờ vẽ lên trang |
 | `seo-check` | 4 defect | **việc chưa làm** — xem § Việc còn mở |
 
@@ -139,30 +139,91 @@ Bốn khái niệm không có trong bộ và phải mượn cái gần nhất: `
 lấy Tram, `morse-code` lấy Walkie Talkie, `windshield-wipers` lấy Car Wash,
 `pink-noise` lấy Portable Speaker.
 
-## Header và footer
+## Shell — trái, giữa, phải
 
-Trang chỉ có **một route**, nên hai luật chrome của house style không áp dụng
-nguyên văn và cả hai chỗ lệch đều là cố ý:
+Trang chạy trên một app shell ba cột, và **chỉ có một breakpoint**: `xl`
+(1280px).
+
+| | Dưới `xl` | Từ `xl` |
+|---|---|---|
+| Thương hiệu, điều hướng | thanh trên cùng sticky | cột trái |
+| Play / pause, âm lượng, mix đang chạy | `PlayControls` trong luồng | cột phải |
+| 13 công cụ | nút tròn nổi góc phải dưới | cột phải |
+| Rail 9 kệ cuộn ngang | `CategoryRail` | cột trái |
+
+Hai cách bày, **mỗi cách tự đủ**. Cái không tồn tại là một bề rộng mà nửa bộ
+chrome biến mất — đó là lý do chỉ một breakpoint chứ không phải hai: ở
+`lg` cột trái vừa chỗ nhưng cột phải thì không, và một app trộn âm có điều
+hướng mà không có bàn trộn thì tệ hơn là gấp lại hẳn.
+
+Hai rail là **panel nổi trên nền trang**, không phải cột chia bằng đường kẻ
+— đọc theo ảnh tham chiếu chứ không theo X. Card chỉ nhỉnh hơn nền một
+whisper nên mỗi panel lấy đúng cái hairline mà surface ladder đòi, và
+`h-[calc(100dvh-1.5rem)]` giữ lề 12px nhìn thấy được ở trên và dưới suốt
+chiều cuộn.
+
+### Ba điều lệch khỏi house style, cả ba đều cố ý
 
 - **Không có mega menu Explore.** Luật đó viết cho template bán kèm cả chục
-  route, nơi người mua cần thấy mình đã trả tiền cho những trang nào. Ở đây
-  "route" duy nhất là chín cái kệ trên cùng một trang, nên nav là một dropdown
-  **Shelves** dẫn tới chín anchor.
+  route. Ở đây "route" duy nhất là chín cái kệ trên cùng một trang, nên nav là
+  chín anchor trong cột trái.
 - **Menu mobile là `DropdownMenu`, không phải Drawer.** Luật Drawer đứng vững
   khi nav cao bằng màn hình và cuộn bên trong; mười anchor thì không. Đổi lại
   là không phải kéo một primitive mới vào bản port Base UI — `components/ui/`
   chưa có `drawer` lẫn `sheet`, và mỗi component thêm vào là một báo cáo
   `.migration/` nữa.
+- **`PlayControls` không còn `sticky`.** Header sticky và cột phải đều giữ
+  play/pause, nên hai viên thuốc kính cùng tranh đỉnh màn hình là thứ bản
+  trước đã có — viên dưới `z-20` chui xuống dưới viên trên `z-50`.
 
-Anchor thật (`<a href="#category-rain">`) chứ không phải `scrollIntoView`:
-`scroll-padding-top: 6rem` trong `globals.css` đã chừa chỗ cho thanh sticky, nên
-link hạ cánh đúng chỗ **và** vẫn chạy khi không có JavaScript. Đo được 35px
-giữa đáy header và đỉnh section.
+### Lưới đo theo cột giữa, không theo cửa sổ
 
-**`PlayControls` không còn `sticky` nữa.** Header sticky và giữ play/pause cộng
-số sound đang trong mix, nên hai viên thuốc kính cùng tranh đỉnh màn hình là
-thứ bản trước đã có — viên dưới `z-20` chui xuống dưới viên trên `z-50`. Bộ
-đầy đủ — shuffle, undo, clear — ở lại trong luồng, ngay trên kệ đầu tiên.
+`SoundGrid` và footer dùng container query (`@xl`, `@4xl`) chứ không phải
+breakpoint viewport. Với một rail mỗi bên, cửa sổ thôi không còn là thứ quyết
+định lưới bao nhiêu cột: ở 1280 cửa sổ là "desktop" nhưng cột giữa chỉ 612px.
+Ngưỡng hai cột là `@xl` (576px) sau khi đo — `@2xl` để 1280 rơi về một cột.
+
+### Chữ phải viết lại vì cột hẹp đi
+
+Cột giữa hẹp làm ba khối chữ kết thúc bằng dòng cụt và `responsive-check` bắt
+được: blurb của `places`, của `things`, và dòng cuối footer. Sửa bằng chữ chứ
+không bằng `text-balance` — cả ba rút thành **một dòng** ở 1280, vì muốn hai
+dòng cân thì blurb phải dài gấp rưỡi những blurb còn lại.
+
+### Scrollspy đo, không quan sát
+
+Cột trái sáng đúng kệ đang xem: `useActiveShelf` lấy kệ cuối cùng có mép trên
+vượt qua vạch một phần ba màn hình, đọc trên mỗi sự kiện cuộn. Bản đầu dùng
+`IntersectionObserver` trên một dải hẹp và có một lỗ cơ học: qua khỏi kệ cuối
+thì **không section nào nằm trong dải**, callback ngừng bắn và highlight đứng
+lại ở chỗ cũ. Đo thì trả lời được mọi vị trí cuộn, kể cả những vị trí không có
+gì trong tầm.
+
+Chín phép đọc rect, không có phép ghi nào xen giữa, nên trình duyệt trả lời cả
+chín từ một lần layout — gom thêm sau `requestAnimationFrame` chỉ đẻ ra một cờ
+để mà sai.
+
+### Anchor thật, không phải `scrollIntoView`
+
+`<a href="#category-rain">` chứ không phải JavaScript: `scroll-padding-top`
+trong `globals.css` đã chừa chỗ, nên link hạ cánh đúng chỗ **và** vẫn chạy khi
+không có JavaScript. Từ `xl` không còn thanh nào ghim trên cột giữa nên khoảng
+chừa hạ từ `6rem` xuống `1.5rem`, bằng đúng lề của shell.
+
+### Một chỗ trùng đã bỏ
+
+Cột phải **không có nút `Levels`**: panel của nó chính là hai slider mục
+Levels ngay phía trên, và một rail mở modal lên nội dung của chính nó là cái
+cửa dẫn vào căn phòng đang đứng. Menu nổi thì vẫn giữ, vì dưới `xl` không có
+mục nào để mà trùng.
+
+### Trạng thái 13 modal nằm ở `ToolsProvider`
+
+Trước đây `Toolbar` vừa là nút bấm vừa là chủ sở hữu state của cả 13 panel.
+Giờ `tools-provider.tsx` giữ state, phím tắt và chỗ render modal; cột phải,
+menu nổi và phím tắt là ba cái nút trên cùng một bộ panel. `TOOL_GROUPS` là
+một danh sách duy nhất, nên rail và menu không thể trôi thành hai ý khác nhau
+về việc công cụ là gì.
 
 Logo là `components/moodist/logo.tsx` chứ không phải `<img src="/logo.svg">`:
 file gốc tô path `#FAFAFA`, vẽ cho nền gần-đen của bản Astro, và một `<img>`
@@ -179,19 +240,23 @@ Mười ba panel, tất cả đi qua **một** `ToolPanel` bọc shadcn `Dialog`
 focus trap, scroll lock và nút đóng viết một lần thay vì mười ba lần. Bản gốc
 tự dựng Modal bằng Portal + FocusTrap + motion; ở đây Base UI lo hết.
 
+Bốn nhóm, tên trong `TOOL_GROUPS` ở `tools-provider.tsx` — một danh sách
+duy nhất mà cả cột phải lẫn menu nổi cùng đọc:
+
 | Nhóm | Panel |
 |---|---|
-| Mix | Presets, Send this mix, Sleep timer |
-| Tools | Countdown, Pomodoro, Notepad, Checklist, Breathing |
-| Tones | Binaural beat, Isochronic tone, Lofi radio |
-| Khác | Levels, Keyboard |
+| The mix | Presets, Send this mix, Sleep timer |
+| While it plays | Countdown, Pomodoro, Notepad, Checklist, Breathing |
+| Generated | Binaural beat, Isochronic tone, Lofi radio |
+| This app | Levels, Keyboard |
 
 **Binaural và isochronic gộp thành một `ToneModal`.** Hai cái khác nhau đúng
 bốn dòng — binaural là hai oscillator pan trái phải, isochronic là một tone bị
 một sóng vuông ngắt quãng — còn toàn bộ phần bao quanh thì giống hệt. Bản gốc
 là hai file gần như trùng nhau, và đó là hai file sẽ trôi khỏi nhau.
 
-Hotkey giữ nguyên bản gốc, cộng `⇧M` mở menu. `MediaSession` cũng port:
+State của cả mười ba nằm ở `ToolsProvider`, không ở nút bấm — § Shell nói
+vì sao. Hotkey giữ nguyên bản gốc, cộng `⇧M` mở menu nổi. `MediaSession` cũng port:
 Howler phát qua Web Audio API mà phím media của hệ điều hành không thấy được,
 nên một track im lặng chạy vòng làm chỗ bám cho Media Session API.
 

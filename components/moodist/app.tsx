@@ -11,8 +11,6 @@ import { CategorySection } from "./category-section";
 import { MediaSession } from "./media-session";
 import { SharedMix } from "./modals/shared-mix";
 import { PlayControls } from "./play-controls";
-import { StoreConsumer } from "./store-consumer";
-import { Toolbar } from "./toolbar";
 
 import { FADE_OUT } from "@/constants/events";
 import { categoryBlurbs } from "@/data/category-blurbs";
@@ -86,11 +84,17 @@ export function App() {
   }, [favoriteSounds, categories]);
 
   return (
-    <StoreConsumer>
+    <>
       <MediaSession />
       <SharedMix />
-      <CategoryRail />
-      <PlayControls />
+
+      {/* Both of these are the left rail's and the right rail's jobs from `xl`
+          up, so below that width they are the only place those jobs are done
+          and above it they would be a second copy of them. */}
+      <div className="contents xl:hidden">
+        <CategoryRail />
+        <PlayControls />
+      </div>
 
       {allCategories.map((category) => (
         <CategorySection
@@ -100,8 +104,6 @@ export function App() {
           functional={category.id !== "favorites"}
         />
       ))}
-
-      <Toolbar />
-    </StoreConsumer>
+    </>
   );
 }

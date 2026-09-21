@@ -1,5 +1,5 @@
-import { Slider as SliderPrimitive } from "@base-ui/react/slider"
-import { cn } from "cn"
+import { Slider as SliderPrimitive } from "@base-ui/react/slider";
+import { cn } from "cn";
 
 function Slider({
   className,
@@ -13,7 +13,19 @@ function Slider({
     ? value
     : Array.isArray(defaultValue)
       ? defaultValue
-      : [min, max]
+      : [min, max];
+
+  // Base UI draws a real `<input type="range">` inside each thumb, and that
+  // input is what a screen reader lands on — an `aria-label` written at the
+  // call site sits on the Root and never reaches it. Carry it down. Two
+  // thumbs get a number each, or both read as the same control.
+  const label = props["aria-label"];
+  const thumbLabel =
+    label && _values.length > 1
+      ? (index: number) => `${label} ${index + 1}`
+      : label
+        ? () => label
+        : undefined;
 
   return (
     <SliderPrimitive.Root
@@ -39,13 +51,14 @@ function Slider({
         {Array.from({ length: _values.length }, (_, index) => (
           <SliderPrimitive.Thumb
             data-slot="slider-thumb"
+            getAriaLabel={thumbLabel}
             key={index}
             className="relative block size-6 shrink-0 rounded-full bg-card shadow-soft ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
           />
         ))}
       </SliderPrimitive.Control>
     </SliderPrimitive.Root>
-  )
+  );
 }
 
-export { Slider }
+export { Slider };
