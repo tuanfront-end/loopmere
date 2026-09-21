@@ -41,7 +41,7 @@ export function Hero() {
 
         <div className="bg-card/90 shadow-soft-lg absolute top-4 right-4 rounded-full px-4 py-2 sm:top-6 sm:right-6">
           <p className="text-xs font-medium tabular-nums">
-            {count()} loops, {sounds.categories.length} sets
+            {count()} loops on {sounds.categories.length} shelves
           </p>
         </div>
       </div>

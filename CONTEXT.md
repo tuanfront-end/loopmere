@@ -110,13 +110,42 @@ Bốn khái niệm không có trong bộ và phải mượn cái gần nhất: `
 lấy Tram, `morse-code` lấy Walkie Talkie, `windshield-wipers` lấy Car Wash,
 `pink-noise` lấy Portable Speaker.
 
+## Toolbar, toolbox và modals
+
+Mười ba panel, tất cả đi qua **một** `ToolPanel` bọc shadcn `Dialog`: escape,
+focus trap, scroll lock và nút đóng viết một lần thay vì mười ba lần. Bản gốc
+tự dựng Modal bằng Portal + FocusTrap + motion; ở đây Radix lo hết.
+
+| Nhóm | Panel |
+|---|---|
+| Mix | Presets, Send this mix, Sleep timer |
+| Tools | Countdown, Pomodoro, Notepad, Checklist, Breathing |
+| Tones | Binaural beat, Isochronic tone, Lofi radio |
+| Khác | Levels, Keyboard |
+
+**Binaural và isochronic gộp thành một `ToneModal`.** Hai cái khác nhau đúng
+bốn dòng — binaural là hai oscillator pan trái phải, isochronic là một tone bị
+một sóng vuông ngắt quãng — còn toàn bộ phần bao quanh thì giống hệt. Bản gốc
+là hai file gần như trùng nhau, và đó là hai file sẽ trôi khỏi nhau.
+
+Hotkey giữ nguyên bản gốc, cộng `⇧M` mở menu. `MediaSession` cũng port:
+Howler phát qua Web Audio API mà phím media của hệ điều hành không thấy được,
+nên một track im lặng chạy vòng làm chỗ bám cho Media Session API.
+
 ## Chưa port
 
-- `toolbar/` và `toolbox/`: pomodoro, todo, notepad, countdown.
-- `modals/`: presets, sleep timer, share link, shortcuts, binaural, breathing,
-  isochronic, lofi (YouTube embed).
-- `media-controls/` (Media Session API), `category-icons/` (thanh nav nhảy
-  nhanh tới category), PWA, dark theme toggle, snackbar.
+PWA (service worker, manifest), dark theme toggle, snackbar. Theme bỏ có chủ
+đích: skill nói ship light-only trừ khi viết hẳn một surface ramp thứ hai, và
+depth dựa trên tint thì không đảo được.
+
+## Một phát hiện về chính bộ checker
+
+`controls-check.py` báo `components/ui/select.tsx — the Popup carries no
+padding of its own`, và đó là **false positive**. Checker tìm
+`<SelectPrimitive.Popup>` — API của **Base UI** — còn repo này init bằng
+`shadcn init --base radix`, nơi popup là `SelectPrimitive.Content`. Padding đã
+nằm đúng chỗ. Rule đúng, chỉ là nó giả định một base mà lệnh init có thể không
+chọn.
 
 ## Chạy
 

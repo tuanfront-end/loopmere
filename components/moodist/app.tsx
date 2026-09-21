@@ -6,7 +6,9 @@ import { Howler } from "howler";
 import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { CategoryRail } from "./category-rail";
 import { CategorySection } from "./category-section";
+import { MediaSession } from "./media-session";
 import { PlayControls } from "./play-controls";
 import { StoreConsumer } from "./store-consumer";
 import { Toolbar } from "./toolbar";
@@ -84,6 +86,8 @@ export function App() {
 
   return (
     <StoreConsumer>
+      <MediaSession />
+      <CategoryRail />
       <PlayControls />
 
       {allCategories.map((category) => (
