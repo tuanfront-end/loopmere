@@ -6,12 +6,20 @@ import { useShallow } from "zustand/react/shallow";
 
 import { SoundIcon } from "./sound-icon";
 
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { sounds } from "@/data/sounds";
 import { cn } from "@/lib/utils";
 import { count } from "@/lib/sounds";
 import { useSoundStore } from "@/stores/sound";
 
 const SHELL = "bg-card/90 shadow-soft-lg rounded-md p-4 backdrop-blur sm:p-5";
+
+/** id → label, built once. The panel names sounds it draws no card for. */
+const LABELS: Record<string, string> = Object.fromEntries(
+  sounds.categories.flatMap((category) =>
+    category.sounds.map((sound) => [sound.id, sound.label]),
+  ),
+);
 
 /**
  * Three mixes somebody already made, because the hardest thing about a page of
@@ -63,13 +71,22 @@ export function HeroStarters() {
 
   return (
     <div className={SHELL}>
+      {/* `-mx-2.5` on the list, and nothing on the two lines above it. The
+          row carries its own `p-2.5`, so pulling the list out by exactly that
+          lands the row's *text* on the card's padding edge — where these
+          labels already are — while the row's hover ground reaches past them
+          to the card itself. The rail's rule, in a card: what you read lines
+          up, what you press may bleed.
+
+          Adding `px-2.5` to the labels as well was the first attempt and it
+          moved them the other way, to 30 against the rows' 20. */}
       <p className="text-muted-foreground text-xs">Start here</p>
 
       <p className="mt-1 text-lg font-medium tracking-tight">
         Three made earlier
       </p>
 
-      <ul className="mt-3 flex flex-col gap-1">
+      <ul className="-mx-2.5 mt-3 flex flex-col gap-1">
         {STARTERS.map((starter) => {
           const active = starter.label === running;
           const sounding = active && isPlaying;
@@ -145,55 +162,64 @@ export function HeroStarters() {
  * This slot held the transport and a readout of the global level, which is the
  * pair the right rail already draws with room to label properly — two panels
  * saying the same thing across one photograph. Favourites is the one part of
- * the product nothing else on this screen reports, and it takes the
- * reference's shape without arguing: a number that grows, a bar under it, and
- * a way in.
+ * the product nothing else on this screen reports.
+ *
+ * The bar that was here is gone. A progress bar says "this is going
+ * somewhere", and a shelf is not going anywhere: three saved out of
+ * eighty-four is not 4% of a journey, it is three sounds somebody liked. What
+ * the room bought is the names of them and a button that plays the lot.
  */
 export function HeroFavourites() {
   const favorites = useSoundStore(useShallow((state) => state.getFavorites()));
+  const override = useSoundStore((state) => state.override);
+  const play = useSoundStore((state) => state.play);
 
-  const total = count();
-  const share = (favorites.length / total) * 100;
+  const named = useMemo(
+    () =>
+      favorites
+        .map((id) => LABELS[id])
+        .filter(Boolean)
+        .join(", "),
+    [favorites],
+  );
 
   return (
     <div className={SHELL}>
       <p className="text-muted-foreground text-xs">Saved</p>
 
       <p className="mt-1 text-2xl tracking-tight tabular-nums">
-        {favorites.length} of {total}
+        {favorites.length ? `${favorites.length} of ${count()}` : "None yet"}
       </p>
 
-      <p className="mt-4 text-sm font-medium">Your own shelf</p>
+      <p className="text-muted-foreground mt-3 line-clamp-3 text-sm text-pretty">
+        {named ||
+          "Tap the heart on any card and the sound lands here, ready for next time."}
+      </p>
 
-      <div className="bg-muted mt-2 h-1.5 w-full overflow-hidden rounded-full">
-        {/* Floored at 2% once there is anything at all: one loop out of
-            eighty-four is a tenth of a pixel, and a bar that reads as empty
-            when it is not is worse than no bar. */}
-        <div
-          className="bg-primary h-full rounded-full transition-[width]"
-          style={{ width: `${favorites.length ? Math.max(share, 2) : 0}%` }}
-        />
-      </div>
+      <div className="mt-4 border-t pt-3">
+        <Button
+          className="w-full"
+          disabled={!favorites.length}
+          size="sm"
+          onClick={() => {
+            // Read on the click rather than subscribed to: this panel would
+            // otherwise re-render on every level anybody drags anywhere.
+            const { sounds } = useSoundStore.getState();
 
-      <div className="text-muted-foreground mt-2 flex items-baseline justify-between text-xs tabular-nums">
-        <span>0</span>
-        <span>{total}</span>
-      </div>
-
-      <div className="border-border mt-4 flex items-center gap-3 border-t pt-3">
-        <p className="text-muted-foreground text-xs text-balance">
-          Tap a heart on any card.
-        </p>
-
-        <a
-          className={cn(
-            buttonVariants({ size: "sm", variant: "outline" }),
-            "ml-auto shrink-0",
-          )}
-          href="#category-favorites"
+            override(
+              Object.fromEntries(
+                favorites.map((id) => [
+                  id,
+                  sounds[id].volume > 0 ? sounds[id].volume : 0.5,
+                ]),
+              ),
+            );
+            play();
+          }}
         >
-          See them
-        </a>
+          <PlayIcon />
+          Play them all
+        </Button>
       </div>
     </div>
   );

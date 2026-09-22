@@ -10,15 +10,24 @@ import { count } from "@/lib/sounds";
 export function Hero() {
   return (
     <section className="mx-auto w-full max-w-[1200px] px-6 pt-10 sm:px-8 sm:pt-14 xl:pt-8">
-      {/* Two columns, bottom-aligned — the reference lands the heading's last
-          line and the button row on very nearly the same rule, and `items-end`
-          is what keeps that true whatever either column's copy does.
+      {/* Two even columns, bottom-aligned — the reference lands the heading's
+          last line and the button row on very nearly the same rule, and
+          `items-end` is what keeps that true whatever either column's copy
+          does.
 
-          The split is measured rather than guessed: in the
-          reference the right column opens at 48% of the container and the gap
-          between them is 9% of it. Solved for this container that is
-          `[0.756fr_1fr]` at `gap-x-18` — not the half-and-half it looks like,
-          because the heading is the shorter column and the louder one.
+          The heading carries no measure of its own: the column is the measure,
+          and the copy is cut to the two lines that fill it. A `max-w` on top
+          of a column is a second opinion about the same width, and the two
+          disagree the moment either changes.
+
+          56px is a big type size for a column that is half of half a page, and
+          the copy is cut to what fits it in two. Measured rather than guessed:
+          at 56px this line takes two at a 318px column and two at 378, and
+          three at 238 — which is what 1280 gives, the one width where the
+          three-column shell is at its tightest. No headline under 28
+          characters takes two lines at 238 either, so that width is a
+          genuine trade rather than a copy problem: 56px and two lines cannot
+          both be had there.
 
           The breakpoint is the *centre column's*, not the window's: with a
           rail on each side the viewport stopped being what decides this, the
@@ -26,7 +35,7 @@ export function Hero() {
 
           Markup order is stack order — heading, then the line that explains
           it, then the buttons. */}
-      <div className="@xl:grid @xl:grid-cols-[0.756fr_1fr] @xl:items-end @xl:gap-x-18">
+      <div className="@xl:grid @xl:grid-cols-2 @xl:items-end @xl:gap-x-18">
         {/* 48px against the centre column, which is the reference's own 64px
             read as a fraction of its 1316px container. Arbitrary rather than
             a step, so it carries the display leading the scale gives 5xl and
@@ -34,8 +43,8 @@ export function Hero() {
             its own lines. The weight is 500 and it carries no utility here:
             the heading row in `globals.css` sets what a display line is set
             at, which is where that decision belongs. */}
-        <h1 className="max-w-[18ch] text-[40px]/[var(--leading-display)] tracking-tighter text-balance @xl:text-[48px]/[var(--leading-display)]">
-          Rain on a tent, a train at night, a room full of typing
+        <h1 className="text-[40px]/[var(--leading-display)] font-[450] tracking-tighter text-balance @xl:text-[56px]/[var(--leading-display)]">
+          A night train in the rain.
         </h1>
 
         <div className="mt-6 @xl:mt-0">
