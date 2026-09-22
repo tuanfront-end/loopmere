@@ -744,6 +744,61 @@ bên một tấm ảnh. Giờ là **Favourites**: phần duy nhất của sản 
 gì khác trên màn hình này báo cáo, và nó vừa đúng hình của reference — một con
 số lớn dần, một thanh dưới nó, và một lối vào.
 
+### H1 gõ chữ — và cái giá của một hộp chữ thay nội dung
+
+Bốn câu chạy vòng trong H1. Ba quyết định, cả ba đều là để **cái hộp đứng yên
+trong khi chữ bên trong đổi**.
+
+**Không dùng thư viện.** Motion có `Typewriter` nhưng nằm sau Motion+ (trả
+phí). Mọi gói miễn phí — `react-type-animation`, `typewriter-effect` — đều gõ
+bằng cách *nối thêm* vào một node. Nghĩa là giữa hai frame, `h1.textContent`
+đọc ra `"A night tra"`: với crawler, và với screen reader đáp xuống đúng lúc
+đó. Ở đây phần chưa gõ chỉ `opacity-0` chứ vẫn nằm trong flow và trong
+accessibility tree — đo 240 mẫu liên tiếp, **không lần nào** H1 không phải một
+câu trọn vẹn.
+
+Phần đuôi giữ chỗ còn giải quyết chuyện thứ hai: `text-balance` cân lại hai
+dòng **mỗi lần chuỗi đổi**, nên gõ kiểu nối thêm sẽ làm tiêu đề giật chữ qua
+lại suốt. Giữ nguyên cả câu thì line break được tính một lần cho mỗi câu. Đo:
+vị trí hai dòng chỉ có **đúng một giá trị** trong 12 giây, chiều cao cũng vậy.
+
+Câu đầu được server-render nguyên vẹn, caret chỉ mọc sau khi mount — nên first
+paint đọc được ngay và HTML gửi đi chỉ có một câu, không nhân đôi.
+
+**Caret là border-right của một span rỗng.** `inline-block` hay một thanh
+absolute đều tạo **break opportunity** giữa lòng từ, nên tiêu đề sẽ xuống dòng
+lại mỗi khi caret đi qua một chữ; ranh giới giữa hai `inline` thường thì không
+— `"lo|ng"` vẫn là một từ với line breaker. Đặt border lên chính span chứa chữ
+thì được, nhưng nó cao bằng font của span đó: một vạch từ ascender xuống dưới
+descender, thò hẳn dưới dòng. Cho caret một element riêng thì nó có font-size
+riêng, và font-size là **đòn bẩy duy nhất** đặt chiều cao một inline box
+(`height` không áp dụng). Giải từ metrics của chính face này ra `0.64em` +
+`vertical-align: 0.14em`; đo lại bằng một mốc baseline mà caret không xê dịch
+được: **0.71em trên baseline** so với cap height 0.716em, và 0.09em dưới.
+`-mr` trả lại đúng bề rộng border, nên line break giống hệt lúc có và không có
+caret.
+
+**Bốn câu được chọn bằng thước, không phải bằng tai.** Một câu chạy trong hộp
+cố định phải xuống **đúng hai dòng ở mọi bề rộng hộp nhận được** — nếu không,
+tiêu đề đổi chiều cao bốn lần một phút. Con số quyết định là cột hẹp nhất mà
+câu còn nằm hai dòng, quy ra `em` để so được giữa sáu cỡ. Thang hiện tại đưa ra
+cột chật nhất là **5.67em** (272px ở 48px — máy 320px), và bốn câu này đo
+5.33 / 5.02 / 5.31 / 5.35. Đầu kia cũng có thước: quá khoảng 8.2em thì câu sụp
+về một dòng, cột rộng nhất thang đưa ra là 8.2em, trần thấp nhất của bốn câu là
+9.77em.
+
+Đo 17 ứng viên, **11 câu rớt**, trong đó có `"A cafe that never closes."`
+(5.62em) và `"A storm you can sleep through."` (5.90em) — hai câu này đã từng ở
+trong bản đầu và làm tiêu đề nhảy 3 dòng ở 320/390/1280/1440. Kiểm lại cuối:
+23 bề rộng × 4 câu = **92 tổ hợp, tất cả hai dòng, `box` giống hệt nhau**.
+
+Cả bốn mở đầu giống nhau là cố ý: caret chỉ xoá về phần `"A "` chung, nên vòng
+lặp đọc ra như một câu đang được viết lại chứ không phải bốn câu bị xoá trắng.
+
+`prefers-reduced-motion` thì không có caret, không có vòng lặp — chỉ còn câu
+đầu, đứng yên. Không có xử lý visibility: tab chạy nền bị browser bóp
+`setTimeout` xuống một giây trở lên, vòng lặp tự nghỉ.
+
 ### Hai số nhỏ
 
 `MixRow` — thumb chỉ cách mép dưới **3px** dù row khai `p-3`. Không phải lỗi

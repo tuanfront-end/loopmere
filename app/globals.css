@@ -124,6 +124,22 @@
       transform: translateX(-50%);
     }
   }
+
+  /* The heading's caret. steps(1) so it snaps rather than fades — a caret that
+     eases is a glow, and the eye reads it as a highlight instead of a cursor.
+
+     Only the half-way frame is written, so the solid state is the element's own
+     border-color. That is what makes it safe under the blanket
+     prefers-reduced-motion rule further down: an animation cut to 0.01ms lands
+     back on the element's own value, which here is the caret drawn, not a
+     caret that has vanished. */
+  --animate-caret: caret 1.05s steps(1, end) infinite;
+
+  @keyframes caret {
+    50% {
+      border-color: transparent;
+    }
+  }
 }
 
 /* A scrollbar on a rail inside the page is chrome the design did not draw, and

@@ -2,10 +2,37 @@ import Image from "next/image";
 
 import { HeroFavourites, HeroStarters } from "./hero-panels";
 import { ShuffleButton } from "./shuffle-button";
+import { Typewriter } from "./typewriter";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { count } from "@/lib/sounds";
+
+/* Four scenes the shelves can actually build. They open identically on
+   purpose: the caret deletes back only to the "A " they share, which reads as
+   one sentence being rewritten rather than four unrelated ones being wiped.
+
+   The first is server-rendered whole — it is what a crawler and the first
+   paint both see — so it is the one that has to stand on its own.
+
+   Each was picked by measurement, not by ear. A sentence that cycles through a
+   fixed box has to break into two lines at *every* width the box takes, or the
+   heading changes height four times a minute; so the number that matters is
+   the narrowest column it still fits two lines in, expressed in em so it can
+   be compared across the six sizes below. The ladder's tightest column is
+   5.67em — 272px at 48px, which is a 320px phone — and these four measure
+   5.33, 5.02, 5.31 and 5.35. Seventeen candidates were measured; eleven of
+   them, "A cafe that never closes." among them, were over it and are not here.
+
+   The other end is measured too: past about 8.2em a sentence collapses onto
+   one line, and the widest column this ladder hands out is 8.2em. The
+   narrowest ceiling of the four is 9.77em. */
+const LINES = [
+  "A night train in the rain.",
+  "A fire and a long book.",
+  "A quiet hour before six.",
+  "A tent and a lot of wind.",
+];
 
 export function Hero() {
   return (
@@ -49,8 +76,8 @@ export function Hero() {
             its own lines. The weight is 500 and it carries no utility here:
             the heading row in `globals.css` sets what a display line is set
             at, which is where that decision belongs. */}
-        <h1 className="text-5xl font-[450] tracking-tighter text-balance @sm:text-6xl @xl:text-4xl @min-[40.5rem]:text-5xl @min-[48.5rem]:text-6xl @min-[56.5rem]:text-7xl">
-          A night train in the rain.
+        <h1 className="min-h-[2lh] text-5xl font-[450] tracking-tighter text-balance @sm:text-6xl @xl:text-4xl @min-[40.5rem]:text-5xl @min-[48.5rem]:text-6xl @min-[56.5rem]:text-7xl">
+          <Typewriter lines={LINES} />
         </h1>
 
         <div className="mt-6 @xl:mt-0">
