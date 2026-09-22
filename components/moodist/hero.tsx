@@ -20,14 +20,20 @@ export function Hero() {
           of a column is a second opinion about the same width, and the two
           disagree the moment either changes.
 
-          56px is a big type size for a column that is half of half a page, and
-          the copy is cut to what fits it in two. Measured rather than guessed:
-          at 56px this line takes two at a 318px column and two at 378, and
-          three at 238 — which is what 1280 gives, the one width where the
-          three-column shell is at its tightest. No headline under 28
-          characters takes two lines at 238 either, so that width is a
-          genuine trade rather than a copy problem: 56px and two lines cannot
-          both be had there.
+          Six sizes, and every breakpoint is a measurement rather than a
+          preference. This line needs a 192px column to sit in two at `4xl`,
+          256 at `5xl`, 320 at `6xl` and 384 at `7xl` — measured by growing the
+          box a pixel at a time until the third line goes away. The column is
+          half the container less the gap, so those four numbers become four
+          container widths: 520, 648, 776 and 904.
+
+          The step at `@xl` goes *down*, from `6xl` to `4xl`, and that is the
+          layout rather than a mistake: it is the width where one full-width
+          column becomes two half ones, so the measure halves and the type has
+          to halve with it. `7xl` lands at a 904px container, which is 1920 on
+          this shell — and at 1024, where there are no rails to pay for.
+
+          Two lines at all eight widths measured.
 
           The breakpoint is the *centre column's*, not the window's: with a
           rail on each side the viewport stopped being what decides this, the
@@ -43,7 +49,7 @@ export function Hero() {
             its own lines. The weight is 500 and it carries no utility here:
             the heading row in `globals.css` sets what a display line is set
             at, which is where that decision belongs. */}
-        <h1 className="text-[40px]/[var(--leading-display)] font-[450] tracking-tighter text-balance @xl:text-[56px]/[var(--leading-display)]">
+        <h1 className="text-5xl font-[450] tracking-tighter text-balance @sm:text-6xl @xl:text-4xl @min-[40.5rem]:text-5xl @min-[48.5rem]:text-6xl @min-[56.5rem]:text-7xl">
           A night train in the rain.
         </h1>
 
