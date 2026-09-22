@@ -32,6 +32,32 @@ export const useSettingsStore = create<SettingsStore>()(
     {
       merge: (persisted, current) =>
         merge(current, persisted as Partial<SettingsStore>),
+
+      /**
+       * Changing a default reaches nobody who already has storage, and after
+       * a day of use that is everybody. Version 0 shipped both levels at 1,
+       * so the page came up at 90 and snapped back to 100 the moment
+       * `rehydrate()` ran.
+       *
+       * A stored 1 cannot be told apart from a chosen 1 — v0 recorded the
+       * number and not whether anyone had touched the slider — so this moves
+       * both. The cost lands on people who deliberately set full volume, and
+       * it is one drag to put back.
+       */
+      migrate: (persisted, version) => {
+        const state = (persisted ?? {}) as Partial<SettingsStore>;
+
+        if (version === 0) {
+          return {
+            ...state,
+            alarmVolume: state.alarmVolume === 1 ? 0.9 : state.alarmVolume,
+            globalVolume: state.globalVolume === 1 ? 0.9 : state.globalVolume,
+          } as SettingsStore;
+        }
+
+        return state as SettingsStore;
+      },
+
       name: 'moodist-settings',
       partialize: state => ({
         alarmVolume: state.alarmVolume,
@@ -39,7 +65,7 @@ export const useSettingsStore = create<SettingsStore>()(
       }),
       skipHydration: true,
       storage: createJSONStorage(() => localStorage),
-      version: 0,
+      version: 1,
     },
   ),
 );

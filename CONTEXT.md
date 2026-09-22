@@ -738,6 +738,16 @@ nhiêu** — chứ không phải ở từng call site, vì mỗi call site đang
 `Levels` mặc định **90%** thay vì 100. Đầy là đỉnh slider, nên một mix đến đó
 rồi thì chỉ còn đường đi xuống.
 
+**Đổi một default không với tới được ai đã có localStorage** — và sau một ngày
+dùng thì đó là tất cả mọi người. Trang lên 90 rồi bật ngược về 100 ngay khi
+`rehydrate()` chạy. Nên `version` lên 1 kèm một `migrate`.
+
+Một con số 1 đã lưu thì **không phân biệt được với một con số 1 do người dùng
+chọn** — v0 ghi con số chứ không ghi việc slider có bị đụng vào hay không. Nên
+migrate chuyển cả hai, và cái giá rơi vào người cố ý để full. Một cú kéo là về.
+Mức nào khác 1 thì không đụng tới: đo với `0.4 / 0.65` → giữ nguyên, chỉ version
+lên 1.
+
 ## Toolbar, toolbox và modals
 
 Mười ba panel, tất cả đi qua **một** `ToolPanel` bọc shadcn `Dialog`: escape,
