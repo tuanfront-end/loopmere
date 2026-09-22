@@ -200,8 +200,18 @@
      than one and neither face is set with the other's tracking. Pointed at the
      body row here, which is the one-family case: swapping to a pair is these
      five lines and the --font-heading above, and no component changes. */
-  --heading-weight-normal: var(--font-weight-normal);
-  --heading-weight-medium: var(--font-weight-medium);
+  /* The heading row stops pointing at the body row for weight. 500 is what a
+     display line is set at here and 600 is its emphasis step — a real two-step
+     row rather than the one-family shorthand, and Google Sans Flex is variable
+     so both are the face rather than a synthesis.
+
+     Written here because this is the layer the decision belongs to. Putting
+     `font-medium` on an h1 instead is the thing `type-check` refuses, and it
+     is right to: from `text-3xl` up the size is the emphasis, so a weight
+     utility at a call site is a second emphasis arguing with the first. A
+     face's own weight is not that — it is what the face is set at. */
+  --heading-weight-normal: 500;
+  --heading-weight-medium: 600;
   --heading-tracking-tight: var(--tracking-tight);
   --heading-tracking-tighter: var(--tracking-tighter);
   --heading-leading-display: var(--leading-display);

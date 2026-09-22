@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { HeroLevels, HeroStarters } from "./hero-panels";
+import { HeroFavourites, HeroStarters } from "./hero-panels";
 import { ShuffleButton } from "./shuffle-button";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -27,12 +27,14 @@ export function Hero() {
           Markup order is stack order — heading, then the line that explains
           it, then the buttons. */}
       <div className="@xl:grid @xl:grid-cols-[0.756fr_1fr] @xl:items-end @xl:gap-x-18">
-        {/* 40px against the centre column, which is the reference's own 64px
+        {/* 48px against the centre column, which is the reference's own 64px
             read as a fraction of its 1316px container. Arbitrary rather than
             a step, so it carries the display leading the scale gives 5xl and
             up — a heading at this size on default leading opens gaps between
-            its own lines. */}
-        <h1 className="max-w-[18ch] text-4xl tracking-tighter text-balance @xl:text-[40px]/[var(--leading-display)]">
+            its own lines. The weight is 500 and it carries no utility here:
+            the heading row in `globals.css` sets what a display line is set
+            at, which is where that decision belongs. */}
+        <h1 className="max-w-[18ch] text-[40px]/[var(--leading-display)] tracking-tighter text-balance @xl:text-[48px]/[var(--leading-display)]">
           Rain on a tent, a train at night, a room full of typing
         </h1>
 
@@ -91,7 +93,7 @@ export function Hero() {
         </div>
 
         <div className="absolute right-[2.4%] bottom-[3.7%] hidden w-[30%] min-w-[248px] @xl:block">
-          <HeroLevels />
+          <HeroFavourites />
         </div>
       </div>
 
@@ -99,7 +101,7 @@ export function Hero() {
         <HeroStarters />
 
         <div className="@xl:hidden">
-          <HeroLevels />
+          <HeroFavourites />
         </div>
       </div>
     </section>

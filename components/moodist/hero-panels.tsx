@@ -1,19 +1,21 @@
 "use client";
 
-import { PlayIcon } from "@heroicons/react/16/solid";
+import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
+import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { SoundIcon } from "./sound-icon";
 
-import { Button } from "@/components/ui/button";
-import { useSettingsStore } from "@/stores/settings";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { count } from "@/lib/sounds";
 import { useSoundStore } from "@/stores/sound";
 
 const SHELL = "bg-card/90 shadow-soft-lg rounded-md p-4 backdrop-blur sm:p-5";
 
 /**
- * Three mixes somebody already made, because the hardest thing about a page
- * of eighty-four loops is the first click.
+ * Three mixes somebody already made, because the hardest thing about a page of
+ * eighty-four loops is the first click.
  *
  * This replaced a panel that drew the six sounds currently picked as a grid of
  * tiles. That one only ever restated what the panel on the other side of the
@@ -35,9 +37,29 @@ const STARTERS: Array<{ label: string; sounds: Record<string, number> }> = [
   },
 ];
 
+/** The ids a starter holds, in one order, so two mixes can be compared. */
+const signature = (ids: Array<string>) => [...ids].sort().join();
+
 export function HeroStarters() {
   const override = useSoundStore((state) => state.override);
   const play = useSoundStore((state) => state.play);
+  const togglePlay = useSoundStore((state) => state.togglePlay);
+  const isPlaying = useSoundStore((state) => state.isPlaying);
+
+  /** A string rather than an array: the selector runs on every store write. */
+  const picked = useSoundStore((state) =>
+    signature(
+      Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected),
+    ),
+  );
+
+  const running = useMemo(
+    () =>
+      STARTERS.find(
+        (starter) => signature(Object.keys(starter.sounds)) === picked,
+      )?.label ?? null,
+    [picked],
+  );
 
   return (
     <div className={SHELL}>
@@ -48,100 +70,130 @@ export function HeroStarters() {
       </p>
 
       <ul className="mt-3 flex flex-col gap-1">
-        {STARTERS.map((starter) => (
-          <li key={starter.label}>
-            <button
-              aria-label={`Play ${starter.label}, a mix of ${Object.keys(starter.sounds).length} loops`}
-              className="hover:bg-accent flex w-full items-center gap-2 rounded-sm p-2.5 text-left transition-colors"
-              onClick={() => {
-                override(starter.sounds);
-                play();
-              }}
-            >
-              <span aria-hidden="true" className="flex shrink-0 gap-0.5">
-                {Object.keys(starter.sounds).map((id) => (
-                  <SoundIcon id={id} key={id} size={20} />
-                ))}
-              </span>
+        {STARTERS.map((starter) => {
+          const active = starter.label === running;
+          const sounding = active && isPlaying;
 
-              <span className="truncate text-sm font-medium">
-                {starter.label}
-              </span>
+          return (
+            <li key={starter.label}>
+              {/* The row is the transport once it is the mix that is on. A
+                  play triangle that stays a play triangle while the thing it
+                  started is audible is the control lying about the state it
+                  is in — so it turns over, and the click stops meaning "load
+                  this" and starts meaning "pause this". */}
+              <button
+                aria-label={
+                  sounding
+                    ? `Pause ${starter.label}`
+                    : active
+                      ? `Play ${starter.label} again`
+                      : `Play ${starter.label}, a mix of ${Object.keys(starter.sounds).length} loops`
+                }
+                aria-pressed={active}
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-sm p-2.5 text-left transition-colors",
+                  active
+                    ? "bg-chip text-primary-ink"
+                    : "hover:bg-accent text-foreground",
+                )}
+                onClick={() => {
+                  if (active) {
+                    togglePlay();
+                    return;
+                  }
 
-              <PlayIcon
-                aria-hidden="true"
-                className="text-muted-foreground ml-auto size-3.5 shrink-0"
-              />
-            </button>
-          </li>
-        ))}
+                  override(starter.sounds);
+                  play();
+                }}
+              >
+                <span aria-hidden="true" className="flex shrink-0 gap-0.5">
+                  {Object.keys(starter.sounds).map((id) => (
+                    <SoundIcon id={id} key={id} size={20} />
+                  ))}
+                </span>
+
+                <span className="truncate text-sm font-medium">
+                  {starter.label}
+                </span>
+
+                {sounding ? (
+                  <PauseIcon
+                    aria-hidden="true"
+                    className="ml-auto size-3.5 shrink-0"
+                  />
+                ) : (
+                  <PlayIcon
+                    aria-hidden="true"
+                    className={cn(
+                      "ml-auto size-3.5 shrink-0",
+                      !active && "text-muted-foreground",
+                    )}
+                  />
+                )}
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
 }
 
-/** The transport and the one level that governs every other one. */
-export function HeroLevels() {
-  const isPlaying = useSoundStore((state) => state.isPlaying);
-  const togglePlay = useSoundStore((state) => state.togglePlay);
-  const noSelected = useSoundStore((state) => state.noSelected());
+/**
+ * The shelf you build yourself.
+ *
+ * This slot held the transport and a readout of the global level, which is the
+ * pair the right rail already draws with room to label properly — two panels
+ * saying the same thing across one photograph. Favourites is the one part of
+ * the product nothing else on this screen reports, and it takes the
+ * reference's shape without arguing: a number that grows, a bar under it, and
+ * a way in.
+ */
+export function HeroFavourites() {
+  const favorites = useSoundStore(useShallow((state) => state.getFavorites()));
 
-  const selected = useSoundStore(
-    useShallow(
-      (state) =>
-        Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected)
-          .length,
-    ),
-  );
-
-  const globalVolume = useSettingsStore((state) => state.globalVolume);
-  const percent = Math.round(globalVolume * 100);
+  const total = count();
+  const share = (favorites.length / total) * 100;
 
   return (
     <div className={SHELL}>
-      <p className="text-muted-foreground text-xs">
-        {noSelected ? "Nothing playing" : isPlaying ? "Playing now" : "Paused"}
-      </p>
+      <p className="text-muted-foreground text-xs">Saved</p>
 
       <p className="mt-1 text-2xl tracking-tight tabular-nums">
-        {selected} {selected === 1 ? "loop" : "loops"}
+        {favorites.length} of {total}
       </p>
 
-      <p className="mt-4 text-sm font-medium">Everything</p>
+      <p className="mt-4 text-sm font-medium">Your own shelf</p>
 
-      {/* A readout, not a control: the rail and the Levels panel are where
-          this is set, and a second slider here would be a third place to
-          change one number. */}
       <div className="bg-muted mt-2 h-1.5 w-full overflow-hidden rounded-full">
+        {/* Floored at 2% once there is anything at all: one loop out of
+            eighty-four is a tenth of a pixel, and a bar that reads as empty
+            when it is not is worse than no bar. */}
         <div
           className="bg-primary h-full rounded-full transition-[width]"
-          style={{ width: `${percent}%` }}
+          style={{ width: `${favorites.length ? Math.max(share, 2) : 0}%` }}
         />
       </div>
 
       <div className="text-muted-foreground mt-2 flex items-baseline justify-between text-xs tabular-nums">
         <span>0</span>
-        <span>{percent}%</span>
+        <span>{total}</span>
       </div>
 
-      {/* Four words and a bare label. The reference gives this row a 393px
-          card; at the width the centre column actually has, the sentence that
-          was here ran to three lines and shouldered the button off the end of
-          them. */}
       <div className="border-border mt-4 flex items-center gap-3 border-t pt-3">
         <p className="text-muted-foreground text-xs text-balance">
-          Saved in this browser.
+          Tap a heart on any card.
         </p>
 
-        <Button
-          aria-label={isPlaying ? "Pause the mix" : "Play the mix"}
-          className="ml-auto shrink-0"
-          disabled={noSelected}
-          size="sm"
-          onClick={togglePlay}
+        <a
+          className={cn(
+            buttonVariants({ size: "sm", variant: "outline" }),
+            "ml-auto shrink-0",
+          )}
+          href="#category-favorites"
         >
-          {isPlaying ? "Pause" : "Play"}
-        </Button>
+          See them
+        </a>
       </div>
     </div>
   );

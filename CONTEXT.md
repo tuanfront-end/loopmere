@@ -695,11 +695,21 @@ Breakpoint đọc **cột giữa** chứ không đọc cửa sổ (`@xl`), cùng
 card. Thứ tự trong markup là thứ tự nó xếp chồng: tiêu đề → dòng giải thích →
 hai nút.
 
-Tiêu đề **40px** ở cột giữa — chính là 64px của reference đọc theo tỉ lệ
-container 1316px của nó. Viết bằng arbitrary chứ không phải một bậc của thang,
-để nó mang được leading display mà thang chỉ cấp từ `5xl` trở lên: một tiêu đề
-cỡ này trên leading mặc định sẽ há ra giữa các dòng của chính nó. Hai cột
-`items-end` — reference cho dòng cuối của tiêu đề và hàng nút rơi gần như cùng
+Tiêu đề **48px** ở cột giữa, 40px dưới đó. Viết bằng arbitrary chứ không phải
+một bậc của thang, để nó mang được leading display mà thang chỉ cấp từ `5xl`
+trở lên: một tiêu đề cỡ này trên leading mặc định sẽ há ra giữa các dòng của
+chính nó.
+
+**Weight 500, và nó không nằm ở call site.** `font-medium` trên một `h1` bị
+`type-check` chặn, đúng: từ `text-3xl` trở lên thì **cỡ chữ là nhấn**, nên một
+utility weight ở call site là cái nhấn thứ hai cãi nhau với cái thứ nhất. Chỗ
+của quyết định này là **hàng type của face** — `--heading-weight-normal: 500`,
+`--heading-weight-medium: 600` — tức hàng heading thôi trỏ vào hàng body và
+thành một hàng hai bậc thật. Mọi heading nặng lên theo, kể cả `h2` của các kệ,
+và đó là điều đúng: một hệ type mà chỉ một tiêu đề nặng hơn thì tệ hơn một hệ
+mà face đơn giản được set ở 500.
+
+Hai cột `items-end` — reference cho dòng cuối của tiêu đề và hàng nút rơi gần như cùng
 một vạch, và `items-end` giữ điều đó đúng bất kể copy của cột nào đổi.
 
 **Panel trái từng là một lưới tile** vẽ sáu sound đang chọn. Nó chỉ nói lại
@@ -720,12 +730,19 @@ accessibility tree lẫn màn hình, nên không có gì bị đọc hai lần.
 Dưới `@xl` khung ảnh vuông lại và hai panel rơi xuống thành stack: một màn hình
 342px không gánh nổi một card rộng 26% có ảnh bên trong mà vẫn đọc được.
 
-Nội dung của hai panel là **state thật**, không phải chữ trang trí — khung ảnh
-trong panel trái đọc chính cái store mà lưới card ghi vào, các tile được chọn
-sáng rõ còn phần còn lại lấy từ các kệ ở một phần ba cường độ, để một mix chỉ
-có một sound vẫn ra hình. Panel phải là transport cộng một readout của
-`--global-volume`; nó **không** phải slider, vì rail và panel Levels đã là hai
-chỗ chỉnh số đó rồi.
+**Hàng starter là transport một khi nó là mix đang chạy.** Một hình tam giác
+play mà vẫn là tam giác play trong lúc thứ nó khởi động đang phát ra tiếng là
+cái control **nói dối về trạng thái của chính nó**. Nên nó lật: hàng nhận nền
+`bg-chip` với mực brand, glyph thành pause, và cú bấm thôi nghĩa là "nạp cái
+này" mà thành "dừng cái này". So khớp bằng chữ ký — id của mix đang chọn sắp
+xếp rồi nối lại — chứ không phải bằng một cờ, để nó vẫn đúng khi người dùng tự
+tay dựng lại đúng mix đó.
+
+**Panel phải từng là transport cộng readout global volume.** Đó đúng là cặp mà
+rail bên phải đã vẽ sẵn với đủ chỗ ghi nhãn — hai panel nói cùng một điều ở hai
+bên một tấm ảnh. Giờ là **Favourites**: phần duy nhất của sản phẩm mà không có
+gì khác trên màn hình này báo cáo, và nó vừa đúng hình của reference — một con
+số lớn dần, một thanh dưới nó, và một lối vào.
 
 ### Hai số nhỏ
 
