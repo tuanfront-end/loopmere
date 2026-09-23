@@ -678,36 +678,48 @@ dưới đây được đo từ ảnh rồi quy về tỉ lệ của container, 
 
 | | Reference | Bản này |
 |---|---|---|
-| Cột phải mở ở | 48.0% | **48.0%** |
-| Khoảng giữa hai cột | 9.0% | 8.7% |
+| Cột phải mở ở | 48.0% | 50% + 36px |
+| Khoảng giữa hai cột | 9.0% | 72px (`gap-x-18`) |
 | Tỉ lệ ảnh | 1.94 | **1.94** |
-| Card trái — left / top | 1.4% / 3.2% | **1.4% / 3.2%** |
+| Card trái — left / top | 1.4% / 3.2% | 14.4px, cố định |
 | Card trái — rộng | 25.9% | 26% |
-| Card phải — right / bottom | 2.4% / 3.7% | **2.4% / 3.7%** |
+| Card phải — right / bottom | 2.4% / 3.7% | 14.4px, cố định |
 | Card phải — rộng | 29.9% | 30% |
 
-Grid ra `[0.756fr_1fr]` ở `gap-x-18` — **không phải** nửa-nửa như nhìn vào
-tưởng, vì tiêu đề là cột *ngắn hơn* mà lại là cột to tiếng hơn. Inset của hai
-card viết bằng phần trăm chứ không phải số px tròn, để chúng giữ đúng tỉ lệ của
-reference ở bất kỳ bề rộng nào cột giữa đang có.
+Hai cột **bằng nhau**, không theo 48% của reference: tiêu đề không mang `max-w`
+riêng, cột chính là measure, và copy được cắt cho vừa hai dòng lấp đầy cột đó.
+
+**Inset của hai card là số cố định, không theo phần trăm của reference.** Khung
+ảnh, card và hàng/nút bên trong là **ba góc đồng tâm**: khung `xl` 33.6 = card
+`md` 19.2 + hở 14.4, và card 19.2 ≈ hàng/nút `sm` 14.4 + hở 6. Hở theo phần trăm
+thì lớn theo cột còn radius thì đứng yên, nên các góc từng lệch đồng tâm 6–20px,
+càng rộng càng lệch. `--panel-inset` là hai token trừ nhau, nên đổi `--radius`
+thì nó tự đúng theo. Hàng starter cuối và nút "Play them all" tràn 10px ra cả
+đáy lẫn hai bên; card giữ `p-4` ở mọi bề rộng (card sound lên `p-5` từ `sm`) để
+khe 6 ấy không đổi. Đã dựng cả hai bậc bên cạnh: khung `2xl` trên card `lg`, hở
+19.2, tròn quá so với tấm ảnh; khung `xl` trên card `lg`, hở 9.6, làm card dính
+vào góc và khung cắt mất bóng.
 
 Breakpoint đọc **cột giữa** chứ không đọc cửa sổ (`@xl`), cùng lý do với lưới
 card. Thứ tự trong markup là thứ tự nó xếp chồng: tiêu đề → dòng giải thích →
 hai nút.
 
-Tiêu đề **48px** ở cột giữa, 40px dưới đó. Viết bằng arbitrary chứ không phải
-một bậc của thang, để nó mang được leading display mà thang chỉ cấp từ `5xl`
-trở lên: một tiêu đề cỡ này trên leading mặc định sẽ há ra giữa các dòng của
-chính nó.
+Tiêu đề là **thang sáu bậc** đọc theo cột giữa, và mỗi breakpoint là một phép
+đo chứ không phải một sở thích — số đo nằm ở comment trên lưới hai cột trong
+`hero.tsx`. Cỡ nào cũng là bậc của thang: `text-4xl` đã vào hàng display trong
+`globals.css`, nên không còn cần một cỡ arbitrary để có leading display.
 
-**Weight 500, và nó không nằm ở call site.** `font-medium` trên một `h1` bị
-`type-check` chặn, đúng: từ `text-3xl` trở lên thì **cỡ chữ là nhấn**, nên một
-utility weight ở call site là cái nhấn thứ hai cãi nhau với cái thứ nhất. Chỗ
-của quyết định này là **hàng type của face** — `--heading-weight-normal: 500`,
-`--heading-weight-medium: 600` — tức hàng heading thôi trỏ vào hàng body và
-thành một hàng hai bậc thật. Mọi heading nặng lên theo, kể cả `h2` của các kệ,
-và đó là điều đúng: một hệ type mà chỉ một tiêu đề nặng hơn thì tệ hơn một hệ
-mà face đơn giản được set ở 500.
+**Hàng heading đứng ở 500; riêng H1 là 460, đặt ở call site, cố ý.**
+`font-medium` trên một `h1` bị `type-check` chặn, đúng: từ `text-3xl` trở lên
+thì **cỡ chữ là nhấn**, nên một utility weight nặng thêm ở call site là cái nhấn
+thứ hai cãi nhau với cái thứ nhất. Chỗ của weight chung là **hàng type của
+face** — `--heading-weight-normal: 500`, `--heading-weight-medium: 600` — nên
+mọi heading, kể cả `h2` của các kệ, đứng ở 500. H1 đi hướng ngược lại: nhẹ hơn
+hàng một chút (450, rồi 460), chỉnh bằng mắt, vì chữ cỡ display đọc ra nặng hơn
+chữ nhỏ ở cùng một weight. Google Sans Flex là font variable nên 460 là 460 thật
+chứ không bị làm tròn về 500. Đây là chỗ lệch khỏi Soft Neutral — skill không
+cho weight arbitrary trên chữ display — và là weight call-site duy nhất trên một
+heading.
 
 Hai cột `items-end` — reference cho dòng cuối của tiêu đề và hàng nút rơi gần như cùng
 một vạch, và `items-end` giữ điều đó đúng bất kể copy của cột nào đổi.
@@ -741,8 +753,10 @@ tay dựng lại đúng mix đó.
 **Panel phải từng là transport cộng readout global volume.** Đó đúng là cặp mà
 rail bên phải đã vẽ sẵn với đủ chỗ ghi nhãn — hai panel nói cùng một điều ở hai
 bên một tấm ảnh. Giờ là **Favourites**: phần duy nhất của sản phẩm mà không có
-gì khác trên màn hình này báo cáo, và nó vừa đúng hình của reference — một con
-số lớn dần, một thanh dưới nó, và một lối vào.
+gì khác trên màn hình này báo cáo — một con số, tên các sound đã lưu, và một nút
+phát cả loạt. Thanh tiến độ của reference **đã bỏ**: kệ không đi tới đâu cả,
+nên ba trên tám mươi tư là ba sound có người thích chứ không phải 4% của một
+hành trình.
 
 ### H1 gõ chữ — và cái giá của một hộp chữ thay nội dung
 

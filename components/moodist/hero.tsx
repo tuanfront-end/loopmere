@@ -69,14 +69,16 @@ export function Hero() {
           Markup order is stack order — heading, then the line that explains
           it, then the buttons. */}
       <div className="@xl:grid @xl:grid-cols-2 @xl:items-end @xl:gap-x-18">
-        {/* 48px against the centre column, which is the reference's own 64px
-            read as a fraction of its 1316px container. Arbitrary rather than
-            a step, so it carries the display leading the scale gives 5xl and
-            up — a heading at this size on default leading opens gaps between
-            its own lines. The weight is 500 and it carries no utility here:
-            the heading row in `globals.css` sets what a display line is set
-            at, which is where that decision belongs. */}
-        <h1 className="min-h-[2lh] text-5xl font-[450] tracking-tighter text-balance @sm:text-6xl @xl:text-4xl @min-[40.5rem]:text-5xl @min-[48.5rem]:text-6xl @min-[56.5rem]:text-7xl">
+        {/* Every size is a step on the scale — the ladder and its
+            measurements are in the comment above — and every step carries
+            display leading, `text-4xl` included, from the display rows in
+            `globals.css`.
+
+            The weight is 460, the one weight set at the call site on a
+            heading, and on purpose: set by eye a shade under the heading
+            row's 500, because large type reads heavier than small at one
+            weight. */}
+        <h1 className="min-h-[2lh] text-5xl font-[460] tracking-tighter text-balance @sm:text-6xl @xl:text-4xl @min-[40.5rem]:text-5xl @min-[48.5rem]:text-6xl @min-[56.5rem]:text-7xl">
           <Typewriter lines={LINES} />
         </h1>
 
@@ -105,8 +107,25 @@ export function Hero() {
           it. 1.94:1 from `@xl` up, which is the reference's own ratio; below
           that the frame goes squarer and the two panels drop out of it into a
           stack, because a 342px-wide phone cannot carry a 26% card with a
-          picture in it and still be read. */}
-      <div className="relative mt-10 aspect-[16/11] overflow-hidden rounded-lg @xl:mt-12 @xl:aspect-[1.94]">
+          picture in it and still be read.
+
+          From `@xl`, where the first panel moves onto it, the frame is the
+          outer ring of three concentric corners — frame `xl`, panel `md`,
+          row and button `sm` — and each is the one inside it plus the space
+          between them. So the panels sit a fixed `--panel-inset` in from the
+          edge, the two radii subtracted, and not a percentage of the frame.
+          They were a percentage, taken from the reference, and a percentage
+          grows with the column while a radius does not, so the corners ran
+          between 6 and 20px off concentric, further the wider the column.
+          14.4 is about what those percentages averaged between 1440 and
+          1600.
+
+          Read against the shortest side, 33.6 is 12% of the frame where
+          `@xl` first applies and less at every width above it. Both
+          neighbours were built: `2xl` over `lg`, 19.2 apart, read too round
+          for a photograph this size, and `xl` over `lg`, 9.6 apart, left the
+          panels stuck in the corners with their shadow clipped by the frame. */}
+      <div className="relative mt-10 aspect-[16/11] overflow-hidden rounded-lg [--panel-inset:calc(var(--radius-xl)_-_var(--radius-md))] @xl:mt-12 @xl:aspect-[1.94] @xl:rounded-xl">
         <Image
           alt="A grass bank running up to a sky of tall cumulus, late in the day"
           className="object-cover"
@@ -130,11 +149,11 @@ export function Hero() {
             leave 44% of it showing, and the same two at their floors on a
             548px image leave four per cent. Below that width this one drops
             into the stack and the photograph gets to be a photograph. */}
-        <div className="absolute top-[3.2%] left-[1.4%] hidden w-[26%] min-w-[236px] @3xl:block">
+        <div className="absolute top-(--panel-inset) left-(--panel-inset) hidden w-[26%] min-w-[236px] @3xl:block">
           <HeroStarters />
         </div>
 
-        <div className="absolute right-[2.4%] bottom-[3.7%] hidden w-[30%] min-w-[248px] @xl:block">
+        <div className="absolute right-(--panel-inset) bottom-(--panel-inset) hidden w-[30%] min-w-[248px] @xl:block">
           <HeroFavourites />
         </div>
       </div>

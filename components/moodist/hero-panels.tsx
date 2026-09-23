@@ -12,7 +12,13 @@ import { cn } from "@/lib/utils";
 import { count } from "@/lib/sounds";
 import { useSoundStore } from "@/stores/sound";
 
-const SHELL = "bg-card/90 shadow-soft-lg rounded-md p-4 backdrop-blur sm:p-5";
+/* The middle ring of three concentric corners — the hero frame outside it,
+   the rows and the button inside — so neither number here is free: the frame
+   in `hero.tsx` is `xl` because this is `md`. `p-4` at every width, not the
+   sound card's `p-4 sm:p-5`, for the same reason: what sits in a corner bleeds
+   by 10, the 6 that leaves plus the rows' 14.4 is 20.4, and the nearest step
+   to that is this 19.2. */
+const SHELL = "bg-card/90 shadow-soft-lg rounded-md p-4 backdrop-blur";
 
 /** id → label, built once. The panel names sounds it draws no card for. */
 const LABELS: Record<string, string> = Object.fromEntries(
@@ -78,15 +84,21 @@ export function HeroStarters() {
           to the card itself. The rail's rule, in a card: what you read lines
           up, what you press may bleed.
 
+          The bottom bleeds too, because the last row's ground sits in the
+          card's two lower corners. 6 in on three sides puts its 14.4 corners
+          concentric with the card's 19.2, to the nearest step; with the
+          card's full padding below it, the lit row sat 6 from the sides and
+          16 from the floor, and no corner could run parallel to both.
+
           Adding `px-2.5` to the labels as well was the first attempt and it
-          moved them the other way, to 30 against the rows' 20. */}
+          moved them the other way, 10 past the rows' own text. */}
       <p className="text-muted-foreground text-xs">Start here</p>
 
       <p className="mt-1 text-lg font-medium tracking-tight">
         Three made earlier
       </p>
 
-      <ul className="-mx-2.5 mt-3 flex flex-col gap-1">
+      <ul className="-mx-2.5 mt-3 -mb-2.5 flex flex-col gap-1">
         {STARTERS.map((starter) => {
           const active = starter.label === running;
           const sounding = active && isPlaying;
@@ -196,7 +208,14 @@ export function HeroFavourites() {
           "Tap the heart on any card and the sound lands here, ready for next time."}
       </p>
 
-      <div className="mt-4 border-t pt-3">
+      {/* The footer is the pressable part, so it bleeds like the starter
+          rows: the button's corners sit 6 inside the card's on three sides.
+          The line bleeds with it, so the rule and the button under it are one
+          width rather than a short line over a wider bar.
+
+          16 above the line and 16 below it. It was 16 and 12, and a line
+          nearer one block reads as that block's underline. */}
+      <div className="-mx-2.5 mt-4 -mb-2.5 border-t pt-4">
         <Button
           className="w-full"
           disabled={!favorites.length}
