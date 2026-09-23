@@ -133,9 +133,32 @@ Chrome vẫn HugeIcons, với Heroicons cho chevron và play/pause. Hàng
 Favourites là category duy nhất không có sound sau cái tên, nên nó mang theo
 glyph trái tim của riêng nó qua prop `icon`.
 
-**Licence là việc còn mở.** thiings.co cho tải lẻ **chỉ để dùng cá nhân**;
-muốn dùng thương mại phải mua licence trọn bộ. Bản này chạy nội bộ nên không
-sao, nhưng nếu có ngày đem bán thì đó là khoản phải trả trước.
+**Licence** (đọc lại ở thiings.co/terms ngày 2026-09-23):
+- Bản tải lẻ miễn phí chỉ cho dùng cá nhân, phi thương mại, và **bắt buộc ghi
+  nguồn thiings.co ở chỗ nhìn thấy được**. Dòng ghi nguồn trong footer là điều
+  kiện để hiện icon, nên không được bỏ.
+- Gói Indie $49 mở dùng thương mại và bỏ ghi nguồn. Nhưng không gói nào cho
+  "make them available for download as standalone assets", mà một repo public
+  chính là như vậy. Vì thế `public/thiings/` nằm trong `.gitignore`, kể cả khi
+  đã trả tiền.
+
+**Bản deploy lấy icon từ một Vercel Blob store _private_.** `npm run build`
+chạy `scripts/thiings.mjs pull` trước `next build`; cách xác thực nằm ở comment
+đầu script, các bước tạo store nằm ở README § Sound icons. Ba hướng khác đã
+cân nhắc và bỏ:
+- **Store public cộng `remotePatterns`:** PNG gốc có URL công khai riêng, phải
+  sửa `SoundIcon` và thêm một env var.
+- **Đổi repo sang private rồi commit file:** file ở lại trong history, nên
+  public trở lại là vi phạm.
+- **Repo asset private kéo bằng token:** thêm một secret phải tự quản.
+
+Store private thì trên Vercel xác thực bằng OIDC, code hiển thị không đổi, và
+file không có URL nào ngoài chính trang.
+
+Script bỏ qua bước tải khi không có store, vì fork phải build được. Nhưng khi đã
+nối store mà store thiếu file thì build **đỏ**. Như vậy Vercel giữ bản deploy
+tốt gần nhất, không đẩy lên một lưới toàn ô trống. Lỗi ngày 2026-09-23 chính là
+một lưới toàn ô trống.
 
 Lấy được từng cái một: site không có API công khai (`/api/things`,
 `/api/search`, `/api/icons` đều 404, danh sách không nằm trong RSC payload),
@@ -1040,5 +1063,3 @@ Chrome thật để xác nhận vòng install → waiting → reload.
 **8. Nhánh `select-popup-on-either-base` chưa merge** ở repo skill. Rebase lên
 `main` rồi mở PR, hoặc bỏ nó đi — nhưng đừng để nó nằm đó: khi nào repo skill
 checkout sang nhánh khác thì checker ở đây đổi hành vi mà không ai báo.
-
-**9. Licence thiings** — § Icon nói rõ. Chỉ thành vấn đề nếu có ngày đem bán.

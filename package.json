@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev -p 3100",
     "icons": "node scripts/icons.mjs",
-    "build": "next build",
+    "thiings:pull": "node scripts/thiings.mjs pull",
+    "thiings:push": "node scripts/thiings.mjs push",
+    "build": "node scripts/thiings.mjs pull && next build",
     "start": "next start -p 3100",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
@@ -41,6 +43,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vercel/blob": "^2.8.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "tailwindcss": "^4",
