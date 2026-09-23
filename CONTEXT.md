@@ -773,6 +773,14 @@ này" mà thành "dừng cái này". So khớp bằng chữ ký — id của mix
 xếp rồi nối lại — chứ không phải bằng một cờ, để nó vẫn đúng khi người dùng tự
 tay dựng lại đúng mix đó.
 
+Cùng luật đó ở hai chỗ nữa. **"Play them all"** của panel Saved thành Pause khi
+mix đang chạy đúng là cả kệ favourite — so bằng id thôi, vì nút phát mỗi sound ở
+mức nó đang có. **Hàng preset trong panel Presets** thành Pause khi mix đang chạy
+là preset đó — so bằng id **và mức**, làm tròn tới phần trăm, vì hai preset có
+thể cùng bộ loop mà khác độ to. Trong lúc mix khớp một preset, ô lưu bị khoá và
+nói nó đã được lưu dưới tên gì: lưu lúc đó chỉ đẻ ra bản sao thứ hai. Kéo một
+mức là hết khớp, và ô mở lại.
+
 **Panel phải từng là transport cộng readout global volume.** Đó đúng là cặp mà
 rail bên phải đã vẽ sẵn với đủ chỗ ghi nhãn — hai panel nói cùng một điều ở hai
 bên một tấm ảnh. Giờ là **Favourites**: phần duy nhất của sản phẩm mà không có

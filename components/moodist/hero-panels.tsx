@@ -51,8 +51,21 @@ const STARTERS: Array<{ label: string; sounds: Record<string, number> }> = [
   },
 ];
 
-/** The ids a starter holds, in one order, so two mixes can be compared. */
+/** The ids a mix holds, in one order, so two mixes can be compared. */
 const signature = (ids: Array<string>) => [...ids].sort().join();
+
+/**
+ * The mix that is on, as a signature — which both panels match against their
+ * own, so each can tell when the thing it starts is the thing playing. A string
+ * rather than an array: the selector runs on every store write.
+ */
+function usePicked() {
+  return useSoundStore((state) =>
+    signature(
+      Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected),
+    ),
+  );
+}
 
 export function HeroStarters() {
   const override = useSoundStore((state) => state.override);
@@ -60,12 +73,7 @@ export function HeroStarters() {
   const togglePlay = useSoundStore((state) => state.togglePlay);
   const isPlaying = useSoundStore((state) => state.isPlaying);
 
-  /** A string rather than an array: the selector runs on every store write. */
-  const picked = useSoundStore((state) =>
-    signature(
-      Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected),
-    ),
-  );
+  const picked = usePicked();
 
   const running = useMemo(
     () =>
@@ -185,6 +193,17 @@ export function HeroFavourites() {
   const favorites = useSoundStore(useShallow((state) => state.getFavorites()));
   const override = useSoundStore((state) => state.override);
   const play = useSoundStore((state) => state.play);
+  const togglePlay = useSoundStore((state) => state.togglePlay);
+  const isPlaying = useSoundStore((state) => state.isPlaying);
+
+  /**
+   * The mix that is on is the whole shelf — by loops alone, since the button
+   * plays each at whatever level it already had. Matched rather than flagged,
+   * like the starter rows, so it holds for a shelf switched on by hand too.
+   */
+  const picked = usePicked();
+  const active = favorites.length > 0 && signature(favorites) === picked;
+  const sounding = active && isPlaying;
 
   const named = useMemo(
     () =>
@@ -221,6 +240,14 @@ export function HeroFavourites() {
           disabled={!favorites.length}
           size="sm"
           onClick={() => {
+            // Once the shelf is what is playing, the button is the transport:
+            // "Play them all" under a shelf already sounding would be the
+            // control lying about its state, the starter rows' rule again.
+            if (active) {
+              togglePlay();
+              return;
+            }
+
             // Read on the click rather than subscribed to: this panel would
             // otherwise re-render on every level anybody drags anywhere.
             const { sounds } = useSoundStore.getState();
@@ -236,8 +263,8 @@ export function HeroFavourites() {
             play();
           }}
         >
-          <PlayIcon />
-          Play them all
+          {sounding ? <PauseIcon /> : <PlayIcon />}
+          {sounding ? "Pause" : "Play them all"}
         </Button>
       </div>
     </div>
