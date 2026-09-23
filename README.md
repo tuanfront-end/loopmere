@@ -1,65 +1,84 @@
-# moodist-next
+# Loopmere
 
-Bản port **Astro → Next.js** của [remvze/moodist](https://github.com/remvze/moodist),
-dựng để **học kiến trúc** — không phải template đem bán, không có kế hoạch phát hành.
+![Loopmere — ambient sound, mixed by you](app/opengraph-image.jpg)
 
-Bản gốc nằm cạnh ở `../moodist` (commit `285ecdb`, v3.0.0) và vẫn chạy được, để
-đối chiếu hành vi khi có gì đó không khớp.
+Ambient sound, mixed by you. Eighty-four loops of rain, forest, cafe and static
+that you layer, level and leave running in a tab. There is nothing to sign up
+for, and the mix you build stays in your browser.
 
-## Chạy
+> **Loopmere is a Next.js port of [Moodist](https://github.com/remvze/moodist)
+> by [MAZE](https://github.com/remvze), used under the MIT licence.** The
+> sounds, the tools and the architecture are Moodist's. This repository
+> rebuilds it on Next.js to study how it works, and gives it a face of its own.
+> For the original — maintained, self-hostable, and the reason this exists —
+> go to [remvze/moodist](https://github.com/remvze/moodist) or
+> [moodist.mvze.net](https://moodist.mvze.net).
+
+## What it does
+
+- 84 loops on eight shelves, each with its own level, plus a shelf of
+  favourites you fill yourself
+- Presets that remember which loops were on and how loud, and mixes you can
+  send as a link
+- Tools that run alongside: sleep timer, countdown, Pomodoro, notepad,
+  checklist, breathing, binaural beats, isochronic tones and a lofi radio
+- Installable as an app, with an offline cache, in light and dark
+
+## What changed in the port
+
+- **Stack:** Astro → Next.js 16 (App Router) with React 19, Base UI, Tailwind
+  CSS 4 and zustand.
+- **Identity:** a new name and mark. Moodist's name and logo belong to the
+  original project, so they appear here only where the original is credited.
+- **Fixes found on the way:** lists that doubled on every development reload,
+  settings that reset themselves, a share link that sent an empty mix, and
+  more. Each one, with its cause, is in [`CONTEXT.md`](CONTEXT.md).
+
+## Run it
 
 ```bash
 npm install
 npm run dev
 ```
 
-`http://localhost:3100` — cổng 3100 chứ không phải 3000, vì bản gốc chiếm 4321
-và hai bản thường mở song song.
-
-Hai gate, và sự khác nhau giữa chúng là có chủ đích:
+It serves on [http://localhost:3100](http://localhost:3100) — 3100 rather than
+3000 so it can run beside the original, which uses 4321.
 
 ```bash
-npm run check      # build + sáu gate đang xanh — đỏ ở đây là hồi quy
-npm run check:all  # thêm năm gate nữa, bốn trong số đó đang đỏ
+npm run check      # build and the gates that are green today; red here is a regression
+npm run check:all  # five more gates; CONTEXT.md § Gate says which are red and why
+npm run icons      # re-render the favicon, app icons and media artwork from app/icon.svg
 ```
 
-Bốn gate đỏ đó tên gì và vì sao chưa xanh: **CONTEXT.md § Gate**.
+Set `NEXT_PUBLIC_SITE_URL` to the deployed address so the canonical URL, the
+share cards and the sitemap point at it. On Vercel the production domain is
+picked up without it.
 
-## Đọc gì trước
+## Read first
 
-| File | Giữ gì |
+| File | What it holds |
 |---|---|
-| [`CONTEXT.md`](CONTEXT.md) | Kiến trúc bản gốc, những chỗ phải sửa khi port, các chỗ cố ý lệch khỏi house style, việc còn mở |
-| [`.migration/`](.migration/) | Một báo cáo cho mỗi component khi chuyển Radix → Base UI, cộng `project.md` cho cả lượt |
+| [`CONTEXT.md`](CONTEXT.md) | The original's architecture, what the port had to fix, and every deliberate decision since (written in Vietnamese) |
+| [`.migration/`](.migration/) | One report per component moved from Radix to Base UI |
 
-## Icon
+## Sound icons
 
-`public/thiings/` **không nằm trong repo này** — thiings.co chỉ cấp licence
-dùng cá nhân cho bản tải lẻ, nên 92 file PNG đó không được phát hành lại.
+`public/thiings/` is **not in this repository.** thiings.co licenses those
+images for personal use only, so the 92 PNGs are not redistributed. The app
+builds and runs without them: each icon sits in a fixed-size box with
+`alt=""`, so a missing file is an empty space rather than a broken image. To
+use them, download the files named in
+[`data/sound-thiings.ts`](data/sound-thiings.ts) into `public/thiings/`.
 
-Repo vẫn build và chạy bình thường khi thiếu chúng. Mỗi icon nằm trong một ô
-kích thước cố định và thẻ ảnh mang `alt=""`, nên một file khuyết hiện ra là ô
-trống — không phải ảnh vỡ, và không xô lệch gì. Muốn có icon thì tự tải theo
-`data/sound-thiings.ts` — file đó giữ nguyên bản đồ `id → đường dẫn`, đặt PNG
-đúng tên vào `public/thiings/` là xong. Chi tiết vì sao chọn bộ này:
-**CONTEXT.md § Icon**.
+## Credits and licence
 
-## Licence
+- **Original:** [Moodist](https://github.com/remvze/moodist) by
+  [MAZE](https://github.com/remvze) — the product, its sounds, its tools and
+  its architecture.
+- **Code:** MIT — see [`LICENSE`](LICENSE), Copyright (c) 2023 MAZE.
+- **Sounds:** `public/sounds/` (117 MB, committed) under the Pixabay Content
+  License and CC0, as in the original.
+- **Port:** built by Boolii Studio.
 
-Port này kế thừa **MIT** từ bản gốc — xem [`LICENSE`](LICENSE), bản quyền
-thuộc MAZE (2023).
-
-Tài sản bên thứ ba đi kèm khác licence:
-
-| Tài sản | Licence |
-|---|---|
-| `public/sounds/` (117MB, commit trong repo) | Pixabay Content License và CC0, theo bản gốc |
-| `public/thiings/` | thiings.co, **chỉ dùng cá nhân** — vì vậy không có trong repo |
-
-## Repo
-
-[`tuanfront-end/moodist-next`](https://github.com/tuanfront-end/moodist-next),
-công khai. Nhánh `migrate-to-base-ui` đi trước `main` hai commit.
-
-`public/sounds` được commit nên `.git` nặng ~125MB — clone chậm, đổi lại là
-chạy được ngay không cần bước tải thêm.
+Because `public/sounds/` is committed, a clone is about 125 MB. It runs with
+no further download.
