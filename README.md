@@ -63,12 +63,28 @@ picked up without it.
 
 ## Sound icons
 
-`public/thiings/` is **not in this repository.** thiings.co licenses those
-images for personal use only, so the 92 PNGs are not redistributed. The app
-builds and runs without them: each icon sits in a fixed-size box with
-`alt=""`, so a missing file is an empty space rather than a broken image. To
-use them, download the files named in
+`public/thiings/` is **not in this repository.** The icons come from
+[Thiings](https://www.thiings.co), whose free licence covers personal,
+non-commercial use with visible credit (the footer carries it) and does not
+allow making the files available for download on their own, which is what a
+public repository does. The app builds and runs without them: each icon sits
+in a fixed-size box with `alt=""`, so a missing file is an empty space rather
+than a broken image. To use them, download the files named in
 [`data/sound-thiings.ts`](data/sound-thiings.ts) into `public/thiings/`.
+
+A Vercel deployment is built from Git, so it has no `public/thiings/` either.
+`npm run build` fetches the files from a private Vercel Blob store first:
+
+1. In the project's **Storage** tab, create a **Blob** store with **Private**
+   access and connect it to Production and Preview. Builds on Vercel then
+   authenticate on their own.
+2. On a machine that has the files, copy `BLOB_READ_WRITE_TOKEN` from the
+   store's page into `.env.local`, then run `npm run thiings:push`.
+3. Redeploy.
+
+With no store connected the build skips the fetch. With one connected, a file
+missing from the store fails the build, so a deployment never goes out with
+empty icons.
 
 ## Credits and licence
 

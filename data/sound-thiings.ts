@@ -1,10 +1,10 @@
 /**
  * The 3D set, one PNG per sound under `public/thiings/`.
  *
- * thiings.co licenses individual downloads for personal use; shipping them
- * would need the collection's commercial licence. So this set is here to be
- * looked at through the build switch, and a sound with no entry falls back to
- * the line set on its own.
+ * The files are not in git: thiings.co's free licence is for personal use and
+ * forbids making them available for download as standalone assets. A build
+ * fetches them from a private Blob store (`scripts/thiings.mjs`), and without
+ * one each icon is an empty box.
  *
  * Sourced one search at a time: the site has no public API, and the concept
  * name lives only in each image's alt text. Originals are 1024px PNGs, resized
