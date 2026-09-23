@@ -2,10 +2,10 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import merge from "deepmerge";
 
 import { sounds as soundCategories } from "@/data/sounds";
 import { pickMany, random } from "@/helpers/random";
+import { mergePersisted } from "@/lib/persist";
 
 type SoundValue = {
   isFavorite: boolean;
@@ -59,6 +59,22 @@ function createInitialSounds() {
   return initialSounds;
 }
 
+/**
+ * Every sound out of the mix, unpaused and back at the default level — as a new
+ * object with new entries. The three bulk actions used to write these fields
+ * into the objects already in the store and hand `set` the same record back,
+ * so anything subscribed to `state.sounds` as a whole never heard: after
+ * "Build me a mix", Send this mix still shared the empty mix from before.
+ */
+function cleared(sounds: Record<string, SoundValue>) {
+  return Object.fromEntries(
+    Object.entries(sounds).map(([id, sound]) => [
+      id,
+      { ...sound, isPaused: false, isSelected: false, volume: 0.5 },
+    ]),
+  );
+}
+
 export const useSoundStore = create<SoundStore>()(
   persist(
     (set, get) => ({
@@ -89,17 +105,21 @@ export const useSoundStore = create<SoundStore>()(
       override(newSounds) {
         get().unselectAll();
 
-        const sounds = get().sounds;
+        const current = get().sounds;
+        const sounds = { ...current };
 
-        Object.keys(newSounds).forEach((sound) => {
-          if (sounds[sound]) {
-            sounds[sound].isSelected = true;
-            sounds[sound].isPaused = false;
-            sounds[sound].volume = newSounds[sound];
+        Object.keys(newSounds).forEach((id) => {
+          if (current[id]) {
+            sounds[id] = {
+              ...current[id],
+              isPaused: false,
+              isSelected: true,
+              volume: newSounds[id],
+            };
           }
         });
 
-        set({ history: null, sounds: { ...sounds } });
+        set({ history: null, sounds });
       },
 
       pause() {
@@ -149,20 +169,10 @@ export const useSoundStore = create<SoundStore>()(
       },
 
       shuffle() {
-        const sounds = get().sounds;
-        const ids = Object.keys(sounds);
+        const sounds = cleared(get().sounds);
 
-        ids.forEach((id) => {
-          sounds[id].isSelected = false;
-          sounds[id].isPaused = false;
-          sounds[id].volume = 0.5;
-        });
-
-        const randomIDs = pickMany(ids, 4);
-
-        randomIDs.forEach((id) => {
-          sounds[id].isSelected = true;
-          sounds[id].volume = random(0.2, 1);
+        pickMany(Object.keys(sounds), 4).forEach((id) => {
+          sounds[id] = { ...sounds[id], isSelected: true, volume: random(0.2, 1) };
         });
 
         set({ history: null, isPlaying: true, sounds });
@@ -221,24 +231,11 @@ export const useSoundStore = create<SoundStore>()(
           set({ history });
         }
 
-        const ids = Object.keys(sounds);
-
-        ids.forEach((id) => {
-          sounds[id].isSelected = false;
-          sounds[id].isPaused = false;
-          sounds[id].volume = 0.5;
-        });
-
-        set({ sounds });
+        set({ sounds: cleared(sounds) });
       },
     }),
     {
-      merge: (persisted, current) =>
-        merge(
-          current,
-          // @ts-expect-error
-          persisted,
-        ),
+      merge: mergePersisted,
       name: "moodist-sounds",
       partialize: (state) => ({
         sounds: state.sounds,

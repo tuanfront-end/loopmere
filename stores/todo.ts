@@ -2,10 +2,10 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import merge from 'deepmerge';
 import { v4 as uuid } from 'uuid';
 
 import { addConfetti } from '@/lib/confetti';
+import { mergePersisted, uniqueById } from '@/lib/persist';
 
 interface TodoStore {
   addTodo: (todo: string) => void;
@@ -82,14 +82,27 @@ export const useTodoStore = create<TodoStore>()(
       },
     }),
     {
-      merge: (persisted, current) =>
-        merge(current, persisted as Partial<TodoStore>),
+      merge: mergePersisted,
+
+      /**
+       * Version 0 could hold one item two, four, eight times over — the
+       * doubling `mergePersisted` describes, written back on the next save.
+       */
+      migrate: (persisted, version) => {
+        const state = (persisted ?? {}) as Partial<TodoStore>;
+
+        if (version < 1) {
+          return { ...state, todos: uniqueById(state.todos || []) } as TodoStore;
+        }
+
+        return state as TodoStore;
+      },
 
       name: 'moodist-todos',
       partialize: state => ({ todos: state.todos }),
       skipHydration: true,
       storage: createJSONStorage(() => localStorage),
-      version: 0,
+      version: 1,
     },
   ),
 );

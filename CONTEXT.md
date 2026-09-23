@@ -48,6 +48,10 @@ settings store. Card tính `adjustedVolume` rồi truyền xuống `useSound`.
 | `stores/`, `hooks/` | chạm localStorage và Howler | thêm `'use client'` |
 | `navigator.audioSession` | API draft, không có trong `lib.dom` | khai báo ở `types/audio-session.d.ts` |
 | `contexts/snackbar.tsx` | kéo theo một component chưa port | bỏ hẳn, dùng `sonner` — xem § Snackbar |
+| `merge` của cả năm store | `deepmerge` **nối** mảng, và Strict Mode của Next chạy effect gọi `rehydrate()` hai lần ở dev — island của Astro thì không. Presets và checklist nhân đôi mỗi lần tải, React báo hai child cùng key, lần ghi kế tiếp lưu luôn bản đôi | `mergePersisted` trong `lib/persist.ts`: mảng đã lưu **thay** mảng mặc định. `StoreConsumer` chỉ hydrate một lần mỗi lần tải trang. Bản đôi đã lỡ ghi thì migration dọn: presets v2, todos v1 |
+| `hooks/use-local-storage.ts` | ghi giá trị hiện tại — lúc mount còn là fallback — đè lên giá trị đã lưu; Strict Mode đọc lại đúng cái fallback đó, nên mỗi lần tải ở dev mất thời lượng Pomodoro và Show more của từng kệ | viết lại bằng `useSyncExternalStore`, cùng dáng với theme: không ghi gì cho tới khi có người set |
+| `shuffle`, `unselectAll`, `override` trong `stores/sound.ts` | ghi thẳng vào object đang nằm trong store rồi `set` lại đúng tham chiếu đó, nên ai subscribe cả `state.sounds` không nghe thấy — sau "Build me a mix", Send this mix chia sẻ một mix rỗng | trả về object mới, qua `cleared()` |
+| `lib/confetti.ts` | mỗi lần gọi là một `new JSConfetti()`, tức một canvas toàn màn hình nữa gắn vào `<body>` và không bao giờ gỡ | một instance, tạo lười |
 
 Bản gốc **không chạy `tsc`** — script `check` của nó là Biome, nên lỗi
 `navigator.audioSession` chưa bao giờ lộ ra. Bản này typecheck sạch.

@@ -30,6 +30,11 @@ export function ServiceWorker() {
         duration: Infinity,
       });
 
+    // The listener outlives the effect unless the cleanup takes it off: a
+    // remount after `register` resolved — Fast Refresh does it — added a second
+    // one, and every update was announced twice.
+    let stop = () => {};
+
     navigator.serviceWorker
       .register("/sw.js", { scope: "/" })
       .then((registration) => {
@@ -40,7 +45,7 @@ export function ServiceWorker() {
           offerUpdate(registration.waiting);
         }
 
-        registration.addEventListener("updatefound", () => {
+        const onUpdateFound = () => {
           const installing = registration.installing;
 
           if (!installing) return;
@@ -55,7 +60,11 @@ export function ServiceWorker() {
               offerUpdate(installing);
             }
           });
-        });
+        };
+
+        registration.addEventListener("updatefound", onUpdateFound);
+        stop = () =>
+          registration.removeEventListener("updatefound", onUpdateFound);
       })
       .catch(() => {
         // No worker means no offline mode; the app is unaffected.
@@ -63,6 +72,7 @@ export function ServiceWorker() {
 
     return () => {
       cancelled = true;
+      stop();
     };
   }, []);
 

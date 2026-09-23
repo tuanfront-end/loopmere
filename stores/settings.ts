@@ -2,7 +2,8 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import merge from 'deepmerge';
+
+import { mergePersisted } from '@/lib/persist';
 
 interface SettingsStore {
   alarmVolume: number;
@@ -30,8 +31,7 @@ export const useSettingsStore = create<SettingsStore>()(
       },
     }),
     {
-      merge: (persisted, current) =>
-        merge(current, persisted as Partial<SettingsStore>),
+      merge: mergePersisted,
 
       /**
        * Changing a default reaches nobody who already has storage, and after
