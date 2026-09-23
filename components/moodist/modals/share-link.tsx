@@ -3,6 +3,7 @@
 import { Copy01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { ToolPanel } from "../tool-panel";
 
@@ -35,9 +36,13 @@ export function ShareLinkModal({ onClose, show }: ShareLinkModalProps) {
     [sounds],
   );
 
-  /** The origin is only knowable on the client, so the first render is a guess. */
+  /**
+   * The origin is only knowable on the client, so the first render leaves it
+   * off. It used to guess `moodist.app`, which is the original's domain, and a
+   * port has no business handing that out as its own.
+   */
   const url = useMemo(() => {
-    const origin = isMounted ? window.location.origin : "https://moodist.app";
+    const origin = isMounted ? window.location.origin : "";
 
     return `${origin}/?share=${encodeURIComponent(mix)}`;
   }, [mix, isMounted]);
@@ -55,7 +60,10 @@ export function ShareLinkModal({ onClose, show }: ShareLinkModalProps) {
           aria-label="Copy the link"
           size="icon"
           variant="outline"
-          onClick={() => copy(url)}
+          onClick={() => {
+            copy(url);
+            toast.success("Link copied.");
+          }}
         >
           <HugeiconsIcon
             icon={copying ? Tick02Icon : Copy01Icon}

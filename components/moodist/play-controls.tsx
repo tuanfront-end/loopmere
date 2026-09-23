@@ -1,12 +1,13 @@
 "use client";
 
-import { PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
+import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
 import {
   Delete02Icon,
   ShuffleIcon,
   Undo02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +27,11 @@ export function PlayControls() {
   const hasHistory = useSoundStore((state) => !!state.history);
 
   return (
-    <div className="sticky top-6 z-20 flex justify-center">
+    /* Not sticky any more. The header is, and it carries play, pause and the
+       count of what is in the mix — two pills fighting for the top of the
+       screen is what this was before. The full set stays here in flow: shuffle,
+       undo and clear are decisions made at the mixing desk, not mid-scroll. */
+    <div className="flex justify-center">
       {/* Floating, so a cast rather than an edge — and the ring is in the token. */}
       <div className="bg-card/85 shadow-soft-lg flex items-center gap-1 rounded-full p-1.5 backdrop-blur">
         <Button disabled={noSelected} onClick={togglePlay}>
@@ -35,7 +40,8 @@ export function PlayControls() {
         </Button>
 
         <Tooltip>
-          <TooltipTrigger asChild>
+          <TooltipTrigger
+            render={
               <Button
                 aria-label="Pick four sounds at random"
                 size="icon"
@@ -44,13 +50,15 @@ export function PlayControls() {
               >
                 <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
               </Button>
-          </TooltipTrigger>
+            }
+          />
           <TooltipContent>Surprise me</TooltipContent>
         </Tooltip>
 
         {hasHistory ? (
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger
+              render={
                 <Button
                   aria-label="Bring the last mix back"
                   size="icon"
@@ -59,22 +67,30 @@ export function PlayControls() {
                 >
                   <HugeiconsIcon icon={Undo02Icon} strokeWidth={1.5} />
                 </Button>
-            </TooltipTrigger>
+              }
+            />
             <TooltipContent>Bring it back</TooltipContent>
           </Tooltip>
         ) : (
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger
+              render={
                 <Button
                   aria-label="Clear every sound"
                   disabled={noSelected}
                   size="icon"
                   variant="ghost"
-                  onClick={() => unselectAll(true)}
+                  onClick={() => {
+                    unselectAll(true);
+                    toast("Mix cleared.", {
+                      action: { label: "Undo", onClick: restoreHistory },
+                    });
+                  }}
                 >
                   <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.5} />
                 </Button>
-            </TooltipTrigger>
+              }
+            />
             <TooltipContent>Clear the mix</TooltipContent>
           </Tooltip>
         )}

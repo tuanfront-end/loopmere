@@ -28,16 +28,15 @@ export function FavoriteButton({ id, label }: FavoriteButtonProps) {
             ? `Remove ${label} from favourites`
             : `Save ${label} to favourites`
         }
+        // Radius matches `buttonVariants` by hand, because this is a
+        // TooltipTrigger rather than a Button — the trigger owns the element.
+        // If a third control ends up in this shape, it becomes a variant.
         className={cn(
-          "absolute top-3 right-3 grid size-9 place-items-center rounded-full transition-colors",
+          "grid size-9 place-items-center rounded-sm transition-colors",
           "text-muted-foreground hover:bg-muted hover:text-foreground",
           isFavorite && "text-coral-ink hover:text-coral-ink",
         )}
-        onClick={(event) => {
-          // The whole card toggles the sound; a heart click must not.
-          event.stopPropagation();
-          toggleFavorite(id);
-        }}
+        onClick={() => toggleFavorite(id)}
       >
         <HugeiconsIcon
           className={cn("size-4", isFavorite && "fill-coral/40")}

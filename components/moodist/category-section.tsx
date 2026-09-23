@@ -5,6 +5,8 @@ import type { Category } from "@/data/types";
 
 interface CategorySectionProps extends Category {
   blurb?: string;
+  /** Shown in place of the grid when the shelf has nothing on it. */
+  emptyMessage?: string;
   functional?: boolean;
   /** Favourites has no sound of its own, so it brings its own glyph. */
   icon?: React.ReactNode;
@@ -12,6 +14,7 @@ interface CategorySectionProps extends Category {
 
 export function CategorySection({
   blurb,
+  emptyMessage,
   functional = true,
   icon,
   id,
@@ -24,11 +27,8 @@ export function CategorySection({
       id={`category-${id}`}
     >
       <div className="flex items-start gap-4">
-        <div
-          aria-hidden="true"
-          className="bg-chip text-primary-ink grid size-11 shrink-0 place-items-center rounded-full"
-        >
-          {id === "favorites" ? icon : <SoundIcon id={id} />}
+        <div aria-hidden="true" className="text-primary-ink shrink-0">
+          {id === "favorites" ? icon : <SoundIcon id={id} size={32} />}
         </div>
 
         <div>
@@ -41,9 +41,27 @@ export function CategorySection({
         </div>
       </div>
 
-      <div className="mt-24">
-        <SoundGrid functional={functional} id={id} sounds={sounds} />
-      </div>
+      {/* 40, against 16 inside the grid and 160 between sections — the ladder
+          the spacing rule asks for. It was 96, which read as air on a
+          1200px-wide page and as a hole once the centre column narrowed.
+          24 at mobile, where the ladder below it is the same 16 and the one
+          above it has come down to 96. */}
+      {sounds.length === 0 && emptyMessage ? (
+        /* `bg-accent` rather than a dashed outline: nothing is dropped here,
+           and the shelf is empty rather than broken. */
+        <div className="bg-accent mt-6 rounded-lg px-6 py-10 sm:mt-10 sm:py-12">
+          {/* Balanced and measured: left to the full width of the shelf the
+              sentence breaks with two words on the last line, which reads as a
+              mistake rather than as a sentence. */}
+          <p className="text-muted-foreground mx-auto max-w-[42ch] text-center text-sm text-balance">
+            {emptyMessage}
+          </p>
+        </div>
+      ) : (
+        <div className="mt-6 sm:mt-10">
+          <SoundGrid functional={functional} id={id} sounds={sounds} />
+        </div>
+      )}
     </section>
   );
 }

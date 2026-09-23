@@ -21,7 +21,6 @@ interface SoundGridProps {
 
 export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
   const [showAll, setShowAll] = useLocalStorage(`${id}-show-more`, false);
-  const selections = useSoundStore((state) => state.sounds);
 
   const overflow = useMemo(
     () => sounds.slice(DEFAULT_VISIBLE_SOUNDS),
@@ -31,18 +30,22 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
   /**
    * A collapsed row can hide a sound that is currently playing, so the toggle
    * says how many rather than leaving the row looking inert.
+   *
+   * Selected as the number itself. The grid used to subscribe to every sound,
+   * so each step of any card's slider re-rendered the whole shelf — 16 ms a
+   * step on a desktop, 70 on a slow phone — to arrive at the same count.
    */
-  const hiddenPlaying = useMemo(
-    () =>
-      showAll
-        ? 0
-        : overflow.filter((sound) => selections[sound.id]?.isSelected).length,
-    [showAll, overflow, selections],
+  const hiddenPlaying = useSoundStore((state) =>
+    showAll
+      ? 0
+      : overflow.filter((sound) => state.sounds[sound.id]?.isSelected).length,
   );
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Sized against the centre column, not the window: with a rail on
+          each side the viewport stopped being what decides this. */}
+      <div className="grid grid-cols-1 gap-4 @xl:grid-cols-2 @4xl:grid-cols-3">
         {sounds.map((sound, index) => (
           <SoundCard
             key={sound.id}
@@ -54,17 +57,24 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
       </div>
 
       {sounds.length > DEFAULT_VISIBLE_SOUNDS && (
-        <div className="mt-8 flex justify-center">
+        <div className="mt-6 flex justify-center sm:mt-8">
+          {/* The large size rather than the small one: this is the one
+              control in a shelf of eighty cards, and at `sm` it read as a
+              footnote to the row above it. The ground stays neutral — a
+              brand tint here was tried and it fought the mix rather than
+              helping it. Solid brand only when the collapse is hiding
+              something that is currently sounding, which is a state worth
+              a primary and the only one here that is. */}
           <Button
-            size="sm"
+            size="lg"
             variant={hiddenPlaying ? "default" : "outline"}
             onClick={() => setShowAll((previous) => !previous)}
           >
             {showAll
-              ? "Fewer"
+              ? "Show fewer"
               : hiddenPlaying
-                ? `${overflow.length} more · ${hiddenPlaying} playing`
-                : `${overflow.length} more`}
+                ? `Show ${overflow.length} more · ${hiddenPlaying} playing`
+                : `Show ${overflow.length} more`}
             {showAll ? <ChevronUpIcon /> : <ChevronDownIcon />}
           </Button>
         </div>

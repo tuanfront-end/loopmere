@@ -81,3 +81,19 @@ export function mix(...motions: Array<Motion>): Motion {
 
   return { hidden, show };
 }
+
+/**
+ * Whether the visitor has asked the system for less motion. Read when it is
+ * needed rather than once: the setting can change while the tab is open.
+ */
+export function prefersReducedMotion() {
+  return (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+}
+
+/** A smooth scroll, or a jump for someone who has asked for less motion. */
+export function scrollBehavior(): ScrollBehavior {
+  return prefersReducedMotion() ? 'auto' : 'smooth';
+}

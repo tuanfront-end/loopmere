@@ -1,6 +1,6 @@
 "use client";
 
-import { PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
+import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ToolPanel } from "../tool-panel";
@@ -17,6 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { keepKeys } from "@/lib/keys";
+import { PERCENT } from "@/components/ui/slider";
 
 /**
  * Two generators, one panel. A binaural beat is two oscillators a few hertz
@@ -151,8 +153,12 @@ export function ToneModal({ kind, onClose, show }: ToneModalProps) {
           : "One tone switched on and off. This one works on speakers."
       }
     >
-      <Select value={preset} onValueChange={setPreset}>
-        <SelectTrigger className="w-full">
+      <Select
+        items={Object.fromEntries(PRESETS.map((item) => [item.id, item.label]))}
+        value={preset}
+        onValueChange={(next) => next && setPreset(next)}
+      >
+        <SelectTrigger aria-label="Band" className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -191,7 +197,7 @@ export function ToneModal({ kind, onClose, show }: ToneModalProps) {
                 type="number"
                 value={value}
                 onChange={(event) => setValue(Number(event.target.value))}
-                onKeyDown={(event) => event.stopPropagation()}
+                onKeyDown={keepKeys}
               />
             </div>
           ))}
@@ -206,13 +212,16 @@ export function ToneModal({ kind, onClose, show }: ToneModalProps) {
           </p>
         </div>
         <Slider
+          format={PERCENT}
           aria-label="Tone level"
           className="mt-4"
           max={1}
           min={0}
           step={0.01}
           value={[volume]}
-          onValueChange={([next]) => setVolume(next)}
+          onValueChange={(next) =>
+            setVolume(Array.isArray(next) ? next[0] : next)
+          }
         />
       </div>
 

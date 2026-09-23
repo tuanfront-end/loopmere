@@ -2,8 +2,9 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import merge from 'deepmerge';
 import { v4 as uuid } from 'uuid';
+
+import { mergePersisted, uniqueById } from '@/lib/persist';
 
 interface PresetStore {
   addPreset: (label: string, sounds: Record<string, number>) => void;
@@ -40,15 +41,13 @@ export const usePresetStore = create<PresetStore>()(
       presets: [],
     }),
     {
-      merge: (persisted, current) =>
-        merge(current, persisted as Partial<PresetStore>),
-
+      merge: mergePersisted,
       migrate,
       name: 'moodist-presets',
       partialize: state => ({ presets: state.presets }),
       skipHydration: true,
       storage: createJSONStorage(() => localStorage),
-      version: 1,
+      version: 2,
     },
   ),
 );
@@ -66,6 +65,17 @@ function migrate(persistedState: unknown, version: number) {
         if (preset.id) return preset;
         return { ...preset, id: uuid() };
       }),
+    } as PresetStore;
+  }
+
+  /**
+   * Version 1 could hold one preset two, four, eight times over — the
+   * doubling `mergePersisted` describes, written back on the next save.
+   */
+  if (version < 2) {
+    persisted = {
+      ...persisted,
+      presets: uniqueById(persisted.presets || []),
     } as PresetStore;
   }
 

@@ -4,6 +4,7 @@ import { useMemo, useEffect, useCallback, useState, useRef } from 'react';
 import { Howl } from 'howler';
 
 import { useLoadingStore } from '@/stores/loading';
+import { useSettingsStore } from '@/stores/settings';
 import { subscribe } from '@/lib/event';
 import { useSSR } from './use-ssr';
 import { FADE_OUT } from '@/constants/events';
@@ -55,14 +56,20 @@ export function useSound(
         preload: options.preload ?? false,
         src: src,
       });
-
-      if (window.navigator.audioSession) {
-        window.navigator.audioSession.type = 'playback';
-      }
     }
 
     return sound;
   }, [src, isBrowser, setIsLoading, html5, options.preload]);
+
+  // Media rather than a UI sound, so iOS plays it through the silent switch.
+  // Set in an effect, not while the Howl is made: a memo is render, and render
+  // does not write to the browser. It still lands before the first play, which
+  // only a tap can start.
+  useEffect(() => {
+    if (window.navigator.audioSession) {
+      window.navigator.audioSession.type = 'playback';
+    }
+  }, []);
 
   useEffect(() => {
     if (sound) {
@@ -70,13 +77,35 @@ export function useSound(
     }
   }, [sound, options.loop]);
 
-  useEffect(() => {
-    targetVolume.current = options.volume ?? 0.5;
+  /**
+   * The level the Howl sits at is this sound's own times the global one, and
+   * the global part is read from its store here rather than passed in. Passed
+   * in, it was a prop on every card, and one step of the Everything slider
+   * re-rendered all of them; applied to the Howl directly, it re-renders none.
+   */
+  const ownVolume = useRef(options.volume ?? 0.5);
+
+  const applyVolume = useCallback(() => {
+    targetVolume.current =
+      ownVolume.current * useSettingsStore.getState().globalVolume;
 
     if (sound && !isFadingOut.current) {
       sound.volume(targetVolume.current);
     }
-  }, [sound, options.volume]);
+  }, [sound]);
+
+  useEffect(() => {
+    ownVolume.current = options.volume ?? 0.5;
+    applyVolume();
+  }, [options.volume, applyVolume]);
+
+  useEffect(
+    () =>
+      useSettingsStore.subscribe((state, previous) => {
+        if (state.globalVolume !== previous.globalVolume) applyVolume();
+      }),
+    [applyVolume],
+  );
 
   const clearFadeTimeout = useCallback(() => {
     if (fadeTimeout.current) {

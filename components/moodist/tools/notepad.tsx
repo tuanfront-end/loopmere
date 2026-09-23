@@ -9,6 +9,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 
 import { ToolButton } from "../tool-button";
 import { ToolPanel } from "../tool-panel";
@@ -17,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { download } from "@/helpers/download";
 import { useCopy } from "@/hooks/use-copy";
 import { useNoteStore } from "@/stores/note";
+import { keepKeys } from "@/lib/keys";
 
 interface NotepadProps {
   onClose: () => void;
@@ -48,7 +50,13 @@ export function Notepad({ onClose, show }: NotepadProps) {
       onClose={onClose}
       action={
         <div className="flex items-center gap-1">
-          <ToolButton label="Copy the note" onClick={() => copy(note)}>
+          <ToolButton
+            label="Copy the note"
+            onClick={() => {
+              copy(note);
+              toast.success("Note copied.");
+            }}
+          >
             <HugeiconsIcon
               icon={copying ? Tick02Icon : Copy01Icon}
               strokeWidth={1.5}
@@ -57,14 +65,27 @@ export function Notepad({ onClose, show }: NotepadProps) {
 
           <ToolButton
             label="Download as a text file"
-            onClick={() => download("Moodist note.txt", note)}
+            onClick={() => {
+              download("Loopmere note.txt", note);
+              toast.success("Saved as Loopmere note.txt");
+            }}
           >
             <HugeiconsIcon icon={Download01Icon} strokeWidth={1.5} />
           </ToolButton>
 
           <ToolButton
             label={history ? "Put the note back" : "Clear the note"}
-            onClick={() => (history ? restore() : clear())}
+            onClick={() => {
+              if (history) {
+                restore();
+                toast.success("Note restored.");
+              } else {
+                clear();
+                toast("Note cleared.", {
+                  action: { label: "Undo", onClick: restore },
+                });
+              }
+            }}
           >
             <HugeiconsIcon
               icon={history ? Undo02Icon : Delete02Icon}
@@ -83,7 +104,7 @@ export function Notepad({ onClose, show }: NotepadProps) {
         value={note}
         onChange={(event) => write(event.target.value)}
         // Escape belongs to the panel; every other key belongs to the note.
-        onKeyDown={(event) => event.stopPropagation()}
+        onKeyDown={keepKeys}
       />
 
       <p className="text-muted-foreground text-xs tabular-nums">

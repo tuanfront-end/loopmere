@@ -40,15 +40,14 @@ export function LofiModal({ onClose, show }: LofiModalProps) {
                   {padNumber(index + 1, 2)}
                 </span>
                 <span className="font-medium">{station.channel}</span>
-                <span className="text-muted-foreground">
-                  · {station.title}
-                </span>
+                <span className="text-muted-foreground">· {station.title}</span>
               </h3>
 
               <div className="mt-3 aspect-video overflow-hidden rounded-sm">
                 <YouTube
                   className="size-full"
                   iframeClassName="size-full"
+                  title={`${station.title}, ${station.channel}`}
                   videoId={station.id}
                 />
               </div>

@@ -2,9 +2,9 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import merge from 'deepmerge';
 
 import { count } from '@/helpers/counter';
+import { mergePersisted } from '@/lib/persist';
 
 interface NoteStore {
   characters: () => number;
@@ -48,12 +48,7 @@ export const useNoteStore = create<NoteStore>()(
       },
     }),
     {
-      merge: (persisted, current) =>
-        merge(
-          current,
-          // @ts-expect-error
-          persisted,
-        ),
+      merge: mergePersisted,
       name: 'moodist-note',
       partialize: state => ({ note: state.note }),
       skipHydration: true,

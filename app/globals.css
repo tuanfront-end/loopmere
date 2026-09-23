@@ -7,6 +7,15 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* `dark:` keys on a class rather than on `prefers-color-scheme`, which is
+   Tailwind's default. Two reasons, and the second is a bug that was already
+   shipping: a switch cannot override a media query, and the `dark:` utilities
+   shadcn's wrappers carry were firing on a dark-OS machine with no dark tokens
+   behind them — an outline button quietly took `dark:bg-input/30` on a page
+   that was still white. The class is set before first paint by the script in
+   `layout.tsx`, and it follows the OS until somebody says otherwise. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -115,6 +124,22 @@
       transform: translateX(-50%);
     }
   }
+
+  /* The heading's caret. steps(1) so it snaps rather than fades — a caret that
+     eases is a glow, and the eye reads it as a highlight instead of a cursor.
+
+     Only the half-way frame is written, so the solid state is the element's own
+     border-color. That is what makes it safe under the blanket
+     prefers-reduced-motion rule further down: an animation cut to 0.01ms lands
+     back on the element's own value, which here is the caret drawn, not a
+     caret that has vanished. */
+  --animate-caret: caret 1.05s steps(1, end) infinite;
+
+  @keyframes caret {
+    50% {
+      border-color: transparent;
+    }
+  }
 }
 
 /* A scrollbar on a rail inside the page is chrome the design did not draw, and
@@ -132,22 +157,24 @@
    Same variables shadcn generates, different values. HSL because
    the per-project knob is a hue rotation.
 
-   The brand hue is hsl(30 6% 13%), the palette's own warm near-black,
-   picked by the user from the five the demo switcher offered. It is
-   the one knob a buyer of this template turns: rotate it across
-   --primary, --ring and --chart-1..3 and the whole page restyles.
-   Measured against this palette it lands 16.02 white-on-primary and
-   15.68 against the page — the widest of the five — and its chip
-   reads 1.122 on a card, inside the whisper band, at the thinner
-   alpha the next comment is about.
+   The brand hue is hsl(97 76% 60%) — #87E64B, read off Envato's own
+   page rather than guessed at. It is the one knob a buyer of this
+   template turns: rotate it across --primary, --ring and --chart-1..3
+   and the whole page restyles. This is the skill's `lime` row with
+   its hue nudged two degrees to match, so the measurements that row
+   was admitted on still hold.
 
-   A near-black brand is a choice with a cost worth naming: the page
-   has no vivid hue to point with any more, so emphasis is carried by
-   ink weight, size and ground instead, and everything with colour on
-   it — photographs, the pastel status chips — carries all of it.
+   It is a *light* brand, which is the case the two-token split exists
+   for. As a fill it only has to be seen, and it carries near-black
+   ink rather than white — 16-to-1, where white on it is 1.6 and
+   unreadable. As ink it hands over to --primary-ink, hsl(95 50% 26%),
+   which is what --ring and the chart ramp read; the fill itself
+   measures 1.5 against the page and would be a focus ring nobody
+   could find.
 
-   --sidebar-primary already held this exact value, so the two now
-   agree; before, they disagreed by a whole hue.
+   The cost worth naming: at 97 degrees this brand sits 17 from
+   --lime, so a page here that wants a second colour spends one of the
+   other five accents. palette-check reports the distance.
 
    The page is the top of the surface ladder and every other rung is
    a distance below it: soft tint 2.5, border 5, muted 6, secondary 8.
@@ -163,29 +190,50 @@
 :root {
   --radius: 1.5rem;
 
-  /* Plus Jakarta Sans's row from the per-face table in the skill's setup notes, bound once
-     here so that `font-medium` means the emphasis step of whatever face is
-     loaded, `tracking-tight` means as much tightening as that face needs, and a
-     display line that wraps clears its own descenders. Swapping the face is the
-     import in layout.tsx and these three numbers; no component changes. */
-  --font-weight-normal: 500;
-  --font-weight-medium: 600;
-  --tracking-tight: -0.025em;
-  --tracking-tighter: -0.05em;
+  /* Google Sans Flex's row from the per-face table in the skill's setup notes,
+     bound once here so that `font-medium` means the emphasis step of whatever
+     face is loaded, `tracking-tight` means as much tightening as that face
+     needs, and a display line that wraps clears its own descenders. Swapping
+     the face is the import in layout.tsx and these numbers; no component
+     changes — and none did when this moved off Plus Jakarta Sans.
+
+     400/500 rather than 500/600: this face's 400 already lands in the ink
+     band, where Plus Jakarta Sans's did not. Tracking is one step looser the
+     whole way, because the face is fitted tighter than the one the base rule
+     was written on — the side bearing of `n` reads 0.061 against Geist's
+     0.080. Minimum leading 0.97, so it binds at Tailwind's 1. */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --tracking-tight: 0em;
+  --tracking-tighter: -0.025em;
   --leading-display: 1;
+  /* 4xl joins the display rows: the hero's heading steps down to it in the
+     band where the centre column is at its narrowest, and a display line on
+     the 1.11 the scale ships with opens a gap between its own two lines. */
+  --text-4xl--line-height: var(--leading-display);
   --text-5xl--line-height: var(--leading-display);
   --text-6xl--line-height: var(--leading-display);
   --text-7xl--line-height: var(--leading-display);
 
-  /* The heading face's own row. Same four numbers, read by the base rule that
+  /* The heading face's own row. Same numbers, read by the base rule that
      scopes them to h1–h6 and .font-heading, so a pair carries two rows rather
      than one and neither face is set with the other's tracking. Pointed at the
      body row here, which is the one-family case: swapping to a pair is these
      five lines and the --font-heading above, and no component changes. */
+  /* The heading row stops pointing at the body row for weight. 500 is what a
+     display line is set at here and 600 is its emphasis step — a real two-step
+     row rather than the one-family shorthand, and Google Sans Flex is variable
+     so both are the face rather than a synthesis.
+
+     Written here because this is the layer the decision belongs to. Putting
+     `font-medium` on an h1 instead is the thing `type-check` refuses, and it
+     is right to: from `text-3xl` up the size is the emphasis, so a weight
+     utility at a call site is a second emphasis arguing with the first. A
+     face's own weight is not that — it is what the face is set at. */
   --heading-weight-normal: 500;
   --heading-weight-medium: 600;
-  --heading-tracking-tight: 0em;
-  --heading-tracking-tighter: -0.025em;
+  --heading-tracking-tight: var(--tracking-tight);
+  --heading-tracking-tighter: var(--tracking-tighter);
   --heading-leading-display: var(--leading-display);
 
   --secondary: hsl(30 6% 91%);
@@ -217,9 +265,9 @@
      This replaces a [data-brand="light"] rule that used to force text-primary
      back to --foreground. That worked and it threw the hue away: a light brand
      had no brand-coloured ink at all, only a neutral one. */
-  --primary: hsl(194 42% 32%);
-  --primary-ink: hsl(194 42% 32%);
-  --primary-foreground: hsl(0 0% 100%);
+  --primary: hsl(97 76% 60%);
+  --primary-ink: hsl(95 50% 26%);
+  --primary-foreground: hsl(30 6% 10%);
 
   /* Gradient art is the one mark allowed to fill space with colour, and until
      now every instance of it carried a hue typed into a component — which is
@@ -235,12 +283,11 @@
      is: /10 of the reference green lands 1.150 against a card and whispers, /10
      of a near-black primary lands 1.216 — past the band and a deeper step than
      the well itself. So the alpha is the variable, and a palette that changes
-     the hue changes it too. This palette *is* the near-black one, so it takes
-     the thinner alpha: /6 reads 1.122 on a card. The mix itself lives in the
-     @theme block above, for the reason written there. Lime is a light hue,
-     so /10 never reaches the whisper band and the alpha is raised to /30. A
-     mid-dark brand takes the ordinary 10%. */
-  --chip-alpha: 10%;
+     the hue changes it too. This palette's brand is a *light* hue, where /10
+     never reaches the whisper band at all, so the alpha is raised to /30. The
+     mix itself lives in the @theme block above, for the reason written there.
+     A near-black brand takes /6 and a mid-dark one the ordinary 10%. */
+  --chip-alpha: 30%;
 
   /* The accent palette — six hues that are not the brand, and the only six.
      Four are declared here and the last two below, which is the order they
@@ -302,20 +349,121 @@
      points off the hue's own saturation, which for a 6% hue clamped to
      1% and 0% — cold greys in a warm palette. Baked in, they keep the
      6% every other neutral here carries. */
-  --chart-1: hsl(194 42% 32%);
-  --chart-2: hsl(194 37% 44%);
-  --chart-3: hsl(194 31% 56%);
+  --chart-1: hsl(95 50% 26%);
+  --chart-2: hsl(95 45% 38%);
+  --chart-3: hsl(95 39% 50%);
   --chart-4: hsl(30 6% 72%);
   --chart-5: hsl(30 6% 85%);
 
   --sidebar: hsl(30 6% 91%);
   --sidebar-foreground: hsl(30 6% 10%);
-  --sidebar-primary: hsl(194 42% 32%);
+  --sidebar-primary: hsl(97 76% 60%);
   --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: hsl(30 6% 93.5%);
   --sidebar-accent-foreground: hsl(30 6% 10%);
   --sidebar-border: hsl(30 6% 91.5%);
   --sidebar-ring: hsl(30 6% 13%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   The same ladder upside down.
+
+   In the light palette a raised surface is *lighter* than the page and the
+   recessed ones run down from it. Near black there is no room below: the page
+   sits at L8 and a step down is a step into nothing. So on this side every
+   rung is *lighter* than the page, and what the numbers keep is the order —
+   card nearest, then accent, muted, secondary, border — and the whisper, which
+   is a ratio rather than a number of lightness points.
+
+   The whisper band holds. The first cut of this block used a ladder three
+   times as wide — card at L12, secondary at L21 — on the assumption that near
+   black a small lightness step cannot produce a small ratio. That was wrong
+   and the arithmetic says so: holding the light side's own ratios on a page at
+   L8 needs a span of **6.4 lightness points**, against the 8 the light side
+   itself spends between L99 and L91. So the rungs below are the light
+   palette's ratios solved for this ground — card 1.02, accent 1.06, border
+   1.12, muted 1.14, secondary 1.20, the same five numbers — and the wide
+   version was thrown away after both were rendered and compared.
+
+   Read this next to `references/surfaces.md`. The house style is a light one
+   and says nothing about the other side, so nothing here is checked by
+   `palette-check.py`, which reads `:root` and stops. Every number was measured
+   by hand instead: ink on all five grounds, every rung against the page, and
+   the brand as ink on the two surfaces it is drawn on.
+   ───────────────────────────────────────────────────────────── */
+.dark {
+  --background: hsl(30 8% 8%);
+  --foreground: hsl(30 10% 94%);
+
+  --card: hsl(30 7% 9%);
+  --card-foreground: var(--foreground);
+  --popover: hsl(30 7% 9%);
+  --popover-foreground: var(--foreground);
+
+  --accent: hsl(30 7% 10.5%);
+  --accent-foreground: var(--foreground);
+  --muted: hsl(30 6% 13%);
+  --muted-foreground: hsl(30 6% 68%);
+  --secondary: hsl(30 6% 14.4%);
+  --secondary-foreground: var(--foreground);
+
+  --border: hsl(30 6% 12.5%);
+  /* A control's ground rather than a rung, so it is allowed to be seen: this
+     is the off state of a switch and the fill of an input. */
+  --input: hsl(30 6% 24%);
+
+  /* The split the light palette needs collapses here. `--primary-ink` exists
+     because a light brand cannot clear 4.5:1 on a near-white page; on a
+     near-black one that same light brand *is* the ink, and the dark green the
+     light side uses for it would disappear. So ink goes up rather than down. */
+  --primary: hsl(97 76% 60%);
+  --primary-ink: hsl(97 72% 68%);
+  --primary-foreground: hsl(30 6% 10%);
+  --ring: var(--primary-ink);
+
+  /* 30% of a light brand over a white card is a whisper; over a card at L12 it
+     is a slab. The alpha is the variable the light block already says it is. */
+  --chip-alpha: 16%;
+
+  /* The fills stay — a 400 reads on either ground. The inks invert: a 700 on
+     L12 is a hole, so each one goes up to the 300 step, which is where these
+     six are still telling six things apart and still clearing the floor. */
+  --leaf-ink: var(--color-emerald-300);
+  --sun-ink: var(--color-amber-300);
+  --coral-ink: var(--color-rose-300);
+  --iris-ink: var(--color-violet-300);
+  --lime-ink: var(--color-lime-300);
+  --sky-ink: var(--color-sky-300);
+
+  --destructive: hsl(4 72% 66%);
+
+  /* The ramp runs the other way too: 1 is the lightest here, and 4 and 5 are
+     the warm greys that were light on the other side. */
+  --chart-1: hsl(97 72% 68%);
+  --chart-2: hsl(95 50% 54%);
+  --chart-3: hsl(95 42% 41%);
+  --chart-4: hsl(30 6% 40%);
+  --chart-5: hsl(30 6% 27%);
+
+  --sidebar: hsl(30 7% 12%);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: hsl(97 76% 60%);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: hsl(30 7% 16%);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: hsl(30 6% 24%);
+  --sidebar-ring: var(--primary-ink);
+
+  /* A near-black cast on a near-black page is nothing, so both tokens are
+     rebuilt rather than reused: the ring flips to a hairline of the *ink*,
+     which is how a raised thing keeps an edge on this side, and the spread
+     goes to real black at four to eight times the alpha. */
+  --shadow-soft:
+    0 0 0 1px hsl(30 10% 94% / 0.07), 0 2px 6px -2px hsl(0 0% 0% / 0.5),
+    0 6px 16px -6px hsl(0 0% 0% / 0.55);
+  --shadow-soft-lg:
+    0 0 0 1px hsl(30 10% 94% / 0.07), 0 8px 24px -6px hsl(0 0% 0% / 0.6),
+    0 24px 48px -24px hsl(0 0% 0% / 0.7);
 }
 
 @layer base {
@@ -339,13 +487,25 @@
   }
   html {
     @apply font-sans font-normal;
+    /* ss01 is this face's alternate ă and ạ, and nothing else — inert on
+       Latin copy, and the reason the vietnamese subset is loaded. */
+    font-feature-settings: "ss01";
   }
 }
 
 @layer base {
-  /* The header is sticky, so anchors need somewhere to land. */
+  /* The header is sticky, so anchors need somewhere to land. From `xl` the
+     rails replace it and nothing is pinned over the centre column any more,
+     so the landing clearance drops to the shell's own margin — otherwise an
+     anchor arrives with a screenful of nothing above it. */
   html {
     scroll-padding-top: 6rem;
+  }
+
+  @media (width >= 80rem) {
+    html {
+      scroll-padding-top: 1.5rem;
+    }
   }
 
   /* The heading face reaches every heading without a utility at the call site,

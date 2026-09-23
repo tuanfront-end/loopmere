@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { MotionConfig, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ToolPanel } from "../tool-panel";
@@ -103,16 +103,23 @@ export function BreathingModal({ onClose, show }: BreathingModalProps) {
   return (
     <ToolPanel show={show} title="Breathing" onClose={onClose}>
       <div className="grid h-64 place-items-center">
-        <div className="relative grid size-40 place-items-center">
-          <motion.div
-            animate={phase}
-            aria-hidden="true"
-            className="bg-chip absolute size-24 rounded-full"
-            key={exercise}
-            variants={variants}
-          />
-          <p className="relative text-sm font-medium">{PHASE_LABELS[phase]}</p>
-        </div>
+        {/* The circle is motion's, not CSS, so `motion-reduce:` never
+            reached it; `reducedMotion="user"` holds it still for anyone who
+            has asked, and the phase still reads in words. */}
+        <MotionConfig reducedMotion="user">
+          <div className="relative grid size-40 place-items-center">
+            <motion.div
+              animate={phase}
+              aria-hidden="true"
+              className="bg-chip absolute size-24 rounded-full"
+              key={exercise}
+              variants={variants}
+            />
+            <p aria-live="polite" className="relative text-sm font-medium">
+              {PHASE_LABELS[phase]}
+            </p>
+          </div>
+        </MotionConfig>
       </div>
 
       <div className="flex items-center justify-between gap-4">
@@ -121,10 +128,13 @@ export function BreathingModal({ onClose, show }: BreathingModalProps) {
         </p>
 
         <Select
+          items={Object.fromEntries(
+            Object.entries(EXERCISES).map(([id, value]) => [id, value.label]),
+          )}
           value={exercise}
-          onValueChange={(next) => setExercise(next as Exercise)}
+          onValueChange={(next) => next && setExercise(next as Exercise)}
         >
-          <SelectTrigger className="w-56">
+          <SelectTrigger aria-label="Pattern" className="w-56">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

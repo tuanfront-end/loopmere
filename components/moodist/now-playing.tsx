@@ -28,7 +28,7 @@ export function NowPlaying() {
 
   if (!labels.length) {
     return (
-      <p className="text-muted-foreground text-sm">
+      <p className="text-muted-foreground text-sm text-balance">
         Nothing picked yet. Tap a card below and it starts.
       </p>
     );

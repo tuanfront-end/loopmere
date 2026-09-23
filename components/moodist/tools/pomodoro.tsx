@@ -1,6 +1,6 @@
 "use client";
 
-import { PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
+import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
 import { Settings02Icon, Undo02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -16,6 +16,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useSoundEffect } from "@/hooks/use-sound-effect";
 import { usePomodoroStore } from "@/stores/pomodoro";
 import { useSettingsStore } from "@/stores/settings";
+import { keepKeys } from "@/lib/keys";
 
 interface PomodoroProps {
   onClose: () => void;
@@ -237,7 +238,7 @@ function PomodoroSettings({
                   [tab.id]: event.target.value,
                 }))
               }
-              onKeyDown={(event) => event.stopPropagation()}
+              onKeyDown={keepKeys}
             />
           </div>
         ))}
