@@ -243,19 +243,27 @@ export function SiteHeader() {
                 </DrawerDescription>
               </DrawerHeader>
 
+              {/* Every row that goes somewhere is a real anchor that shuts the
+                  sheet on its way, not `DrawerClose render={<a/>}`. That one
+                  is a button underneath: Base UI logged an error for the
+                  missing <button> each time the sheet opened, and the fix it
+                  suggests, `nativeButton={false}`, puts role="button" on the
+                  link — a jump to a shelf announced as a press. The rail's
+                  coffee link is an anchor for the same reason. */}
               <div className="flex flex-col gap-1">
                 {shelves.map((shelf) => (
-                  <DrawerClose
+                  <a
                     className={drawerRow}
+                    href={shelf.href}
                     key={shelf.id}
-                    render={<a href={shelf.href} />}
+                    onClick={() => setNavOpen(false)}
                   >
                     <ShelfIcon id={shelf.id} />
                     {shelf.title}
                     <span className="text-muted-foreground ml-auto text-xs tabular-nums">
                       {shelf.count}
                     </span>
-                  </DrawerClose>
+                  </a>
                 ))}
               </div>
 
@@ -263,9 +271,10 @@ export function SiteHeader() {
                   it from `xl` up. */}
               <div className="mx-2.5 mt-2 border-t pt-2">
                 <div className="-mx-2.5">
-                  <DrawerClose
+                  <a
                     className={drawerRow}
-                    render={<a href="#category-favorites" />}
+                    href="#category-favorites"
+                    onClick={() => setNavOpen(false)}
                   >
                     <span aria-hidden="true" className="shrink-0">
                       <HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />
@@ -274,7 +283,7 @@ export function SiteHeader() {
                     <span className="text-muted-foreground ml-auto text-xs tabular-nums">
                       {favorites.length}
                     </span>
-                  </DrawerClose>
+                  </a>
                 </div>
               </div>
 
@@ -288,15 +297,12 @@ export function SiteHeader() {
                   Surprise me
                 </DrawerClose>
 
-                <DrawerClose
+                <a
                   className={drawerRow}
-                  render={
-                    <a
-                      href={REPO_URL}
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    />
-                  }
+                  href={REPO_URL}
+                  rel="noreferrer noopener"
+                  target="_blank"
+                  onClick={() => setNavOpen(false)}
                 >
                   <HugeiconsIcon
                     className="size-4 shrink-0"
@@ -304,20 +310,17 @@ export function SiteHeader() {
                     strokeWidth={1.5}
                   />
                   Source on GitHub
-                </DrawerClose>
+                </a>
 
                 {/* A row, not the outline button the rail gives it. Inside a
                     sheet every other way out is a row, and one button among
                     them would read as the thing the sheet was opened for. */}
-                <DrawerClose
+                <a
                   className={drawerRow}
-                  render={
-                    <a
-                      href={COFFEE_URL}
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    />
-                  }
+                  href={COFFEE_URL}
+                  rel="noreferrer noopener"
+                  target="_blank"
+                  onClick={() => setNavOpen(false)}
                 >
                   <HugeiconsIcon
                     className="size-4 shrink-0"
@@ -325,7 +328,7 @@ export function SiteHeader() {
                     strokeWidth={1.5}
                   />
                   Buy me a coffee
-                </DrawerClose>
+                </a>
               </div>
             </DrawerContent>
           </Drawer>
