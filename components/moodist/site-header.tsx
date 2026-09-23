@@ -118,7 +118,7 @@ export function SiteHeader() {
         >
           <Logo className="size-6" />
           <span className="font-heading text-base font-medium tracking-tight">
-            Moodist
+            Loopmere
           </span>
         </a>
 

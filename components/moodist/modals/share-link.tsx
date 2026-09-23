@@ -36,9 +36,13 @@ export function ShareLinkModal({ onClose, show }: ShareLinkModalProps) {
     [sounds],
   );
 
-  /** The origin is only knowable on the client, so the first render is a guess. */
+  /**
+   * The origin is only knowable on the client, so the first render leaves it
+   * off. It used to guess `moodist.app`, which is the original's domain, and a
+   * port has no business handing that out as its own.
+   */
   const url = useMemo(() => {
-    const origin = isMounted ? window.location.origin : "https://moodist.app";
+    const origin = isMounted ? window.location.origin : "";
 
     return `${origin}/?share=${encodeURIComponent(mix)}`;
   }, [mix, isMounted]);

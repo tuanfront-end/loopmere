@@ -65,8 +65,8 @@ export function Notepad({ onClose, show }: NotepadProps) {
           <ToolButton
             label="Download as a text file"
             onClick={() => {
-              download("Moodist note.txt", note);
-              toast.success("Saved as Moodist note.txt");
+              download("Loopmere note.txt", note);
+              toast.success("Saved as Loopmere note.txt");
             }}
           >
             <HugeiconsIcon icon={Download01Icon} strokeWidth={1.5} />

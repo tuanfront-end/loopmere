@@ -24,7 +24,7 @@ export function MediaSession() {
     if (!supported || !isPlaying) return;
 
     navigator.mediaSession.metadata = new MediaMetadata({
-      artist: "Moodist",
+      artist: "Loopmere",
       artwork: [
         { sizes: "192x192", src: "/assets/pwa/192.png", type: "image/png" },
         { sizes: "512x512", src: "/assets/pwa/512.png", type: "image/png" },

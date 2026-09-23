@@ -60,7 +60,7 @@ export function SiteFooter() {
           <div className="flex items-center gap-2">
             <Logo className="size-6" />
             <span className="font-heading text-base font-medium tracking-tight">
-              Moodist
+              Loopmere
             </span>
           </div>
 
@@ -121,7 +121,7 @@ export function SiteFooter() {
               <Outbound href={REPO_URL}>This port</Outbound>
             </li>
             <li>
-              <Outbound href={UPSTREAM_URL}>The Astro original</Outbound>
+              <Outbound href={UPSTREAM_URL}>Moodist, the Astro original</Outbound>
             </li>
             <li>
               <Outbound href={UPSTREAM_AUTHOR_URL}>Maze, who wrote it</Outbound>

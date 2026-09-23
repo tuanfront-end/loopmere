@@ -11,10 +11,10 @@ export default function manifest(): MetadataRoute.Manifest {
       src: `/assets/pwa/${size}.png`,
       type: "image/png",
     })),
-    name: "Moodist",
+    name: "Loopmere",
     orientation: "any",
     scope: "/",
-    short_name: "Moodist",
+    short_name: "Loopmere",
     start_url: "/",
     theme_color: "#fdfcfa",
   };

@@ -27,7 +27,7 @@ const sans = Google_Sans_Flex({
 });
 
 export const metadata: Metadata = {
-  title: "Moodist — ambient sound, mixed by you",
+  title: "Loopmere — ambient sound, mixed by you",
   description:
     "Eighty-odd loops of rain, forest, cafe and static. Layer them, set the levels, and let the tab run.",
 };

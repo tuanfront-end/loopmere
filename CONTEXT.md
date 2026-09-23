@@ -58,7 +58,8 @@ Bản gốc **không chạy `tsc`** — script `check` của nó là Biome, nên
   `helpers/`, `constants/`, `lib/` — gần như không đổi.
 - UI: hero, play controls (play/pause, shuffle, clear, restore), category
   section, sound grid có Show More, sound card, favorite, volume slider.
-- Assets: `public/sounds` (117MB), images, logo, og.
+- Assets: `public/sounds` (117MB) và images. Logo và og của bản gốc thì đã
+  bỏ — mark giờ là của bản port, xem đoạn Logo ở § Shell.
 - Toolbar, mười ba panel, PWA, snackbar và nửa nhận của share link — mỗi thứ
   có mục riêng bên dưới.
 
@@ -234,6 +235,19 @@ giống hệt từng byte với `../moodist` — còn `favicon.ico` từng là t
 `currentColor`; mọi bản raster — favicon, `apple-icon`, bảy icon PWA, artwork
 của MediaSession — render từ `app/icon.svg` bằng `npm run icons`. Hai path của
 mark có mặt ở cả hai file, nên đổi mark là sửa cả hai rồi chạy lại lệnh đó.
+
+**Tên hiển thị là Loopmere** — một *loop*, cái vòng của mark, và một *mere*,
+mặt nước lặng dâng trong nó. "Moodist" là tên của dự án gốc, nên nó chỉ còn ở
+chỗ ghi công: dòng cuối rail và cột "Where it came from" của footer. Lowtide
+được tra trước và bị loại — ít nhất năm sản phẩm phần mềm cùng tên, và TIDE là
+một app ngủ/tập trung lớn đúng ngách. Ngách này đã bão hoà chữ thiên nhiên
+(Stillroom, Drift, Lull đều có app), nên tên được ghép. Ngày 23/9/2026 Loopmere
+không có kết quả web nào, `.com` và `.app` đều còn trống.
+
+**Khoá lưu trữ vẫn là `moodist-*`, cố ý.** Bảy khoá localStorage và hai cache
+của service worker mang tên cũ. Không ai nhìn thấy chúng, và đổi tên là xoá mix,
+preset và note của người đã dùng, trừ khi viết migration. Thư mục
+`components/moodist/`, tên package và tên repo cũng giữ nguyên.
 
 Header dùng `buttonVariants` trên `<a>` thật cho hai link trông như nút. Viết
 `<Button render={<a/>}>` thì Base UI gắn `role="button"` lên thẻ điều hướng, và

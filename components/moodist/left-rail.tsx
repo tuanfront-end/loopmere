@@ -162,7 +162,7 @@ export function LeftRail() {
         href="#top"
       >
         <Logo className="size-7" />
-        <span className="font-heading text-lg tracking-tight">Moodist</span>
+        <span className="font-heading text-lg tracking-tight">Loopmere</span>
       </a>
 
       <nav aria-label="Shelves" className="flex min-h-0 shrink flex-col">

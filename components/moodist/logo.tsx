@@ -4,9 +4,11 @@
  * which is the product in one glyph: loops you stack and set the level of,
  * most of them weather, water and grass.
  *
- * The port's own. It replaced the original's rosette, which is the original
- * project's mark; the favicon, the app icons and the media artwork are
- * rendered from these same two paths in `app/icon.svg` by `npm run icons`.
+ * The port's own, and the name is drawn in it: Loopmere is a loop — the ring —
+ * and a mere, the still water rising in it. It replaced the original's
+ * rosette, which is the original project's mark; the favicon, the app icons
+ * and the media artwork are rendered from these same two paths in
+ * `app/icon.svg` by `npm run icons`.
  *
  * The level's ends and its lower arc run through the middle of the ring's
  * stroke rather than along its inner edge, so the two shapes overlap: butted,
