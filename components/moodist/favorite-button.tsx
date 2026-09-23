@@ -36,11 +36,7 @@ export function FavoriteButton({ id, label }: FavoriteButtonProps) {
           "text-muted-foreground hover:bg-muted hover:text-foreground",
           isFavorite && "text-coral-ink hover:text-coral-ink",
         )}
-        onClick={(event) => {
-          // The whole card toggles the sound; a heart click must not.
-          event.stopPropagation();
-          toggleFavorite(id);
-        }}
+        onClick={() => toggleFavorite(id)}
       >
         <HugeiconsIcon
           className={cn("size-4", isFavorite && "fill-coral/40")}

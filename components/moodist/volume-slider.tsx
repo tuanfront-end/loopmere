@@ -2,6 +2,7 @@
 
 import { Slider } from "@/components/ui/slider";
 import { useSoundStore } from "@/stores/sound";
+import { PERCENT } from "@/components/ui/slider";
 
 interface VolumeSliderProps {
   /** Not in the mix: the rail is drawn, but it is nobody's control yet. */
@@ -21,15 +22,13 @@ export function VolumeSlider({ disabled, id, label }: VolumeSliderProps) {
 
   return (
     <Slider
+      format={PERCENT}
       aria-label={`${label} level`}
       disabled={disabled}
       max={1}
       min={0}
       step={0.01}
       value={[volume]}
-      // The card underneath toggles the sound; a drag must not reach it.
-      onClick={(event) => event.stopPropagation()}
-      onKeyDown={(event) => event.stopPropagation()}
       onValueChange={(next) =>
         setVolume(id, Array.isArray(next) ? next[0] : next)
       }

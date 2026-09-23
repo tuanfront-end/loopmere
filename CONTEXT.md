@@ -36,7 +36,9 @@ này dùng lại nguyên vẹn, không phải sửa một dòng.
 Store chỉ `lock()` để chặn tương tác trong lúc fade, rồi `pause()` + `unlock()`.
 
 **4. Volume là tích hai tầng.** `volume` của từng sound × `globalVolume` trong
-settings store. Card tính `adjustedVolume` rồi truyền xuống `useSound`.
+settings store. Bản gốc để card tính tích rồi truyền xuống `useSound`; bản port
+cho `useSound` tự đọc `globalVolume` từ store và áp thẳng lên `Howl`, vì truyền
+qua prop thì mỗi bước kéo slider Everything làm mọi card render lại.
 
 ## Những chỗ phải sửa khi port
 
