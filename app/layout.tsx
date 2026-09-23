@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Google_Sans_Flex } from "next/font/google";
 
@@ -87,6 +88,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </TooltipProvider>
         <ServiceWorker />
         <Toaster />
+        {/* Real visitors' Core Web Vitals, reported to the Vercel project.
+            It sends nothing off Vercel, and its script loads after the page. */}
+        <SpeedInsights />
       </body>
     </html>
   );
