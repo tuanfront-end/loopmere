@@ -105,15 +105,15 @@ nhưng một template đem bán thì phải theo scaffold.
 hover, vn-comment — cộng `next build` và toàn bộ selftest. **Đỏ ở đó là hồi
 quy thật.**
 
-`npm run check:all` chạy thêm năm gate nữa, và bốn trong số đó đang đỏ. Ba là
-quyết định, một là việc chưa làm:
+`npm run check:all` chạy thêm năm gate nữa, và ba trong số đó đang đỏ — cả ba
+là quyết định. `seo-check` đã sạch; nó chỉ còn một dòng "look" để người đọc tự
+xét: `WebApplication` nằm ngoài bộ schema mà script đã duyệt.
 
 | Gate | Báo gì | Đọc thế nào |
 |---|---|---|
 | `page-check` | section 2–9: tám cái liên tiếp không ảnh, luật là ba | **quyết định** — xem ngay dưới |
 | `ref-ledger` | 0/3 section ghi `// drawn:` | **quyết định** — không có mark vẽ tay nào, và moodist không đòi |
 | `image-check` | `/assets/pwa/192.png` và `512.png` hẹp hơn sàn 1200px | **false positive** — đó là icon app, dùng lại làm artwork của MediaSession, không bao giờ vẽ lên trang |
-| `seo-check` | 4 defect | **việc chưa làm** — xem § Việc còn mở |
 
 **`page-check` fail, và không sửa.** Luật picture run nói ba section liên tiếp
 không ảnh là hết mức; trang này có chín grid category liên tiếp. Luật đó viết
@@ -963,24 +963,82 @@ trong `claude-build-template-skills`, một commit (`46af405`), chưa push, và
 working tree của repo skill, nên checker mà session này chạy là bản nào đang
 được checkout ở đó. Xem § Việc còn mở.
 
+## SEO, tốc độ và truy cập
+
+Một lượt đo rồi sửa, bằng hai audit chạy trên trang thật: axe-core, và Chrome
+ở CPU chậm 4×.
+
+**SEO.** `lib/seo.ts` là chỗ duy nhất dựng head: `pageMeta()` trả title,
+description, canonical và cả hai card từ cùng hai chuỗi, vì Next *thay* chứ
+không *gộp* một `openGraph` lồng nhau — card viết ở layout sẽ dán nhãn trang
+chủ lên mọi route. URL gốc lấy từ `NEXT_PUBLIC_SITE_URL`, rồi
+`VERCEL_PROJECT_PRODUCTION_URL`, cuối cùng là localhost. JSON-LD chỉ nói điều
+trang chứng minh được: một web app miễn phí, `isBasedOn` Moodist của MAZE.
+`app/opengraph-image.jpg` render tĩnh bằng Chrome từ font và ảnh hero của chính
+trang; nó ghi "84 loops", nên số sound đổi thì render lại.
+
+**Tốc độ.** JS lần đầu của `/` từ 368 xuống **295 KB gzip**; CLS ở 1280–1440 từ
+0.15–0.17 xuống **0**.
+
+- 13 panel tool là chunk riêng, mount (đóng) khi trình duyệt rảnh — comment
+  đầu `tools-provider.tsx`.
+- `alarm.mp3` (134 KB) không còn tải hai lần mỗi lần vào trang: `preload:
+  false`.
+- Kéo một slider không còn render lại cả kệ: `SoundGrid` chọn đúng con số nó
+  cần, `SoundCard` là `memo`, `globalVolume` áp thẳng vào `Howl` (điểm 4 ở
+  trên).
+- Shell là grid khai sẵn ba cột, nên rail phải đến muộn không đẩy cột giữa.
+- Slider dùng `edge-client-only`: bỏ 86 script chèn trước hydrate, thumb vẫn
+  đúng chỗ — đo ở 90%.
+- Ảnh hero: AVIF, `fetchPriority="high"`, `sizes` theo bề rộng thật của khung.
+- Speed Insights gắn ở layout; chỉ có số liệu khi chạy trên Vercel và project
+  đã bật nó.
+
+**Truy cập.** axe-core: **0 vi phạm** ở 390 và 1440, kể cả khi mở panel.
+
+- Card là khung; bật/tắt là một `<button>` phủ kín, nằm dưới nút tim và
+  slider. Hết control lồng control, và Enter trên nút tim không còn chọn sound.
+- Phím tắt Shift+chữ tắt được ở panel Keyboard (WCAG 2.1.4); gợi ý phím ở rail
+  và menu ẩn theo.
+- Escape đóng panel kể cả khi focus đang ở ô nhập (`lib/keys.ts`).
+- Animation chạy bằng JS nghe `prefers-reduced-motion`: vòng thở, confetti,
+  cuộn trang.
+- Slider đọc "90%" thay vì `0.8999…` và có vòng focus; hai Select có tên; sheet
+  có nút đóng; contrast của số đếm, hàng tạm dừng và tab chưa chọn lên trên
+  4.5:1.
+
 ## Việc còn mở
 
-Bốn thứ, không cái nào đang chặn:
+Không cái nào đang chặn:
 
-**1. `seo-check` báo 4 defect.** Thiếu canonical, thiếu cả năm thẻ Open Graph
-(`og:title`, `og:description`, `og:url`, `og:type`, `og:site_name`), thiếu
-`twitter:card`, thiếu `sitemap.xml`. Tất cả đều là vài dòng trong `metadata`
-của `app/layout.tsx` cộng một `app/sitemap.ts`.
+**1. Chữ tự gõ ở hero chạy mãi.** WCAG 2.2.2 đòi một cách dừng nội dung tự
+chuyển động quá 5 giây: nút tạm dừng, hoặc dừng sau 5 giây. Cả hai đổi thiết
+kế hero, nên chờ quyết định. `prefers-reduced-motion` đã tắt nó đúng.
 
-Defect thứ năm — skip link trỏ vào `#content` mà không có gì mang id đó — đã
-hết: `<main>` nhận `id="content"` khi header vào, vì một header có menu là
-hơn chục tab stop đứng trước thẻ sound đầu tiên.
+**2. Chưa có undo khi xoá preset hay việc trong checklist.** Shift+R thì đã
+có: toast "Cleared the mix." kèm Undo.
 
-**2. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
+**3. Footer nằm trong `<main>`**, nên trang không có landmark `contentinfo`; và
+chip category ở bản dưới `xl` là `<button>` dùng để điều hướng, focus ở lại
+chip sau khi nhảy — nên là `<a href>` như rail trái.
+
+**4. 12 lỗi eslint `react-hooks/set-state-in-effect`**, đều có từ trước, ở các
+tool (pomodoro, countdown, tone, breathing, sleep timer, share link, media
+session). eslint không nằm trong `npm run check`.
+
+**5. Chưa lazy-load Drawer, Menu và sonner** (~37 KB gzip, chỉ dùng dưới `xl`
+hoặc sau một thao tác). Subset `vietnamese` của font thì giữ — lý do ở comment
+trong `layout.tsx`.
+
+**6. `controls-check` thỉnh thoảng đỏ `RuntimeError: Uncaught`** — lỗi đua của
+script trong repo skill: nó đọc `readyState` của `about:blank` trước khi trang
+mới có `<body>`. Chạy lại là xanh; bản sửa đang làm ở repo skill.
+
+**7. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
 Chrome thật để xác nhận vòng install → waiting → reload.
 
-**3. Nhánh `select-popup-on-either-base` chưa merge** ở repo skill. Rebase lên
+**8. Nhánh `select-popup-on-either-base` chưa merge** ở repo skill. Rebase lên
 `main` rồi mở PR, hoặc bỏ nó đi — nhưng đừng để nó nằm đó: khi nào repo skill
 checkout sang nhánh khác thì checker ở đây đổi hành vi mà không ai báo.
 
-**4. Licence thiings** — § Icon nói rõ. Chỉ thành vấn đề nếu có ngày đem bán.
+**9. Licence thiings** — § Icon nói rõ. Chỉ thành vấn đề nếu có ngày đem bán.
