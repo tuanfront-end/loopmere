@@ -109,7 +109,9 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
         {icon ?? <SoundIcon id={id} size={24} />}
       </span>
       {title}
-      <span className="ml-auto text-xs tabular-nums opacity-60">{count}</span>
+      <span className="text-muted-foreground ml-auto text-xs tabular-nums">
+        {count}
+      </span>
     </a>
   );
 }
@@ -165,7 +167,7 @@ export function LeftRail() {
         <span className="font-heading text-lg tracking-tight">Loopmere</span>
       </a>
 
-      <nav aria-label="Shelves" className="flex min-h-0 shrink flex-col">
+      <nav aria-label="Jump to a shelf" className="flex min-h-0 shrink flex-col">
         {/* The negative margin and the padding cancel: without them the focus
             ring on a row is clipped by the scroller it sits in. */}
         <div className="no-scrollbar -mx-1 flex min-h-0 flex-col gap-1 overflow-y-auto px-1">
@@ -216,7 +218,6 @@ export function LeftRail() {
         </div>
 
         <Button
-          aria-label="Pick four sounds at random"
           className="w-full"
           size="lg"
           variant="outline"

@@ -106,7 +106,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 xl:hidden">
       <div
         className={cn(
-          "mx-auto flex items-center gap-1 transition-all duration-300 ease-out",
+          "mx-auto flex items-center gap-1 transition-[height,max-width,margin,padding,border-radius,background-color,box-shadow] duration-300 ease-out",
           scrolled
             ? "bg-card/60 shadow-soft-lg mt-3 h-12 max-w-[calc(100%-1.5rem)] rounded-full px-2 ring-1 ring-white/50 ring-inset dark:ring-white/10 backdrop-blur-xl backdrop-saturate-125 sm:h-14 sm:max-w-[960px] sm:px-3"
             : "h-14 max-w-[1200px] px-6 sm:h-16 sm:px-8",
@@ -165,7 +165,7 @@ export function SiteHeader() {
         <div className="ml-auto flex items-center gap-1">
           {noSelected ? (
             <Button
-              aria-label="Pick four sounds at random"
+              aria-label="Surprise me"
               className="shrink-0"
               size="sm"
               variant="outline"

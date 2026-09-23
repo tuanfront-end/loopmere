@@ -1,6 +1,14 @@
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import { cn } from "cn";
 
+/**
+ * The value text for a level between 0 and 1. Without it the slider announces
+ * the raw float — "0.8999999761581421" for what the screen shows as 90%.
+ */
+export const PERCENT = {
+  style: "percent",
+} as const satisfies Intl.NumberFormatOptions;
+
 function Slider({
   className,
   defaultValue,

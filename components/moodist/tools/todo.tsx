@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTodoStore } from "@/stores/todo";
+import { keepKeys } from "@/lib/keys";
 
 interface TodoProps {
   onClose: () => void;
@@ -48,7 +49,7 @@ export function Todo({ onClose, show }: TodoProps) {
           placeholder="I have to..."
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          onKeyDown={(event) => event.stopPropagation()}
+          onKeyDown={keepKeys}
         />
         <Button disabled={!value.trim().length} type="submit">
           Add
@@ -77,12 +78,12 @@ export function Todo({ onClose, show }: TodoProps) {
                 <input
                   aria-label={`Edit ${todo.todo}`}
                   className={cn(
-                    "flex-1 bg-transparent text-sm outline-none",
+                    "-mx-1 flex-1 rounded-sm bg-transparent px-1 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                     todo.done && "text-muted-foreground line-through",
                   )}
                   value={todo.todo}
                   onChange={(event) => editTodo(todo.id, event.target.value)}
-                  onKeyDown={(event) => event.stopPropagation()}
+                  onKeyDown={keepKeys}
                 />
 
                 <Button

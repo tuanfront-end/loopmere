@@ -41,7 +41,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
             beside it the centre is nothing like the window width. */}
         <div className="@container min-w-0 flex-1">{children}</div>
 
-        <aside className="sticky top-3 hidden h-[calc(100dvh-1.5rem)] w-[340px] shrink-0 xl:block 2xl:w-[360px]">
+        <aside
+          aria-label="The mix and tools"
+          className="sticky top-3 hidden h-[calc(100dvh-1.5rem)] w-[340px] shrink-0 xl:block 2xl:w-[360px]"
+        >
           <div className="bg-card h-full rounded-lg border">
             <RightRail />
           </div>

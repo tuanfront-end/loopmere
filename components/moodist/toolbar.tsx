@@ -23,6 +23,7 @@ import {
   drawerRow,
 } from "@/components/ui/drawer";
 import { useSoundStore } from "@/stores/sound";
+import { useSettingsStore } from "@/stores/settings";
 
 /**
  * The tools, for the widths with no right rail to put them in. Above `xl` the
@@ -42,7 +43,11 @@ export function Toolbar() {
   const shuffle = useSoundStore((state) => state.shuffle);
   const noSelected = useSoundStore((state) => state.noSelected());
 
-  useHotkeys("shift+m", () => setIsOpen((previous) => !previous));
+  const shortcuts = useSettingsStore((state) => state.shortcuts);
+
+  useHotkeys("shift+m", () => setIsOpen((previous) => !previous), {
+    enabled: shortcuts,
+  });
 
   return (
     <div className="fixed right-6 bottom-6 z-40 flex items-center gap-2 xl:hidden">
@@ -108,7 +113,7 @@ export function Toolbar() {
                         strokeWidth={1.5}
                       />
                       {tool.label}
-                      {tool.shortcut && (
+                      {shortcuts && tool.shortcut && (
                         <span className="text-muted-foreground ml-auto text-xs tracking-widest">
                           {tool.shortcut}
                         </span>

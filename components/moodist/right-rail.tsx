@@ -27,6 +27,7 @@ import { sounds } from "@/data/sounds";
 import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
+import { PERCENT } from "@/components/ui/slider";
 
 /** id → label, built once. The rail names sounds it never renders a card for. */
 const labels: Record<string, string> = Object.fromEntries(
@@ -70,18 +71,31 @@ function MixRow({ id }: { id: string }) {
 
   return (
     <li
-      className={cn(
-        "bg-card rounded-sm border p-3 transition-opacity",
-        // Still in the mix, still holding its level, just not sounding.
-        isPaused && "opacity-55",
-      )}
+      // Still in the mix, still holding its level, just not sounding — the
+      // render fades and the name goes grey, the card's own reading of the
+      // state. Fading the whole row put its name at 3.88:1 and its level at
+      // 2.28:1 while both were still something to read and a slider to drag.
+      className="bg-card rounded-sm border p-3"
     >
       <div className="flex items-center gap-2">
-        <span aria-hidden="true" className="text-primary-ink shrink-0">
+        <span
+          aria-hidden="true"
+          className={cn(
+            "text-primary-ink shrink-0 transition-opacity",
+            isPaused && "opacity-55",
+          )}
+        >
           <SoundIcon id={id} size={24} />
         </span>
 
-        <span className="truncate text-sm font-medium">{labels[id]}</span>
+        <span
+          className={cn(
+            "truncate text-sm font-medium",
+            isPaused && "text-muted-foreground",
+          )}
+        >
+          {labels[id]}
+        </span>
 
         <span className="text-muted-foreground ml-auto text-xs tabular-nums">
           {Math.round(volume * 100)}%
@@ -107,6 +121,7 @@ function MixRow({ id }: { id: string }) {
       </div>
 
       <Slider
+        format={PERCENT}
         aria-label={`${labels[id]} level`}
         className="mt-3"
         max={1}
@@ -242,6 +257,7 @@ function Levels() {
               </p>
             </div>
             <Slider
+              format={PERCENT}
               aria-label={`${label} level`}
               className="mt-3"
               max={1}
@@ -260,6 +276,8 @@ function Levels() {
 }
 
 function Tools() {
+  // Hints for keys that do nothing would be the rail lying about them.
+  const shortcuts = useSettingsStore((state) => state.shortcuts);
   const { open } = useTools();
   const noSelected = useSoundStore((state) => state.noSelected());
 
@@ -291,7 +309,7 @@ function Tools() {
                     strokeWidth={1.5}
                   />
                   {tool.label}
-                  {tool.shortcut && (
+                  {shortcuts && tool.shortcut && (
                     <span className="text-muted-foreground ml-auto text-xs tracking-widest">
                       {tool.shortcut}
                     </span>
@@ -308,6 +326,7 @@ function Tools() {
 
 export function RightRail() {
   const { open } = useTools();
+  const shortcuts = useSettingsStore((state) => state.shortcuts);
 
   return (
     <div className="no-scrollbar flex h-full flex-col gap-8 overflow-y-auto p-5">
@@ -336,7 +355,7 @@ export function RightRail() {
                     strokeWidth={1.5}
                   />
                   {tool.label}
-                  {tool.shortcut && (
+                  {shortcuts && tool.shortcut && (
                     <span className="ml-auto text-xs tracking-widest">
                       {tool.shortcut}
                     </span>

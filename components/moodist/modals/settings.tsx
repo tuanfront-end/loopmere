@@ -4,6 +4,7 @@ import { ToolPanel } from "../tool-panel";
 
 import { Slider } from "@/components/ui/slider";
 import { useSettingsStore } from "@/stores/settings";
+import { PERCENT } from "@/components/ui/slider";
 
 interface SettingsModalProps {
   onClose: () => void;
@@ -32,6 +33,7 @@ export function SettingsModal({ onClose, show }: SettingsModalProps) {
             </p>
           </div>
           <Slider
+            format={PERCENT}
             aria-label={`${label} level`}
             className="mt-4"
             max={1}

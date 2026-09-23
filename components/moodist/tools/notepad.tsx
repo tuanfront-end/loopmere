@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { download } from "@/helpers/download";
 import { useCopy } from "@/hooks/use-copy";
 import { useNoteStore } from "@/stores/note";
+import { keepKeys } from "@/lib/keys";
 
 interface NotepadProps {
   onClose: () => void;
@@ -103,7 +104,7 @@ export function Notepad({ onClose, show }: NotepadProps) {
         value={note}
         onChange={(event) => write(event.target.value)}
         // Escape belongs to the panel; every other key belongs to the note.
-        onKeyDown={(event) => event.stopPropagation()}
+        onKeyDown={keepKeys}
       />
 
       <p className="text-muted-foreground text-xs tabular-nums">

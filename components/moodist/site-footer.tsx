@@ -102,7 +102,7 @@ export function SiteFooter() {
               <li key={category.id}>
                 <a className={linkClass} href={`#category-${category.id}`}>
                   {category.title}
-                  <span className="ml-1.5 text-xs tabular-nums opacity-60">
+                  <span className="text-muted-foreground ml-1.5 text-xs tabular-nums">
                     {category.sounds.length}
                   </span>
                 </a>

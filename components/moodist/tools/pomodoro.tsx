@@ -16,6 +16,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useSoundEffect } from "@/hooks/use-sound-effect";
 import { usePomodoroStore } from "@/stores/pomodoro";
 import { useSettingsStore } from "@/stores/settings";
+import { keepKeys } from "@/lib/keys";
 
 interface PomodoroProps {
   onClose: () => void;
@@ -237,7 +238,7 @@ function PomodoroSettings({
                   [tab.id]: event.target.value,
                 }))
               }
-              onKeyDown={(event) => event.stopPropagation()}
+              onKeyDown={keepKeys}
             />
           </div>
         ))}

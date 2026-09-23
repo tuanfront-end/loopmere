@@ -4,6 +4,7 @@ import { ChevronUpIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { scrollBehavior } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 export function ScrollToTop() {
@@ -28,9 +29,12 @@ export function ScrollToTop() {
         "shadow-soft hover:shadow-soft-lg",
         !show && "pointer-events-none opacity-0",
       )}
+      // Invisible is not enough: at opacity 0 it still took a Tab stop, a
+      // focus ring around nothing at the top of the page.
+      inert={!show}
       size="icon"
       variant="outline"
-      onClick={() => window.scrollTo({ behavior: "smooth", top: 0 })}
+      onClick={() => window.scrollTo({ behavior: scrollBehavior(), top: 0 })}
     >
       <ChevronUpIcon />
     </Button>

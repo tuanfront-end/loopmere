@@ -44,11 +44,9 @@ export function ToolPanel({
             </DialogTitle>
             {action}
           </div>
-          {blurb ? (
-            <DialogDescription>{blurb}</DialogDescription>
-          ) : (
-            <DialogDescription className="sr-only">{title}</DialogDescription>
-          )}
+          {/* No stand-in description when there is no blurb: repeating the
+              title there had a screen reader say the panel's name twice. */}
+          {blurb && <DialogDescription>{blurb}</DialogDescription>}
         </DialogHeader>
 
         {children}

@@ -1,7 +1,11 @@
 "use client";
 
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "cn";
+
+import { Button } from "@/components/ui/button";
 
 /**
  * A bottom sheet, on Base UI's Drawer rather than shadcn's `vaul`: every other
@@ -99,13 +103,37 @@ function DrawerContent({
   );
 }
 
-function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
+function DrawerHeader({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="drawer-header"
-      className={cn("flex flex-col gap-1 pb-4", className)}
+      className={cn("relative flex flex-col gap-1 pr-10 pb-4", className)}
       {...props}
-    />
+    >
+      {children}
+
+      {/* The close control the grab handle's comment below promises, and
+          which was missing from both sheets. A swipe is not a gesture every
+          hand or every input can make, and a phone has no Escape key. The
+          dialogs' own close button, in the same corner. */}
+      <DrawerPrimitive.Close
+        data-slot="drawer-close"
+        render={
+          <Button
+            className="absolute -top-1 right-0 rounded-full"
+            size="icon-sm"
+            variant="ghost"
+          />
+        }
+      >
+        <HugeiconsIcon icon={Cancel01Icon} strokeWidth={1.5} />
+        <span className="sr-only">Close</span>
+      </DrawerPrimitive.Close>
+    </div>
   );
 }
 

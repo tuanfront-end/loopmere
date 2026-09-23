@@ -6,6 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { SoundIcon } from "./sound-icon";
 
 import { sounds } from "@/data/sounds";
+import { scrollBehavior } from "@/lib/motion";
 
 /**
  * Hover tints the ground and brings the hairline up to a faint brand — the
@@ -25,7 +26,7 @@ export function CategoryRail() {
   const goto = (id: string) =>
     document
       .getElementById(`category-${id}`)
-      ?.scrollIntoView({ behavior: "smooth" });
+      ?.scrollIntoView({ behavior: scrollBehavior() });
 
   return (
     <section className="mx-auto w-full max-w-[1200px] px-6 sm:px-8">

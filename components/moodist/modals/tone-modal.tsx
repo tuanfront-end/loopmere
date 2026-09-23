@@ -17,6 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { keepKeys } from "@/lib/keys";
+import { PERCENT } from "@/components/ui/slider";
 
 /**
  * Two generators, one panel. A binaural beat is two oscillators a few hertz
@@ -156,7 +158,7 @@ export function ToneModal({ kind, onClose, show }: ToneModalProps) {
         value={preset}
         onValueChange={(next) => next && setPreset(next)}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger aria-label="Band" className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -195,7 +197,7 @@ export function ToneModal({ kind, onClose, show }: ToneModalProps) {
                 type="number"
                 value={value}
                 onChange={(event) => setValue(Number(event.target.value))}
-                onKeyDown={(event) => event.stopPropagation()}
+                onKeyDown={keepKeys}
               />
             </div>
           ))}
@@ -210,6 +212,7 @@ export function ToneModal({ kind, onClose, show }: ToneModalProps) {
           </p>
         </div>
         <Slider
+          format={PERCENT}
           aria-label="Tone level"
           className="mt-4"
           max={1}

@@ -47,6 +47,7 @@ export function LofiModal({ onClose, show }: LofiModalProps) {
                 <YouTube
                   className="size-full"
                   iframeClassName="size-full"
+                  title={`${station.title}, ${station.channel}`}
                   videoId={station.id}
                 />
               </div>

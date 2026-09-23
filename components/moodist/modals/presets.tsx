@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { usePresetStore } from "@/stores/preset";
 import { useSoundStore } from "@/stores/sound";
+import { keepKeys } from "@/lib/keys";
 
 interface PresetsModalProps {
   onClose: () => void;
@@ -88,7 +89,7 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
           required
           value={name}
           onChange={(event) => setName(event.target.value)}
-          onKeyDown={(event) => event.stopPropagation()}
+          onKeyDown={keepKeys}
         />
         <Button disabled={noSelected || Boolean(saved)} type="submit">
           Save
@@ -124,13 +125,13 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
                 <li className="flex items-center gap-2 py-3" key={preset.id}>
                   <input
                     aria-label={`Rename ${preset.label}`}
-                    className="flex-1 bg-transparent text-sm outline-none"
+                    className="-mx-1 flex-1 rounded-sm bg-transparent px-1 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
                     placeholder="Untitled"
                     value={preset.label}
                     onChange={(event) =>
                       changeName(preset.id, event.target.value)
                     }
-                    onKeyDown={(event) => event.stopPropagation()}
+                    onKeyDown={keepKeys}
                   />
 
                   <Button

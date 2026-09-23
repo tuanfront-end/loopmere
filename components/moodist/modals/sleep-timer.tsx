@@ -11,6 +11,7 @@ import { padNumber } from "@/helpers/number";
 import { dispatch } from "@/lib/event";
 import { useSleepTimerStore } from "@/stores/sleep-timer";
 import { useSoundStore } from "@/stores/sound";
+import { keepKeys } from "@/lib/keys";
 
 interface SleepTimerModalProps {
   onClose: () => void;
@@ -118,7 +119,7 @@ export function SleepTimerModal({ onClose, show }: SleepTimerModalProps) {
                   type="number"
                   value={value}
                   onChange={(event) => setValue(event.target.value)}
-                  onKeyDown={(event) => event.stopPropagation()}
+                  onKeyDown={keepKeys}
                 />
               </div>
             ))}

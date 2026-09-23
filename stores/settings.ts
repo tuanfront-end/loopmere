@@ -10,6 +10,8 @@ interface SettingsStore {
   globalVolume: number;
   setAlarmVolume: (volume: number) => void;
   setGlobalVolume: (volume: number) => void;
+  setShortcuts: (on: boolean) => void;
+  shortcuts: boolean;
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -29,6 +31,17 @@ export const useSettingsStore = create<SettingsStore>()(
       setGlobalVolume(volume: number) {
         set({ globalVolume: volume });
       },
+
+      setShortcuts(on: boolean) {
+        set({ shortcuts: on });
+      },
+
+      /**
+       * Every shortcut is Shift and one key, which makes each a character a
+       * screen reader or voice control can send by accident — so they can be
+       * switched off (WCAG 2.1.4), from the Keyboard panel that lists them.
+       */
+      shortcuts: true,
     }),
     {
       merge: mergePersisted,
@@ -62,6 +75,7 @@ export const useSettingsStore = create<SettingsStore>()(
       partialize: state => ({
         alarmVolume: state.alarmVolume,
         globalVolume: state.globalVolume,
+        shortcuts: state.shortcuts,
       }),
       skipHydration: true,
       storage: createJSONStorage(() => localStorage),
