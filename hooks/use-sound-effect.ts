@@ -22,8 +22,12 @@ export function useSoundEffect(src: string, volume: number = 1) {
     let sound: Howl | null = null;
 
     if (isBrowser) {
+      // Loaded when it first plays, not when the tool mounts. With Howler's
+      // default of preloading, Countdown and Pomodoro each fetched the 134 KB
+      // alarm on every page load, whether or not either ever ran out.
       sound = new Howl({
         html5: true,
+        preload: false,
         src: src,
       });
     }

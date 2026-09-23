@@ -21,8 +21,17 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <>
       <SiteHeader />
 
-      <div className="flex w-full items-start xl:gap-3 xl:px-3">
-        <aside className="sticky top-3 hidden h-[calc(100dvh-1.5rem)] w-[280px] shrink-0 xl:block 2xl:w-[300px]">
+      {/* A grid with its three tracks declared, not a row of flex items. The
+          right rail sits after half a megabyte of centre-column HTML, so as a
+          flex item it arrived late: the first paint gave the centre the whole
+          width and then took 340px of it back — a layout shift of 0.15 to 0.17
+          at 1280 and 1440. Declared tracks hold the space before the rail
+          exists; measured, the shift is 0. */}
+      <div className="flex w-full items-start xl:grid xl:grid-cols-[280px_minmax(0,1fr)_340px] xl:gap-3 xl:px-3 2xl:grid-cols-[300px_minmax(0,1fr)_360px]">
+        <aside
+          aria-label="Shelves and settings"
+          className="sticky top-3 hidden h-[calc(100dvh-1.5rem)] w-[280px] shrink-0 xl:block 2xl:w-[300px]"
+        >
           <div className="bg-card h-full rounded-lg border">
             <LeftRail />
           </div>

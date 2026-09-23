@@ -35,7 +35,12 @@ function Slider({
       value={value}
       min={min}
       max={max}
-      thumbAlignment="edge"
+      // Edge alignment, set after hydration. Plain "edge" positions each thumb
+      // before React loads with an inline script per slider — eighty-six of
+      // them, parsed and run while the HTML streams, a quarter of the main
+      // thread's load-time work on a slow phone. The thumbs land in the same
+      // place; they appear a moment later.
+      thumbAlignment="edge-client-only"
       {...props}
     >
       {/* No blanket opacity on the Control. A disabled slider here is shown on

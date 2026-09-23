@@ -129,9 +129,17 @@ export function Hero() {
         <Image
           alt="A grass bank running up to a sky of tall cumulus, late in the day"
           className="object-cover"
+          // Fetched first, and in the markup rather than preloaded: `priority`
+          // is deprecated in Next 16, and its guidance for a hero is eager
+          // loading at high priority. Before this it went out at Low.
+          fetchPriority="high"
           fill
-          priority
-          sizes="(min-width: 1280px) 800px, 100vw"
+          loading="eager"
+          // The frame's real width in each shell — the centre column less its
+          // gutters and both rails, capped by the section's 1136px. It was
+          // "800px from 1280", which fetched 1920 wide for a 548px frame at
+          // 1280 and 828 wide, blurred, for a 1136px frame at 1920.
+          sizes="(min-width: 1536px) min(1136px, calc(100vw - 772px)), (min-width: 1280px) calc(100vw - 732px), min(1136px, calc(100vw - 48px))"
           src="/images/hero-background.webp"
         />
 

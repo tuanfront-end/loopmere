@@ -21,7 +21,6 @@ interface SoundGridProps {
 
 export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
   const [showAll, setShowAll] = useLocalStorage(`${id}-show-more`, false);
-  const selections = useSoundStore((state) => state.sounds);
 
   const overflow = useMemo(
     () => sounds.slice(DEFAULT_VISIBLE_SOUNDS),
@@ -31,13 +30,15 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
   /**
    * A collapsed row can hide a sound that is currently playing, so the toggle
    * says how many rather than leaving the row looking inert.
+   *
+   * Selected as the number itself. The grid used to subscribe to every sound,
+   * so each step of any card's slider re-rendered the whole shelf — 16 ms a
+   * step on a desktop, 70 on a slow phone — to arrive at the same count.
    */
-  const hiddenPlaying = useMemo(
-    () =>
-      showAll
-        ? 0
-        : overflow.filter((sound) => selections[sound.id]?.isSelected).length,
-    [showAll, overflow, selections],
+  const hiddenPlaying = useSoundStore((state) =>
+    showAll
+      ? 0
+      : overflow.filter((sound) => state.sounds[sound.id]?.isSelected).length,
   );
 
   return (
