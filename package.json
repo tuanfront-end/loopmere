@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3100",
+    "icons": "node scripts/icons.mjs",
     "build": "next build",
     "start": "next start -p 3100",
     "lint": "eslint",

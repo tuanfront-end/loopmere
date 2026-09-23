@@ -105,7 +105,7 @@ quyết định, một là việc chưa làm:
 |---|---|---|
 | `page-check` | section 2–9: tám cái liên tiếp không ảnh, luật là ba | **quyết định** — xem ngay dưới |
 | `ref-ledger` | 0/3 section ghi `// drawn:` | **quyết định** — không có mark vẽ tay nào, và moodist không đòi |
-| `image-check` | `/logo-light.png` rộng 200px, sàn là 1200px | **false positive** — file đó là artwork của MediaSession, không bao giờ vẽ lên trang |
+| `image-check` | `/assets/pwa/192.png` và `512.png` hẹp hơn sàn 1200px | **false positive** — đó là icon app, dùng lại làm artwork của MediaSession, không bao giờ vẽ lên trang |
 | `seo-check` | 4 defect | **việc chưa làm** — xem § Việc còn mở |
 
 **`page-check` fail, và không sửa.** Luật picture run nói ba section liên tiếp
@@ -225,10 +225,15 @@ menu nổi và phím tắt là ba cái nút trên cùng một bộ panel. `TOOL_
 một danh sách duy nhất, nên rail và menu không thể trôi thành hai ý khác nhau
 về việc công cụ là gì.
 
-Logo là `components/moodist/logo.tsx` chứ không phải `<img src="/logo.svg">`:
-file gốc tô path `#FAFAFA`, vẽ cho nền gần-đen của bản Astro, và một `<img>`
-thì không tô lại được từ bên ngoài. Path vào thẳng component và nhận
-`currentColor`.
+**Logo là mark riêng của bản port — Horizon:** một vòng tròn, mức nước dâng
+trong nó theo một nhịp sóng; đọc ra level, sóng âm và đồi dưới trời cùng lúc.
+Rosette của bản gốc là mark của dự án gốc, nên nó ra đi cùng mọi file ăn theo —
+`logo.svg`, `logo-dark.png`, `logo-light.png`, `favicon.svg`, `og.png`, cả năm
+giống hệt từng byte với `../moodist` — còn `favicon.ico` từng là tam giác mặc
+định của Vercel. Mark nằm inline trong `components/moodist/logo.tsx` để nhận
+`currentColor`; mọi bản raster — favicon, `apple-icon`, bảy icon PWA, artwork
+của MediaSession — render từ `app/icon.svg` bằng `npm run icons`. Hai path của
+mark có mặt ở cả hai file, nên đổi mark là sửa cả hai rồi chạy lại lệnh đó.
 
 Header dùng `buttonVariants` trên `<a>` thật cho hai link trông như nút. Viết
 `<Button render={<a/>}>` thì Base UI gắn `role="button"` lên thẻ điều hướng, và
