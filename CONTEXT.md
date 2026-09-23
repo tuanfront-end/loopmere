@@ -1063,6 +1063,3 @@ Chrome thật để xác nhận vòng install → waiting → reload.
 **8. Nhánh `select-popup-on-either-base` chưa merge** ở repo skill. Rebase lên
 `main` rồi mở PR, hoặc bỏ nó đi — nhưng đừng để nó nằm đó: khi nào repo skill
 checkout sang nhánh khác thì checker ở đây đổi hành vi mà không ai báo.
-
-**9. Store Blob cho thiings chưa tạo.** Tới khi tạo, bản deploy vẫn thiếu 92
-icon. Các bước ở README § Sound icons; xong thì xoá mục này.
