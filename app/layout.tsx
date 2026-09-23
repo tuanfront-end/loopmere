@@ -9,6 +9,7 @@ import { Toolbar } from "@/components/moodist/toolbar";
 import { ToolsProvider } from "@/components/moodist/tools-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/seo";
 
 import "./globals.css";
 
@@ -26,10 +27,19 @@ const sans = Google_Sans_Flex({
   variable: "--font-sans",
 });
 
+/**
+ * What every route shares. The cards are not here — `pageMeta` in
+ * `lib/seo.ts` builds them per route, because Next replaces a nested
+ * `openGraph` rather than merging it, and one written here would label every
+ * route with the home page's card.
+ */
 export const metadata: Metadata = {
-  title: "Loopmere — ambient sound, mixed by you",
-  description:
-    "Eighty-odd loops of rain, forest, cafe and static. Layer them, set the levels, and let the tab run.",
+  applicationName: SITE_NAME,
+  appleWebApp: { title: SITE_NAME },
+  description: SITE_DESCRIPTION,
+  // What every relative URL in the head resolves against.
+  metadataBase: SITE_URL,
+  title: { default: SITE_TITLE, template: `%s — ${SITE_NAME}` },
 };
 
 export const viewport: Viewport = {
