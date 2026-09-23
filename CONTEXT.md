@@ -1,4 +1,4 @@
-# moodist-next — ghi chú nghiên cứu
+# Loopmere — ghi chú nghiên cứu
 
 Bản port **Astro → Next.js** của [remvze/moodist](https://github.com/remvze/moodist)
 (bản gốc nằm cạnh, ở `../moodist`, commit `285ecdb` / v3.0.0). Mục đích là học
@@ -251,7 +251,9 @@ không có kết quả web nào, `.com` và `.app` đều còn trống.
 **Khoá lưu trữ vẫn là `moodist-*`, cố ý.** Bảy khoá localStorage và hai cache
 của service worker mang tên cũ. Không ai nhìn thấy chúng, và đổi tên là xoá mix,
 preset và note của người đã dùng, trừ khi viết migration. Thư mục
-`components/moodist/`, tên package và tên repo cũng giữ nguyên.
+`components/moodist/` cũng giữ nguyên. Repo và package thì đã đổi theo tên:
+`tuanfront-end/loopmere`, trước đây là `moodist-next` — GitHub vẫn chuyển hướng
+từ địa chỉ cũ.
 
 Header dùng `buttonVariants` trên `<a>` thật cho hai link trông như nút. Viết
 `<Button render={<a/>}>` thì Base UI gắn `role="button"` lên thẻ điều hướng, và

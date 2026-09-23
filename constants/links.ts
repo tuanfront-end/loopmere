@@ -1,7 +1,7 @@
 /** Outbound links, in one place so the header and the footer cannot drift. */
 
 /** This port. */
-export const REPO_URL = "https://github.com/tuanfront-end/moodist-next";
+export const REPO_URL = "https://github.com/tuanfront-end/loopmere";
 
 /** The Astro original every architectural decision here was read off. */
 export const UPSTREAM_URL = "https://github.com/remvze/moodist";

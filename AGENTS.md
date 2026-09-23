@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## This repo is a port, not a template for sale
 
-moodist-next is an Astro → Next.js port of [remvze/moodist](https://github.com/remvze/moodist),
+Loopmere (repo `loopmere`, formerly `moodist-next`) is an Astro → Next.js port of [remvze/moodist](https://github.com/remvze/moodist),
 built to study its architecture. Nothing here goes to a marketplace, so the
 packaging and sellability rules do not apply to it.
 
