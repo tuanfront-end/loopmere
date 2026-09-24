@@ -52,8 +52,9 @@ export function CategorySection({
         <div className="bg-accent mt-6 rounded-lg px-6 py-10 sm:mt-10 sm:py-12">
           {/* Balanced and measured: left to the full width of the shelf the
               sentence breaks with two words on the last line, which reads as a
-              mistake rather than as a sentence. */}
-          <p className="text-muted-foreground mx-auto max-w-[42ch] text-center text-sm text-balance">
+              mistake rather than as a sentence. Body size, because it is a
+              sentence read through rather than a record read in passing. */}
+          <p className="text-muted-foreground mx-auto max-w-[42ch] text-center text-base text-balance">
             {emptyMessage}
           </p>
         </div>

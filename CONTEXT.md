@@ -1054,9 +1054,8 @@ kế hero, nên chờ quyết định. `prefers-reduced-motion` đã tắt nó �
 **2. Chưa có undo khi xoá preset hay việc trong checklist.** Shift+R thì đã
 có: toast "Cleared the mix." kèm Undo.
 
-**3. Footer nằm trong `<main>`**, nên trang không có landmark `contentinfo`; và
-chip category ở bản dưới `xl` là `<button>` dùng để điều hướng, focus ở lại
-chip sau khi nhảy — nên là `<a href>` như rail trái.
+**3. Chip category ở bản dưới `xl` là `<button>` dùng để điều hướng**, focus ở
+lại chip sau khi nhảy — nên là `<a href>` như rail trái.
 
 **4. 12 lỗi eslint `react-hooks/set-state-in-effect`**, đều có từ trước, ở các
 tool (pomodoro, countdown, tone, breathing, sleep timer, share link, media
