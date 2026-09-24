@@ -72,10 +72,9 @@ Bản gốc **không chạy `tsc`** — script `check` của nó là Biome, nên
 ## Soft Neutral
 
 House style đã áp lên bản port. Palette copy nguyên khối từ
-`template/scaffold/app/globals.css`, brand xoay sang **teal** bằng
-`brand-hue.py`, type đổi sang pairing **Warm** (Fraunces trên Plus Jakarta
-Sans) — Inter bị loại vì không có row đo trong skill. Button re-scale về
-36/40/44, slider thumb từ 12px lên 24px, lucide bị thay khỏi mọi primitive.
+`template/scaffold/app/globals.css`; brand và face ở § Brand, face và trạng
+thái của card. Button re-scale về 36/40/44, slider thumb từ 12px lên 24px,
+lucide bị thay khỏi mọi primitive.
 
 **Không có `.soft-neutral.json` — site brief không áp vào đây.** Hai dial mà
 `/site-brief` ghi ra là dial của một template đem bán: vẽ bao nhiêu, tiêu hue
@@ -117,6 +116,15 @@ chỉ đọc hai block đó khi dial lớn hơn 0.
 `npm run check` gom sáu gate đang xanh — type, palette, responsive, controls,
 hover, vn-comment — cộng `next build` và toàn bộ selftest. **Đỏ ở đó là hồi
 quy thật.**
+
+**Gate đỏ mà code ở đây không đổi thì nhìn sang repo skill trước.** Script chạy
+từ working tree của repo đó, nên `main` bên đó tiến lên, hay repo đó đang ở
+nhánh khác hoặc có thay đổi chưa commit, đều đổi hành vi gate ở đây — một accent
+mới trong scaffold là đủ làm `palette-check` đỏ. Tách nguồn bằng cách chạy lại
+gate đỏ với script lấy từ `git archive main soft-neutral` của repo skill, cwd
+vẫn ở đây: output trùng thì lỗi đến từ `main`, khác thì từ thứ đang checkout bên
+đó. `check` dừng ở gate đỏ đầu tiên, nên sửa xong một gate có thể lộ ra gate
+đứng sau nó.
 
 `npm run check:all` chạy thêm năm gate nữa, và ba trong số đó đang đỏ — cả ba
 là quyết định. `seo-check` đã sạch; nó chỉ còn một dòng "look" để người đọc tự
@@ -988,16 +996,10 @@ Năm chỗ vỡ ở call site, và chỉ một trong số đó biên dịch sạ
 `items`, nên nút chọn binaural đọc là `custom` thay vì `Set it yourself`.
 
 `controls-check.py` trước đó báo false positive trên repo Radix vì nó chỉ biết
-`SelectPrimitive.Popup` của Base UI. Đã sửa trong repo skill: rule đọc cả hai
-part và gọi tên đúng cái file thực sự dùng. Nó cũng bắt được một finding thật
-trên đường đi — base variant đặt padding của Select lên `SelectGroup`, và repo
-này dời nó về popup.
-
-**Bản sửa đó chưa vào `main`.** Nó nằm ở nhánh `select-popup-on-either-base`
-trong `claude-build-template-skills`, một commit (`46af405`), chưa push, và
-`main` đã đi trước bốn commit kể từ điểm rẽ. Symlink `.claude/skills/` trỏ vào
-working tree của repo skill, nên checker mà session này chạy là bản nào đang
-được checkout ở đó. Xem § Việc còn mở.
+`SelectPrimitive.Popup` của Base UI. Đã sửa trong repo skill, vào `main` qua
+PR #48: rule đọc cả hai part và gọi tên đúng cái file thực sự dùng. Nó cũng bắt
+được một finding thật trên đường đi — base variant đặt padding của Select lên
+`SelectGroup`, và repo này dời nó về popup.
 
 ## SEO, tốc độ và truy cập
 
@@ -1065,13 +1067,5 @@ session). eslint không nằm trong `npm run check`.
 hoặc sau một thao tác). Subset `vietnamese` của font thì giữ — lý do ở comment
 trong `layout.tsx`.
 
-**6. `controls-check` thỉnh thoảng đỏ `RuntimeError: Uncaught`** — lỗi đua của
-script trong repo skill: nó đọc `readyState` của `about:blank` trước khi trang
-mới có `<body>`. Chạy lại là xanh; bản sửa đang làm ở repo skill.
-
-**7. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
+**6. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
 Chrome thật để xác nhận vòng install → waiting → reload.
-
-**8. Nhánh `select-popup-on-either-base` chưa merge** ở repo skill. Rebase lên
-`main` rồi mở PR, hoặc bỏ nó đi — nhưng đừng để nó nằm đó: khi nào repo skill
-checkout sang nhánh khác thì checker ở đây đổi hành vi mà không ai báo.
