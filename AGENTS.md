@@ -11,8 +11,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## This repo is a port, not a template for sale
 
 Loopmere (repo `loopmere`, formerly `moodist-next`) is an Astro → Next.js port of [remvze/moodist](https://github.com/remvze/moodist),
-built to study its architecture. Nothing here goes to a marketplace, so the
-packaging and sellability rules do not apply to it.
+begun to study its architecture and now kept up for listeners. Nothing here
+goes to a marketplace, so the packaging and sellability rules do not apply to
+it.
+
+**Shipping or adding a roadmap item?** Move it in `data/roadmap.ts` in the same
+PR: to Shipped with the month it merges, and its issue closed by `Closes #N`.
+`CONTEXT.md` § Roadmap defines the three states.
 
 **Read `CONTEXT.md`** before changing ported code, before arguing with a red
 gate, and before touching a `components/ui/` wrapper. It holds what the port

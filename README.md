@@ -8,8 +8,9 @@ for, and the mix you build stays in your browser.
 
 > **Loopmere is a Next.js port of [Moodist](https://github.com/remvze/moodist)
 > by [MAZE](https://github.com/remvze), used under the MIT licence.** The
-> sounds, the tools and the architecture are Moodist's. This repository
-> rebuilds it on Next.js to study how it works, and gives it a face of its own.
+> sounds, the tools and the architecture are Moodist's. This repository began
+> as a Next.js rebuild made to study how it works; it has a face of its own
+> now, and a roadmap of what it adds next.
 > For the original — maintained, self-hostable, and the reason this exists —
 > go to [remvze/moodist](https://github.com/remvze/moodist) or
 > [moodist.mvze.net](https://moodist.mvze.net).
@@ -33,6 +34,16 @@ for, and the mix you build stays in your browser.
 - **Fixes found on the way:** lists that doubled on every development reload,
   settings that reset themselves, a share link that sent an empty mix, and
   more. Each one, with its cause, is in [`CONTEXT.md`](CONTEXT.md).
+
+## Roadmap and suggestions
+
+What shipped, what is next and what comes later live in
+[`data/roadmap.ts`](data/roadmap.ts) and render at the foot of the home page.
+To suggest something or report a fault,
+[open an issue](https://github.com/tuanfront-end/loopmere/issues/new/choose):
+the forms ask a question or two, and a free GitHub account is all they need.
+New sounds come from Moodist, so ask for those on
+[its tracker](https://github.com/remvze/moodist/issues).
 
 ## Run it
 
