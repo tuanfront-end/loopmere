@@ -5,7 +5,7 @@ import {
   FavouriteIcon,
   Github01Icon,
   Moon02Icon,
-  ShuffleIcon,
+  Route01Icon,
   Sun03Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -16,7 +16,7 @@ import { Logo } from "./logo";
 import { SoundIcon } from "./sound-icon";
 import { useTheme } from "./theme-provider";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { COFFEE_URL, REPO_URL, UPSTREAM_URL } from "@/constants/links";
 import { sounds } from "@/data/sounds";
@@ -34,8 +34,11 @@ import { useSoundStore } from "@/stores/sound";
  * section is inside the band at all, so the callback stops firing and the
  * highlight stays wherever it was when the reader left the band. Measuring
  * answers every scroll position, including the ones with nothing in view.
+ *
+ * `end` is the section after the last shelf. Once it crosses the line the
+ * reader has left the shelves, and no row stays lit to say otherwise.
  */
-function useActiveShelf(ids: Array<string>) {
+function useActiveShelf(ids: Array<string>, end: string) {
   const [active, setActive] = useState<string | null>(null);
   const key = ids.join();
 
@@ -60,6 +63,12 @@ function useActiveShelf(ids: Array<string>) {
         }
       }
 
+      const after = document.getElementById(end);
+
+      if (after && after.getBoundingClientRect().top <= line) {
+        current = null;
+      }
+
       setActive(current);
     };
 
@@ -71,7 +80,7 @@ function useActiveShelf(ids: Array<string>) {
       window.removeEventListener("scroll", measure);
       window.removeEventListener("resize", measure);
     };
-  }, [key]);
+  }, [end, key]);
 
   return active;
 }
@@ -89,7 +98,7 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
     <a
       aria-current={active ? "true" : undefined}
       className={cn(
-        "flex items-center gap-3 rounded-sm px-2.5 py-2.5 text-sm font-medium transition-colors",
+        "flex items-center gap-3 rounded-sm px-2.5 py-2.5 text-sm font-medium transition-colors short:py-2",
         // A rail row is a tab, not a card, and the two idioms are kept apart
         // on purpose: a tab tints and stays flat, a card lifts. What both
         // still avoid is `bg-muted`, which is what the icon's own disc is
@@ -127,7 +136,7 @@ function ThemeToggle() {
   const isDark = resolved === "dark";
 
   return (
-    <label className="hover:bg-accent text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-3 rounded-sm py-2.5 pr-2 pl-2.5 text-sm font-medium transition-colors">
+    <label className="hover:bg-accent text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-3 rounded-sm py-2.5 pr-2 pl-2.5 text-sm font-medium transition-colors short:py-2">
       <span aria-hidden="true" className="shrink-0">
         <HugeiconsIcon
           className="size-5"
@@ -147,18 +156,17 @@ function ThemeToggle() {
 }
 
 export function LeftRail() {
-  const shuffle = useSoundStore((state) => state.shuffle);
   const favorites = useSoundStore(useShallow((state) => state.getFavorites()));
 
   // Page order, because the highlight is read off the page. Favourites is
-  // last on both.
-  const active = useActiveShelf([
-    ...sounds.categories.map((category) => category.id),
-    "favorites",
-  ]);
+  // the last shelf on both, and the roadmap under it is not a shelf.
+  const active = useActiveShelf(
+    [...sounds.categories.map((category) => category.id), "favorites"],
+    "roadmap",
+  );
 
   return (
-    <div className="flex h-full flex-col gap-6 p-5">
+    <div className="flex h-full flex-col gap-6 p-5 short:gap-4 short:p-4">
       <a
         className="hover:bg-muted flex w-fit items-center gap-2 rounded-sm py-1.5 pr-4 pl-2.5 transition-colors"
         href="#top"
@@ -170,7 +178,7 @@ export function LeftRail() {
       <nav aria-label="Jump to a shelf" className="flex min-h-0 shrink flex-col">
         {/* The negative margin and the padding cancel: without them the focus
             ring on a row is clipped by the scroller it sits in. */}
-        <div className="no-scrollbar -mx-1 flex min-h-0 flex-col gap-1 overflow-y-auto px-1">
+        <div className="no-scrollbar -mx-1 flex min-h-0 flex-col gap-1 overflow-y-auto px-1 shorter:gap-0.5">
           {sounds.categories.map((category) => (
             <ShelfLink
               active={active === category.id}
@@ -189,7 +197,7 @@ export function LeftRail() {
             the last — a row that moves the other eight down by forty pixels
             on a click somewhere else on the page. Empty is a state it can
             perfectly well be in, and the count says so. */}
-        <div className="mx-2.5 mt-2 shrink-0 border-t pt-2">
+        <div className="mx-2.5 mt-2 shrink-0 border-t pt-2 shorter:mt-1 shorter:pt-1">
           <div className="-mx-2.5">
             <ShelfLink
               active={active === "favorites"}
@@ -217,29 +225,19 @@ export function LeftRail() {
           <ThemeToggle />
         </div>
 
-        <Button
-          className="w-full"
-          size="lg"
-          variant="outline"
-          onClick={shuffle}
-        >
-          <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
-          Build me a mix
-        </Button>
-
         {/* An anchor wearing the variants, not a `Button render={<a/>}`: Base
             UI puts `role="button"` on the latter and a screen reader then
             announces a link out to a payment page as a press. Through `cn`,
             because `buttonVariants` concatenates and `w-full` has to win.
 
-            This one carries the brand and the shuffle above it does not. The
-            rail has two buttons and only one of them can be the loud one; a
-            mix is four clicks away in eighty other places on this page, and
-            this is the only door to the thing that keeps it running. */}
+            The loud one of the pair, and the first. The rail has two buttons
+            and only one of them can carry the brand: the roadmap under it is
+            a jump down this page, and this is the only door to the thing that
+            keeps the page running. */}
         <a
           className={cn(
             buttonVariants({ size: "lg", variant: "default" }),
-            "w-full",
+            "w-full short:h-10",
           )}
           href={COFFEE_URL}
           rel="noreferrer noopener"
@@ -248,9 +246,24 @@ export function LeftRail() {
           <HugeiconsIcon icon={Coffee02Icon} strokeWidth={1.5} />
           Buy me a coffee
         </a>
+
+        {/* It took the place of "Build me a mix", which the hero and the mix
+            panel both still carry. An anchor rather than a scroll call, so it
+            lands on the scroll padding and works with no JavaScript, the way
+            every row above it does. */}
+        <a
+          className={cn(
+            buttonVariants({ size: "lg", variant: "outline" }),
+            "w-full short:h-10",
+          )}
+          href="#roadmap"
+        >
+          <HugeiconsIcon icon={Route01Icon} strokeWidth={1.5} />
+          Roadmap
+        </a>
       </div>
 
-      <p className="text-muted-foreground mt-auto px-2.5 text-xs text-balance">
+      <p className="text-muted-foreground mt-auto px-2.5 text-xs text-balance shorter:hidden">
         Built by Boolii Studio. A Next.js port of{" "}
         <a
           className="hover:text-foreground underline underline-offset-4 transition-colors"

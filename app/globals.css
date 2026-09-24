@@ -16,6 +16,17 @@
    `layout.tsx`, and it follows the OS until somebody says otherwise. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* A laptop's browser window, not its screen. A 1366×768 panel leaves about
+   660px of viewport under the tabs and the toolbar, a 1440×900 one about 790,
+   and the left rail's nine shelves and two buttons need 840 at the house's
+   airy row. Under this line the rail steps its rows from 44 to 40 — the
+   control floor, not under it — so every shelf stays in view where most
+   people actually use this. Under 700 — the 1366×768 laptop, still the most
+   common one — the rail also drops its credit line, which the footer carries
+   in full, rather than hide a shelf. */
+@custom-variant short (@media (max-height: 820px));
+@custom-variant shorter (@media (max-height: 700px));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
