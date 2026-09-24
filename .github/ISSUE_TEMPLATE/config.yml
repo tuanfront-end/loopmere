@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: A new sound, or a problem inside one
+    url: https://github.com/remvze/moodist/issues
+    about: The loops come from Moodist, so new sounds and faults in a recording go to Moodist's tracker.

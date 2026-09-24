@@ -1,5 +1,6 @@
 import { App } from "@/components/moodist/app";
 import { Hero } from "@/components/moodist/hero";
+import { Roadmap } from "@/components/moodist/roadmap";
 import { SiteFooter } from "@/components/moodist/site-footer";
 import { homeJsonLd, pageMeta, SITE_TITLE } from "@/lib/seo";
 
@@ -25,6 +26,7 @@ export default function Home() {
       >
         <Hero />
         <App />
+        <Roadmap />
         <SiteFooter />
       </main>
     </>

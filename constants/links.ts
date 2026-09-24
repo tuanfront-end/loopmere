@@ -3,8 +3,14 @@
 /** This port. */
 export const REPO_URL = "https://github.com/tuanfront-end/loopmere";
 
+/** Where a listener suggests a feature or reports a fault: the form chooser. */
+export const SUGGEST_URL = `${REPO_URL}/issues/new/choose`;
+
 /** The Astro original every architectural decision here was read off. */
 export const UPSTREAM_URL = "https://github.com/remvze/moodist";
+
+/** Where a new sound is asked for. The loops are Moodist's, so it is theirs. */
+export const UPSTREAM_ISSUES_URL = `${UPSTREAM_URL}/issues`;
 
 /** Its author. */
 export const UPSTREAM_AUTHOR_URL = "https://github.com/remvze";
