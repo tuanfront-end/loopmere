@@ -43,3 +43,7 @@ next-env.d.ts
 # thiings icons — thiings.co licenses single downloads for personal use only,
 # so the 92 PNGs stay out of a public repo. See README § Sound icons.
 /public/thiings/
+
+# the Soft Neutral skill, linked in per machine — a committed link records an
+# absolute path that resolves nowhere else. scripts/gates.mjs finds it.
+/.claude/skills/
