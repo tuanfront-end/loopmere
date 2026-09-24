@@ -187,8 +187,15 @@ export function SiteFooter() {
         </p>
 
         <p className="text-muted-foreground text-balance">
-          A port kept for study, not for sale: an Astro app rebuilt in Next.js
-          without its islands.
+          A Next.js rebuild of an Astro app, without its islands, and not for
+          sale. What we build next is on the{" "}
+          <a
+            className={`${linkClass} underline underline-offset-4`}
+            href="#roadmap"
+          >
+            roadmap
+          </a>
+          .
         </p>
       </div>
     </footer>

@@ -1,0 +1,23 @@
+name: Suggest something
+description: A feature or a change you would like Loopmere to have.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One idea per issue, in your own words. New sounds come from Moodist, so ask for those on [Moodist's GitHub](https://github.com/remvze/moodist/issues).
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: What should Loopmere do that it does not do now?
+      placeholder: Show which sounds are playing in the tab title.
+    validations:
+      required: true
+  - type: textarea
+    id: moment
+    attributes:
+      label: When you would use it
+      description: What you were doing when you wanted it. This part helps the most.
+    validations:
+      required: false

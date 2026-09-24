@@ -1,8 +1,8 @@
 # Loopmere — ghi chú nghiên cứu
 
 Bản port **Astro → Next.js** của [remvze/moodist](https://github.com/remvze/moodist)
-(bản gốc nằm cạnh, ở `../moodist`, commit `285ecdb` / v3.0.0). Mục đích là học
-kiến trúc, không phải để phát hành.
+(bản gốc nằm cạnh, ở `../moodist`, commit `285ecdb` / v3.0.0). Bắt đầu để học
+kiến trúc; giờ là một sản phẩm nhỏ cho người nghe, vẫn không bán — xem § Roadmap.
 
 ## Stack
 
@@ -133,8 +133,8 @@ xét: `WebApplication` nằm ngoài bộ schema mà script đã duyệt.
 
 | Gate | Báo gì | Đọc thế nào |
 |---|---|---|
-| `page-check` | section 2–9: tám cái liên tiếp không ảnh, luật là ba | **quyết định** — xem ngay dưới |
-| `ref-ledger` | 0/3 section ghi `// drawn:` | **quyết định** — không có mark vẽ tay nào, và moodist không đòi |
+| `page-check` | section 2–10: chín kệ liên tiếp không ảnh, luật là ba | **quyết định** — xem ngay dưới |
+| `ref-ledger` | 0/4 section ghi `// drawn:` | **quyết định** — không có mark vẽ tay nào, và moodist không đòi |
 | `image-check` | `/assets/pwa/192.png` và `512.png` hẹp hơn sàn 1200px | **false positive** — đó là icon app, dùng lại làm artwork của MediaSession, không bao giờ vẽ lên trang |
 
 **`page-check` fail, và không sửa.** Luật picture run nói ba section liên tiếp
@@ -142,7 +142,9 @@ không ảnh là hết mức; trang này có chín grid category liên tiếp. L
 cho landing page bán hàng, nơi mỗi section là một lập luận. Moodist là app
 tool: chín grid là chín cái kệ của cùng một thứ, và nhồi một tấm ảnh vào mỗi kệ
 sẽ làm trang đọc như catalogue chứ không phải như bàn trộn. Trang vẫn giữ một
-ảnh thật ở hero, tức là colour floor vẫn được thoả.
+ảnh thật ở hero, tức là colour floor vẫn được thoả. Roadmap, section đầu tiên
+sau chuỗi kệ, mang khung art khai báo `data-picture`, nên chuỗi dừng ở
+Favourites.
 
 ### Skill nằm ngoài repo
 
@@ -298,6 +300,21 @@ Cột phải **không có nút `Levels`**: panel của nó chính là hai slider
 Levels ngay phía trên, và một rail mở modal lên nội dung của chính nó là cái
 cửa dẫn vào căn phòng đang đứng. Menu nổi thì vẫn giữ, vì dưới `xl` không có
 mục nào để mà trùng.
+
+### Rail trái gọn lại khi cửa sổ thấp
+
+Rail cao `100dvh`, nên trên laptop nó thiếu chỗ theo chiều dọc chứ không phải
+chiều ngang: ở 1366×657 danh sách kệ từng cuộn 34px và giấu hàng Noise. Hai
+variant trong `globals.css`, đọc chiều cao cửa sổ:
+
+- `short:` (≤820px) hạ hàng kệ, hàng dark mode và hai nút từ 44 xuống 40 —
+  đúng sàn control, không dưới — và padding, gap của rail xuống một bậc.
+- `shorter:` (≤700px) bỏ dòng credit, vì footer đã ghi đủ công của MAZE, và siết
+  khe giữa các hàng kệ.
+
+Đo lại: 1280×690, 1366×657, 1440×789 và 1536×730 đều hiện đủ chín kệ, không
+cuộn. Rail phải thì không đổi — nó cuộn cả khối từ trước, và mười ba công cụ
+không vừa màn laptop nào.
 
 ### Trạng thái 13 modal nằm ở `ToolsProvider`
 
@@ -999,20 +1016,15 @@ chỉ đặt ở những chỗ hành động không để lại dấu vết trê
 copy và tải ghi chú, lưu preset, nhận mix từ link. Hai chỗ có **Undo** vì
 chúng xoá việc người ta đã làm — xoá ghi chú và xoá mix.
 
-Toaster ép `theme="light"` và dùng `--normal-shadow: var(--shadow-soft-lg)`.
-Mặc định nó đọc `next-themes` và sẽ ra dark theo hệ điều hành, mà bản này
-ship light-only.
+Toaster ép `theme="light"`, nhưng nền và chữ đọc từ token (`--popover`,
+`--popover-foreground`) và token thì lật theo `.dark`, nên toast đi theo dark
+mode của app. Bóng là `--shadow-soft-lg`.
 
 ## Nhận link chia sẻ
 
 `SharedMix` là nửa còn lại của Send this mix, và là thứ bị bỏ quên ở lần port
 đầu: nó đọc `?share=` một lần lúc mount, hiện các loop nhận được, rồi xoá
 tham số khỏi URL để refresh không hỏi lại.
-
-## Chưa port
-
-Dark theme toggle, có chủ đích: skill nói ship light-only trừ khi viết hẳn
-một surface ramp thứ hai, và depth dựa trên tint thì không đảo được.
 
 ## Base UI, không phải Radix
 
@@ -1076,27 +1088,89 @@ trang; nó ghi "84 loops", nên số sound đổi thì render lại.
   có nút đóng; contrast của số đếm, hàng tạm dừng và tab chưa chọn lên trên
   4.5:1.
 
+## Roadmap
+
+Section cuối trang Home — sau kệ Favourites, trước footer — viết cho **người
+nghe**: người mở trang để trộn và nghe, không phải người đọc code. Một lộ trình
+công khai là một lời hứa: từ 23/9/2026 Loopmere là một sản phẩm nhỏ có người
+chăm, vẫn không bán.
+
+Mỗi mục ở đúng một trong ba trạng thái. Trong chat chúng được gọi là đã làm /
+chuẩn bị làm / có kế hoạch; tên trên trang và trong code là:
+
+| | Nghĩa | Ranh giới |
+|---|---|---|
+| **Shipped** | đã merge vào `main` | build đỏ là sự cố, không phải trạng thái |
+| **Next** | đã chọn làm tiếp, tối đa ba mục | có nhánh hay PR đang mở là ở đây |
+| **Later** | đã quyết sẽ làm, chưa xếp lượt | ý tưởng chưa quyết thì ở GitHub Issues |
+
+Shipped mang tháng. Next và Later không mang ngày: ngày là lời hứa về thời hạn,
+và roadmap không hứa điều đó.
+
+**Shipped chỉ chứa thứ bản port thêm vào.** Loop, công cụ, preset, chia sẻ là của
+Moodist, và section nói vậy trong một dòng. Đối chiếu với v3.0.0 có hai cái bẫy:
+dark mode (bản gốc có System / Light / Dark trong menu) và Undo sau khi xoá mix
+(nút Undo của bản gốc). Cả hai có từ trước; bản port chỉ dựng lại.
+
+**Nút mở trang chọn form issue, không mở PR.** Người nghe không mở PR, còn
+developer đã có link repo ở footer và rail. Hai form, đề xuất và báo lỗi, và
+không có issue trống. Sound mới và lỗi *trong* một sound thì đi sang Moodist, qua
+một link ngay trên trang chọn đó: kho sound là của Moodist, và mỗi sound mới còn
+cần một icon Thiings mà licence không cho phân phối.
+
+**Mỗi mục Next và Later có một issue**, làm chỗ để người nghe theo dõi và thảo
+luận. Trạng thái thì chỉ nằm trong `data/roadmap.ts`.
+
+**Danh sách là một file có kiểu trong repo, `data/roadmap.ts`**, không đọc từ
+GitHub. Lúc quyết định, repo có 0 issue, nên đọc từ Issues là render ra ba cột
+rỗng; và build đã có một bước gọi mạng (kéo icon từ Blob), trong khi API GitHub
+không token chỉ cho 60 request mỗi giờ theo IP. Mỗi mục có thể trỏ tới một issue
+hay PR, nên đổi sang đọc Issues về sau chỉ là một PR.
+
+**Section này không phải kệ.** Nó không có hàng trong "Jump to a shelf"; cửa vào
+nó là nút Roadmap ở chân rail trái, ngay dưới nút cà phê. Nút đó thay chỗ "Build
+me a mix", thứ mà hero và panel The mix vẫn giữ. Scrollspy biết section này, để
+Favourites thôi sáng khi đã cuộn qua.
+
+**Laptop là cỡ chính.** 1366×768 còn khoảng 660px viewport dưới thanh trình
+duyệt, 1440×900 khoảng 790. Ở 1280 và 1366 section xếp một cột, và Shipped chia
+hai cột từ `@xl` — một cột ở đó là 550px dòng ngắn. Chỉ từ `@3xl` (1440) mới
+tách trái/phải: ở 1366 khung còn khoảng 297px, và mỗi mô tả trong thẻ Next chạy
+bốn, năm dòng. Khung bo `xl`, cùng góc khung ảnh hero; `2xl` (43px) đọc ra mềm.
+
+**Mục roadmap là product object.** Thẻ Next, Later và danh sách Shipped là bản
+ghi từ `data/roadmap.ts`, đọc lướt, nên ở 14px và gắn `data-object`; tiêu đề và
+lede làm nên lập luận của section nên ở 16 — ADR 0015 của skill.
+
+**Next nổi trên khung art, vì Next là lời hứa.** Một thẻ trắng trên khung
+gradient màu brand, Later là thẻ thứ hai ngay dưới trong cùng khung, Shipped là
+danh sách hai cột chạy dưới cả hai cột. Nút đề xuất đứng ngay dưới tiêu đề,
+trước mọi danh sách. Hai bản khác đã dựng thật trên trang rồi bỏ: bảng ba ô màu
+(ở 1280 mỗi cột còn khoảng 260px, và dài nhất trên điện thoại) và một danh sách
+sau ba tab (gọn nhất, nhưng phẳng, và giấu Shipped cùng Later sau một cú bấm).
+Khung mang `data-picture`: nó là ảnh của section, và nó cắt chuỗi kệ không ảnh.
+
 ## Việc còn mở
 
-Không cái nào đang chặn:
+Việc đã hứa với người nghe nằm trong `data/roadmap.ts`. Ở đây là phần còn
+lại, và không cái nào đang chặn:
 
 **1. Chữ tự gõ ở hero chạy mãi.** WCAG 2.2.2 đòi một cách dừng nội dung tự
 chuyển động quá 5 giây: nút tạm dừng, hoặc dừng sau 5 giây. Cả hai đổi thiết
-kế hero, nên chờ quyết định. `prefers-reduced-motion` đã tắt nó đúng.
+kế hero, nên chờ quyết định. `prefers-reduced-motion` đã tắt nó đúng. Đã có
+lúc nằm trong Next của roadmap và bị rút ra: đó là việc phải làm cho đúng chuẩn,
+không phải thứ để hứa.
 
-**2. Chưa có undo khi xoá preset hay việc trong checklist.** Shift+R thì đã
-có: toast "Cleared the mix." kèm Undo.
-
-**3. Chip category ở bản dưới `xl` là `<button>` dùng để điều hướng**, focus ở
+**2. Chip category ở bản dưới `xl` là `<button>` dùng để điều hướng**, focus ở
 lại chip sau khi nhảy — nên là `<a href>` như rail trái.
 
-**4. 12 lỗi eslint `react-hooks/set-state-in-effect`**, đều có từ trước, ở các
+**3. 12 lỗi eslint `react-hooks/set-state-in-effect`**, đều có từ trước, ở các
 tool (pomodoro, countdown, tone, breathing, sleep timer, share link, media
 session). eslint không nằm trong `npm run check`.
 
-**5. Chưa lazy-load Drawer, Menu và sonner** (~37 KB gzip, chỉ dùng dưới `xl`
+**4. Chưa lazy-load Drawer, Menu và sonner** (~37 KB gzip, chỉ dùng dưới `xl`
 hoặc sau một thao tác). Subset `vietnamese` của font thì giữ — lý do ở comment
 trong `layout.tsx`.
 
-**6. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
+**5. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
 Chrome thật để xác nhận vòng install → waiting → reload.

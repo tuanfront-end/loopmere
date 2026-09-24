@@ -1,0 +1,19 @@
+name: Something's broken
+description: Something in Loopmere does not work the way it should.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you got.
+      placeholder: I dragged the rain level to zero, and the rain kept playing.
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Browser and device
+      placeholder: Safari on an iPhone 15, or Chrome on Windows 11
+    validations:
+      required: false
