@@ -61,6 +61,10 @@ npm run check:all  # five more gates; CONTEXT.md § Gate says which are red and 
 npm run icons      # re-render the favicon, app icons and media artwork from app/icon.svg
 ```
 
+The gates come from Soft Neutral, Boolii Studio's house-style skill for Claude
+Code, which is not published. Without it, `npm run check` builds the app, types
+included, and ends on a `gates:` line saying what it skipped.
+
 Set `NEXT_PUBLIC_SITE_URL` to the deployed address so the canonical URL, the
 share cards and the sitemap point at it. On Vercel the production domain is
 picked up without it.

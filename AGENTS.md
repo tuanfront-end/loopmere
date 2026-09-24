@@ -25,9 +25,10 @@ decided and why — the original's four architectural moves, the fixes the port
 needed, the deliberate departures from Soft Neutral, and the open items.
 
 `npm run check` is the set that is green today: a red one there is a
-regression. `npm run check:all` adds five gates, four of which are red —
-`CONTEXT.md` § Gate says which three are decisions and which one is unfinished
-work.
+regression. Without the Soft Neutral skill installed it runs the build alone
+and says so in a `gates:` line — report that run as a build, not as green
+gates. `npm run check:all` adds five more; `CONTEXT.md` § Gate says which are
+red and why.
 
 The `components/ui/` wrappers are **Base UI**, not Radix. One migration report
 per component lives in `.migration/`.

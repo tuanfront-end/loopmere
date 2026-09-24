@@ -17,7 +17,11 @@ import { useSoundStore } from "@/stores/sound";
    in `hero.tsx` is `xl` because this is `md`. `p-4` at every width, not the
    sound card's `p-4 sm:p-5`, for the same reason: what sits in a corner bleeds
    by 10, the 6 that leaves plus the rows' 14.4 is 20.4, and the nearest step
-   to that is this 19.2. */
+   to that is this 19.2.
+
+   Both panels are product objects — three mixes the product offers, the shelf
+   a listener built — so their 14px lines are records read in passing rather
+   than copy, and each root says what it is with `data-object`. */
 const SHELL = "bg-card/90 shadow-soft-lg rounded-md p-4 backdrop-blur";
 
 /** id → label, built once. The panel names sounds it draws no card for. */
@@ -84,7 +88,7 @@ export function HeroStarters() {
   );
 
   return (
-    <div className={SHELL}>
+    <div className={SHELL} data-object>
       {/* `-mx-2.5` on the list, and nothing on the two lines above it. The
           row carries its own `p-2.5`, so pulling the list out by exactly that
           lands the row's *text* on the card's padding edge — where these
@@ -215,7 +219,7 @@ export function HeroFavourites() {
   );
 
   return (
-    <div className={SHELL}>
+    <div className={SHELL} data-object>
       <p className="text-muted-foreground text-xs">Saved</p>
 
       <p className="mt-1 text-2xl tracking-tight tabular-nums">

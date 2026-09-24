@@ -72,10 +72,9 @@ Bản gốc **không chạy `tsc`** — script `check` của nó là Biome, nên
 ## Soft Neutral
 
 House style đã áp lên bản port. Palette copy nguyên khối từ
-`template/scaffold/app/globals.css`, brand xoay sang **teal** bằng
-`brand-hue.py`, type đổi sang pairing **Warm** (Fraunces trên Plus Jakarta
-Sans) — Inter bị loại vì không có row đo trong skill. Button re-scale về
-36/40/44, slider thumb từ 12px lên 24px, lucide bị thay khỏi mọi primitive.
+`template/scaffold/app/globals.css`; brand và face ở § Brand, face và trạng
+thái của card. Button re-scale về 36/40/44, slider thumb từ 12px lên 24px,
+lucide bị thay khỏi mọi primitive.
 
 **Không có `.soft-neutral.json` — site brief không áp vào đây.** Hai dial mà
 `/site-brief` ghi ra là dial của một template đem bán: vẽ bao nhiêu, tiêu hue
@@ -99,11 +98,34 @@ và tự viết `cn` bằng `clsx` + `tailwind-merge` — xem `_comment` trong
 là drop-in của clsx + tailwind-merge, không có dependency nào), nên chưa đổi;
 nhưng một template đem bán thì phải theo scaffold.
 
+### Accent thứ bảy theo sang, lớp pastel thì không
+
+**`--peach` theo scaffold sang, cả hai theme.** ADR 0014 của repo skill thêm nó
+làm accent thứ bảy, và không có `.soft-neutral.json` thì `_dials.py` license cả
+bảy — `palette-check` đòi đủ mười bốn alias. Thu hẹp về sáu thì cần chính file
+đó, mà phần đầu mục này nói vì sao không có. Bên sáng chép scaffold từng chữ, kể
+cả ink `-800`, ngoại lệ duy nhất so với `-700`; bên tối theo luật của sáu cái
+kia, ink lên `-300`, số đo nằm trong comment khối `.dark`.
+
+**Lớp pastel của scaffold thì không port** — hai block `[data-pastel]` và bốn
+role mỗi hue. Dial pastel ở 0 và không trang nào dùng role nào; `palette-check`
+chỉ đọc hai block đó khi dial lớn hơn 0.
+
 ## Gate
 
 `npm run check` gom sáu gate đang xanh — type, palette, responsive, controls,
 hover, vn-comment — cộng `next build` và toàn bộ selftest. **Đỏ ở đó là hồi
-quy thật.**
+quy thật.** Gate nào ở đây cũng là script của skill Soft Neutral, và skill
+không nằm trong repo — § Skill nằm ngoài repo, cuối mục này.
+
+**Gate đỏ mà code ở đây không đổi thì nhìn sang repo skill trước.** Script chạy
+từ working tree của repo đó, nên `main` bên đó tiến lên, hay repo đó đang ở
+nhánh khác hoặc có thay đổi chưa commit, đều đổi hành vi gate ở đây — một accent
+mới trong scaffold là đủ làm `palette-check` đỏ. Tách nguồn bằng cách chạy lại
+gate đỏ với script lấy từ `git archive main soft-neutral` của repo skill, cwd
+vẫn ở đây: output trùng thì lỗi đến từ `main`, khác thì từ thứ đang checkout bên
+đó. `check` dừng ở gate đỏ đầu tiên, nên sửa xong một gate có thể lộ ra gate
+đứng sau nó.
 
 `npm run check:all` chạy thêm năm gate nữa, và ba trong số đó đang đỏ — cả ba
 là quyết định. `seo-check` đã sạch; nó chỉ còn một dòng "look" để người đọc tự
@@ -123,6 +145,36 @@ sẽ làm trang đọc như catalogue chứ không phải như bàn trộn. Tran
 ảnh thật ở hero, tức là colour floor vẫn được thoả. Roadmap, section đầu tiên
 sau chuỗi kệ, mang khung art khai báo `data-picture`, nên chuỗi dừng ở
 Favourites.
+
+### Skill nằm ngoài repo
+
+`scripts/gates.mjs` chạy các gate; comment đầu file nói nó tìm skill ở đâu, khi
+nào bỏ qua và khi nào đỏ. Máy nào cài repo skill theo README của nó đều có link
+tầng user `~/.claude/skills/soft-neutral`, nên gate luôn chạy ở đó. Gate mới
+từ `template/scaffold.json` thì thêm vào mảng `GATES` của script đó, không vào
+`package.json`.
+
+**Link trong repo không còn được commit.** Nó ghi một đường dẫn tuyệt đối trong
+home của máy đã tạo nó, nên ở mọi máy khác `python3` không mở được gate đầu
+tiên — trong khi README § Run it bảo người đọc chạy đúng lệnh đó — và nó lộ
+đường dẫn home trong một repo public. Repo template của team thì private — dòng
+cuối `template/stand-up.sh` in sẵn `gh repo create … --private` — nên link
+commit ở đó vô hại; đây là chỗ bản port lệch khỏi scaffold.
+
+Commit bỏ track làm git **xoá** link khỏi checkout nào pull nó, và worktree mới
+không bao giờ có link. Gate vẫn chạy nhờ link tầng user, nhưng lệnh chạy tay mà
+skill viết sẵn — `python3 .claude/skills/soft-neutral/scripts/…` — cần link
+trong repo. Nối lại:
+
+```bash
+mkdir -p .claude/skills && ln -s ~/.claude/claude-build-template-skills/soft-neutral .claude/skills/
+```
+
+Hai hướng khác đã cân nhắc và bỏ:
+- **`check` chỉ build, gate sang một script riêng:** mỗi lệnh một nghĩa, nhưng
+  máy có skill phải chạy hai lệnh mới đủ tập gate như trước.
+- **Copy script vào repo:** repo skill private và không có licence, nên không
+  đăng lên repo public được; bản copy cũng lệch dần khỏi bản gốc.
 
 ## Icon
 
@@ -313,7 +365,7 @@ quyết: `--primary` làm fill và mang chữ gần-đen (16:1; chữ trắng tr
 `--ring` và dải chart đọc.
 
 **Cái giá phải nói ra:** ở 97° brand này cách `--lime` 17°, nên trang nào ở đây
-muốn màu thứ hai thì tiêu một trong năm accent còn lại. `palette-check` báo
+muốn màu thứ hai thì tiêu một trong sáu accent còn lại. `palette-check` báo
 khoảng cách đó mỗi lần chạy.
 
 **Face là Google Sans Flex**, một họ duy nhất cho cả heading lẫn body — trạng
@@ -987,16 +1039,10 @@ Năm chỗ vỡ ở call site, và chỉ một trong số đó biên dịch sạ
 `items`, nên nút chọn binaural đọc là `custom` thay vì `Set it yourself`.
 
 `controls-check.py` trước đó báo false positive trên repo Radix vì nó chỉ biết
-`SelectPrimitive.Popup` của Base UI. Đã sửa trong repo skill: rule đọc cả hai
-part và gọi tên đúng cái file thực sự dùng. Nó cũng bắt được một finding thật
-trên đường đi — base variant đặt padding của Select lên `SelectGroup`, và repo
-này dời nó về popup.
-
-**Bản sửa đó chưa vào `main`.** Nó nằm ở nhánh `select-popup-on-either-base`
-trong `claude-build-template-skills`, một commit (`46af405`), chưa push, và
-`main` đã đi trước bốn commit kể từ điểm rẽ. Symlink `.claude/skills/` trỏ vào
-working tree của repo skill, nên checker mà session này chạy là bản nào đang
-được checkout ở đó. Xem § Việc còn mở.
+`SelectPrimitive.Popup` của Base UI. Đã sửa trong repo skill, vào `main` qua
+PR #48: rule đọc cả hai part và gọi tên đúng cái file thực sự dùng. Nó cũng bắt
+được một finding thật trên đường đi — base variant đặt padding của Select lên
+`SelectGroup`, và repo này dời nó về popup.
 
 ## SEO, tốc độ và truy cập
 
@@ -1115,9 +1161,8 @@ kế hero, nên chờ quyết định. `prefers-reduced-motion` đã tắt nó �
 lúc nằm trong Next của roadmap và bị rút ra: đó là việc phải làm cho đúng chuẩn,
 không phải thứ để hứa.
 
-**2. Footer nằm trong `<main>`**, nên trang không có landmark `contentinfo`; và
-chip category ở bản dưới `xl` là `<button>` dùng để điều hướng, focus ở lại
-chip sau khi nhảy — nên là `<a href>` như rail trái.
+**2. Chip category ở bản dưới `xl` là `<button>` dùng để điều hướng**, focus ở
+lại chip sau khi nhảy — nên là `<a href>` như rail trái.
 
 **3. 12 lỗi eslint `react-hooks/set-state-in-effect`**, đều có từ trước, ở các
 tool (pomodoro, countdown, tone, breathing, sleep timer, share link, media
@@ -1127,13 +1172,5 @@ session). eslint không nằm trong `npm run check`.
 hoặc sau một thao tác). Subset `vietnamese` của font thì giữ — lý do ở comment
 trong `layout.tsx`.
 
-**5. `controls-check` thỉnh thoảng đỏ `RuntimeError: Uncaught`** — lỗi đua của
-script trong repo skill: nó đọc `readyState` của `about:blank` trước khi trang
-mới có `<body>`. Chạy lại là xanh; bản sửa đang làm ở repo skill.
-
-**6. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
+**5. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
 Chrome thật để xác nhận vòng install → waiting → reload.
-
-**7. Nhánh `select-popup-on-either-base` chưa merge** ở repo skill. Rebase lên
-`main` rồi mở PR, hoặc bỏ nó đi — nhưng đừng để nó nằm đó: khi nào repo skill
-checkout sang nhánh khác thì checker ở đây đổi hành vi mà không ai báo.
