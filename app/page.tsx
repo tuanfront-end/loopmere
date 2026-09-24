@@ -13,7 +13,7 @@ export default function Home() {
         type="application/ld+json"
       />
 
-      <main
+      <div
         /* 96 at mobile rather than the house step's 128, and the floor drops
            with it. Nine near-identical shelves are a *run*, and the rule that
            sets the step says a run reads as one passage when it is tight; 128
@@ -21,12 +21,18 @@ export default function Home() {
            over. From `sm` the section is no longer three times the height of
            its window and the house number is right again. */
         className="flex grow flex-col gap-24 pb-24 sm:gap-40 sm:pb-32 xl:gap-28 xl:pb-16"
-        id="content"
       >
-        <Hero />
-        <App />
+        {/* The footer follows `main` rather than sitting in it, so the page
+            has a contentinfo landmark — and the type pass, which walks `main`
+            and `footer` as two roots, reads its lines once rather than twice.
+            The step is written again here because the sections are `main`'s
+            children and the footer is this column's. */}
+        <main className="flex flex-col gap-24 sm:gap-40 xl:gap-28" id="content">
+          <Hero />
+          <App />
+        </main>
         <SiteFooter />
-      </main>
+      </div>
     </>
   );
 }

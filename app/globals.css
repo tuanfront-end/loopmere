@@ -72,6 +72,8 @@
   --color-lime-ink: var(--lime-ink);
   --color-sky: var(--sky);
   --color-sky-ink: var(--sky-ink);
+  --color-peach: var(--peach);
+  --color-peach-ink: var(--peach-ink);
   /* The mix is inline here rather than behind a --chip variable on :root. A
      var() nested inside a custom property is substituted where that property
      is *declared*, so --chip would have been resolved once against :root's
@@ -174,7 +176,7 @@
 
    The cost worth naming: at 97 degrees this brand sits 17 from
    --lime, so a page here that wants a second colour spends one of the
-   other five accents. palette-check reports the distance.
+   other six accents. palette-check reports the distance.
 
    The page is the top of the surface ladder and every other rung is
    a distance below it: soft tint 2.5, border 5, muted 6, secondary 8.
@@ -338,6 +340,16 @@
   --sky: var(--color-sky-400);
   --sky-ink: var(--color-sky-700);
 
+  /* Seven, for a colour the six did not have: nothing sat between coral and
+     sun, and a peach card built from either reads salmon or butter. At this
+     step it sits 28 degrees from sun — closer than any other pair — so a peach
+     chip and a sun chip never stand side by side.
+
+     Its ink is the one a step darker. -700 lands 4.50 on this page once the
+     chip is composited, a hair under the floor every other -700 clears. */
+  --peach: var(--color-orange-400);
+  --peach-ink: var(--color-orange-800);
+
   --destructive: hsl(4 62% 40%);
 
   --border: hsl(30 6% 94%);
@@ -427,13 +439,21 @@
 
   /* The fills stay — a 400 reads on either ground. The inks invert: a 700 on
      L12 is a hole, so each one goes up to the 300 step, which is where these
-     six are still telling six things apart and still clearing the floor. */
+     seven are still telling seven things apart and still clearing the floor.
+
+     Peach comes up from 800 rather than 700 and lands on the same 300. Its
+     extra step on the light side made up a hair of floor, and this ground
+     leaves nothing to make up: composited, its chip reads 8.22 on the card,
+     inside the 7.56–10.12 the other six span. At 300 it sits 25 degrees from
+     sun, three nearer than at 400, so the rule in :root that keeps the two
+     apart holds here too. */
   --leaf-ink: var(--color-emerald-300);
   --sun-ink: var(--color-amber-300);
   --coral-ink: var(--color-rose-300);
   --iris-ink: var(--color-violet-300);
   --lime-ink: var(--color-lime-300);
   --sky-ink: var(--color-sky-300);
+  --peach-ink: var(--color-orange-300);
 
   --destructive: hsl(4 72% 66%);
 
