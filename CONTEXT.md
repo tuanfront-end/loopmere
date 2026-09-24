@@ -99,6 +99,19 @@ và tự viết `cn` bằng `clsx` + `tailwind-merge` — xem `_comment` trong
 là drop-in của clsx + tailwind-merge, không có dependency nào), nên chưa đổi;
 nhưng một template đem bán thì phải theo scaffold.
 
+### Accent thứ bảy theo sang, lớp pastel thì không
+
+**`--peach` theo scaffold sang, cả hai theme.** ADR 0014 của repo skill thêm nó
+làm accent thứ bảy, và không có `.soft-neutral.json` thì `_dials.py` license cả
+bảy — `palette-check` đòi đủ mười bốn alias. Thu hẹp về sáu thì cần chính file
+đó, mà phần đầu mục này nói vì sao không có. Bên sáng chép scaffold từng chữ, kể
+cả ink `-800`, ngoại lệ duy nhất so với `-700`; bên tối theo luật của sáu cái
+kia, ink lên `-300`, số đo nằm trong comment khối `.dark`.
+
+**Lớp pastel của scaffold thì không port** — hai block `[data-pastel]` và bốn
+role mỗi hue. Dial pastel ở 0 và không trang nào dùng role nào; `palette-check`
+chỉ đọc hai block đó khi dial lớn hơn 0.
+
 ## Gate
 
 `npm run check` gom sáu gate đang xanh — type, palette, responsive, controls,
@@ -296,7 +309,7 @@ quyết: `--primary` làm fill và mang chữ gần-đen (16:1; chữ trắng tr
 `--ring` và dải chart đọc.
 
 **Cái giá phải nói ra:** ở 97° brand này cách `--lime` 17°, nên trang nào ở đây
-muốn màu thứ hai thì tiêu một trong năm accent còn lại. `palette-check` báo
+muốn màu thứ hai thì tiêu một trong sáu accent còn lại. `palette-check` báo
 khoảng cách đó mỗi lần chạy.
 
 **Face là Google Sans Flex**, một họ duy nhất cho cả heading lẫn body — trạng
