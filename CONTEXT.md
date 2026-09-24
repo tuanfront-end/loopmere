@@ -115,7 +115,8 @@ chỉ đọc hai block đó khi dial lớn hơn 0.
 
 `npm run check` gom sáu gate đang xanh — type, palette, responsive, controls,
 hover, vn-comment — cộng `next build` và toàn bộ selftest. **Đỏ ở đó là hồi
-quy thật.**
+quy thật.** Gate nào ở đây cũng là script của skill Soft Neutral, và skill
+không nằm trong repo — § Skill nằm ngoài repo, cuối mục này.
 
 **Gate đỏ mà code ở đây không đổi thì nhìn sang repo skill trước.** Script chạy
 từ working tree của repo đó, nên `main` bên đó tiến lên, hay repo đó đang ở
@@ -142,6 +143,36 @@ cho landing page bán hàng, nơi mỗi section là một lập luận. Moodist 
 tool: chín grid là chín cái kệ của cùng một thứ, và nhồi một tấm ảnh vào mỗi kệ
 sẽ làm trang đọc như catalogue chứ không phải như bàn trộn. Trang vẫn giữ một
 ảnh thật ở hero, tức là colour floor vẫn được thoả.
+
+### Skill nằm ngoài repo
+
+`scripts/gates.mjs` chạy các gate; comment đầu file nói nó tìm skill ở đâu, khi
+nào bỏ qua và khi nào đỏ. Máy nào cài repo skill theo README của nó đều có link
+tầng user `~/.claude/skills/soft-neutral`, nên gate luôn chạy ở đó. Gate mới
+từ `template/scaffold.json` thì thêm vào mảng `GATES` của script đó, không vào
+`package.json`.
+
+**Link trong repo không còn được commit.** Nó ghi một đường dẫn tuyệt đối trong
+home của máy đã tạo nó, nên ở mọi máy khác `python3` không mở được gate đầu
+tiên — trong khi README § Run it bảo người đọc chạy đúng lệnh đó — và nó lộ
+đường dẫn home trong một repo public. Repo template của team thì private — dòng
+cuối `template/stand-up.sh` in sẵn `gh repo create … --private` — nên link
+commit ở đó vô hại; đây là chỗ bản port lệch khỏi scaffold.
+
+Commit bỏ track làm git **xoá** link khỏi checkout nào pull nó, và worktree mới
+không bao giờ có link. Gate vẫn chạy nhờ link tầng user, nhưng lệnh chạy tay mà
+skill viết sẵn — `python3 .claude/skills/soft-neutral/scripts/…` — cần link
+trong repo. Nối lại:
+
+```bash
+mkdir -p .claude/skills && ln -s ~/.claude/claude-build-template-skills/soft-neutral .claude/skills/
+```
+
+Hai hướng khác đã cân nhắc và bỏ:
+- **`check` chỉ build, gate sang một script riêng:** mỗi lệnh một nghĩa, nhưng
+  máy có skill phải chạy hai lệnh mới đủ tập gate như trước.
+- **Copy script vào repo:** repo skill private và không có licence, nên không
+  đăng lên repo public được; bản copy cũng lệch dần khỏi bản gốc.
 
 ## Icon
 
