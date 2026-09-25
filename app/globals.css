@@ -220,9 +220,9 @@
   --tracking-tight: 0em;
   --tracking-tighter: -0.025em;
   --leading-display: 1;
-  /* 4xl joins the display rows: the hero's heading steps down to it in the
-     band where the centre column is at its narrowest, and a display line on
-     the 1.11 the scale ships with opens a gap between its own two lines. */
+  /* 4xl joins the display rows: the roadmap's heading sets at it from `@xl`,
+     and a display line on the 1.11 the scale ships with opens a gap between
+     its own two lines. */
   --text-4xl--line-height: var(--leading-display);
   --text-5xl--line-height: var(--leading-display);
   --text-6xl--line-height: var(--leading-display);

@@ -805,8 +805,10 @@ dưới đây được đo từ ảnh rồi quy về tỉ lệ của container, 
 | Card phải — right / bottom | 2.4% / 3.7% | 14.4px, cố định |
 | Card phải — rộng | 29.9% | 30% |
 
-Hai cột **bằng nhau**, không theo 48% của reference: tiêu đề không mang `max-w`
-riêng, cột chính là measure, và copy được cắt cho vừa hai dòng lấp đầy cột đó.
+Hai cột **bằng nhau**, không theo 48% của reference: khi đã chia cột thì cột
+chính là measure, và copy được cắt cho vừa hai dòng lấp đầy cột đó. Tiêu đề
+mang `max-w-[8em]`, nhưng đó là chốt cho bản xếp chồng chứ không phải bề rộng để
+thiết kế theo — hai cột không bao giờ đưa quá 7.4em nên chốt không bao giờ chạm.
 
 **Inset của hai card là số cố định, không theo phần trăm của reference.** Khung
 ảnh, card và hàng/nút bên trong là **ba góc đồng tâm**: khung `xl` 33.6 = card
@@ -819,14 +821,27 @@ khe 6 ấy không đổi. Đã dựng cả hai bậc bên cạnh: khung `2xl` tr
 19.2, tròn quá so với tấm ảnh; khung `xl` trên card `lg`, hở 9.6, làm card dính
 vào góc và khung cắt mất bóng.
 
-Breakpoint đọc **cột giữa** chứ không đọc cửa sổ (`@xl`), cùng lý do với lưới
-card. Thứ tự trong markup là thứ tự nó xếp chồng: tiêu đề → dòng giải thích →
-hai nút.
+Breakpoint đọc **cột giữa** chứ không đọc cửa sổ, cùng lý do với lưới card. Thứ
+tự trong markup là thứ tự nó xếp chồng: tiêu đề → dòng giải thích → hai nút.
 
-Tiêu đề là **thang sáu bậc** đọc theo cột giữa, và mỗi breakpoint là một phép
-đo chứ không phải một sở thích — số đo nằm ở comment trên lưới hai cột trong
-`hero.tsx`. Cỡ nào cũng là bậc của thang: `text-4xl` đã vào hàng display trong
-`globals.css`, nên không còn cần một cỡ arbitrary để có leading display.
+**Chỉ chia hai cột từ cột giữa 928px (`58rem`).** Đó là bề rộng mà mỗi nửa giữ
+được thứ nó giữ ở cỡ đầy: tiêu đề cần 386px để nằm hai dòng ở `7xl`, hàng nút
+rộng 354px. Bản trước chia ở `@xl` (576px), và đó đúng là dải của laptop: 1280
+đến 1600 cho cột giữa 612–892px, tablet 768–820 thì không có rail nhưng vẫn dưới
+900. Chia ở đó thì mỗi nửa còn 238–378px — tiêu đề tụt xuống 36 và 48px cho
+vừa, hàng nút gãy thành hai nút lệch nhau 6px chồng lên nhau, và cột chữ cao gấp
+đôi dòng mà nó giải thích. Nhìn ra là layout đang vỡ chứ không phải đang chọn.
+Dưới 928 giờ là một cột, tiêu đề 72px.
+
+Tiêu đề là **thang ba bậc** — 48, 60 từ cột 384px, 72 từ 576 — và **chỉ đi
+lên**: cột rộng hơn không bao giờ trả về cỡ nhỏ hơn, dù xếp chồng hay chia cột.
+Bản sáu bậc cũ đi xuống ngay chỗ chia cột (`6xl` → `4xl`); nay chia cột muộn đến
+mức nửa cột đã đủ cho `7xl`, nên bước xuống đó không còn lý do tồn tại.
+
+Hàng nút giữ **độ rộng của chính cặp nút** (`max-w-fit`), mỗi nút `grow`: vừa
+một hàng thì không có chỗ trống nào để `grow` chia, nút giữ bề rộng của nhãn;
+không vừa — điện thoại dưới ~400px — thì mỗi dòng một nút, và nút chiếm trọn
+dòng. Không cần breakpoint nào.
 
 **Hàng heading đứng ở 500; riêng H1 là 460, đặt ở call site, cố ý.**
 `font-medium` trên một `h1` bị `type-check` chặn, đúng: từ `text-3xl` trở lên
@@ -922,16 +937,18 @@ caret.
 **Bốn câu được chọn bằng thước, không phải bằng tai.** Một câu chạy trong hộp
 cố định phải xuống **đúng hai dòng ở mọi bề rộng hộp nhận được** — nếu không,
 tiêu đề đổi chiều cao bốn lần một phút. Con số quyết định là cột hẹp nhất mà
-câu còn nằm hai dòng, quy ra `em` để so được giữa sáu cỡ. Thang hiện tại đưa ra
-cột chật nhất là **5.67em** (272px ở 48px — máy 320px), và bốn câu này đo
-5.33 / 5.02 / 5.31 / 5.35. Đầu kia cũng có thước: quá khoảng 8.2em thì câu sụp
-về một dòng, cột rộng nhất thang đưa ra là 8.2em, trần thấp nhất của bốn câu là
-9.77em.
+câu còn nằm hai dòng, quy ra `em` để so được giữa các cỡ. Thang hiện tại đưa ra
+cột chật nhất là **5.5em** (396px ở 72px — hero hai cột ở chỗ hẹp nhất của nó),
+và bốn câu này cần nhiều nhất 5.38. Đầu kia cũng có thước: câu ngắn nhất sụp về
+một dòng ở 9.76em, còn measure rộng nhất tiêu đề từng nhận là 8em — chính cái chốt
+`max-w-[8em]` của bản xếp chồng.
 
 Đo 17 ứng viên, **11 câu rớt**, trong đó có `"A cafe that never closes."`
 (5.62em) và `"A storm you can sleep through."` (5.90em) — hai câu này đã từng ở
 trong bản đầu và làm tiêu đề nhảy 3 dòng ở 320/390/1280/1440. Kiểm lại cuối:
-23 bề rộng × 4 câu = **92 tổ hợp, tất cả hai dòng, `box` giống hệt nhau**.
+23 bề rộng × 4 câu = **92 tổ hợp, tất cả hai dòng, `box` giống hệt nhau**. Sau
+khi thang thành ba bậc, kiểm lại ở mọi mép bậc — 320, 383/384, 575/576, 927/928
+và 1920 — cả bốn câu vẫn hai dòng.
 
 Cả bốn mở đầu giống nhau là cố ý: caret chỉ xoá về phần `"A "` chung, nên vòng
 lặp đọc ra như một câu đang được viết lại chứ không phải bốn câu bị xoá trắng.

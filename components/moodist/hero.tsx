@@ -19,14 +19,15 @@ import { count } from "@/lib/sounds";
    fixed box has to break into two lines at *every* width the box takes, or the
    heading changes height four times a minute; so the number that matters is
    the narrowest column it still fits two lines in, expressed in em so it can
-   be compared across the six sizes below. The ladder's tightest column is
-   5.67em — 272px at 48px, which is a 320px phone — and these four measure
-   5.33, 5.02, 5.31 and 5.35. Seventeen candidates were measured; eleven of
-   them, "A cafe that never closes." among them, were over it and are not here.
+   be compared across the three sizes below. The ladder's tightest column is
+   5.5em — 396px at 72px, the two-column hero at its narrowest — and these
+   four need at most 5.38. Seventeen candidates were measured; eleven of
+   them, "A cafe that never closes." among them at 5.62, need more than the
+   ladder hands out and are not here.
 
-   The other end is measured too: past about 8.2em a sentence collapses onto
-   one line, and the widest column this ladder hands out is 8.2em. The
-   narrowest ceiling of the four is 9.77em. */
+   The other end is measured too: the shortest of the four folds onto one
+   line at 9.76em, and the widest measure the heading is ever handed is 8em,
+   the cap it carries. */
 const LINES = [
   "A night train in the rain.",
   "A fire and a long book.",
@@ -42,25 +43,20 @@ export function Hero() {
           `items-end` is what keeps that true whatever either column's copy
           does.
 
-          The heading carries no measure of its own: the column is the measure,
-          and the copy is cut to the two lines that fill it. A `max-w` on top
-          of a column is a second opinion about the same width, and the two
-          disagree the moment either changes.
+          Only once each half holds what it holds at full size, though, and
+          that is a 928px centre column. The heading needs 386px to sit in two
+          lines at `7xl` and the button row is 354; a column is half the
+          container less the gutters and the 72px gap, so 928 leaves each ten
+          pixels spare. Below it the hero is one column.
 
-          Six sizes, and every breakpoint is a measurement rather than a
-          preference. This line needs a 192px column to sit in two at `4xl`,
-          256 at `5xl`, 320 at `6xl` and 384 at `7xl` — measured by growing the
-          box a pixel at a time until the third line goes away. The column is
-          half the container less the gap, so those four numbers become four
-          container widths: 520, 648, 776 and 904.
-
-          The step at `@xl` goes *down*, from `6xl` to `4xl`, and that is the
-          layout rather than a mistake: it is the width where one full-width
-          column becomes two half ones, so the measure halves and the type has
-          to halve with it. `7xl` lands at a 904px container, which is 1920 on
-          this shell — and at 1024, where there are no rails to pay for.
-
-          Two lines at all eight widths measured.
+          It used to split at `@xl`, 576px, and that is where the laptops
+          live: 1280 to 1536 hand the centre column 612 to 828px, and a
+          tablet has no rails to pay for but is still under 900. Split there,
+          each half was 238 to 380px wide — the heading stepped down to 36px
+          and 48 to fit it, the button row broke into two buttons of unequal
+          width, and the copy column stood twice as tall as the line it was
+          explaining. A shrunk heading beside a stack that had come apart read
+          as a layout failing, not as one choosing.
 
           The breakpoint is the *centre column's*, not the window's: with a
           rail on each side the viewport stopped being what decides this, the
@@ -68,33 +64,54 @@ export function Hero() {
 
           Markup order is stack order — heading, then the line that explains
           it, then the buttons. */}
-      <div className="@xl:grid @xl:grid-cols-2 @xl:items-end @xl:gap-x-18">
-        {/* Every size is a step on the scale — the ladder and its
-            measurements are in the comment above — and every step carries
-            display leading, `text-4xl` included, from the display rows in
-            `globals.css`.
+      <div className="@min-[58rem]:grid @min-[58rem]:grid-cols-2 @min-[58rem]:items-end @min-[58rem]:gap-x-18">
+        {/* Three sizes, and the ladder only climbs: 48, 60 from a 384px
+            column, 72 from 576 — stacked or split, a wider column never
+            hands the heading a smaller size. Each carries display leading
+            from the display rows in `globals.css`.
+
+            Every one of the four lines sits in two anywhere between 5.38em
+            and 9.76em of measure: the first is where the longest breaks into
+            a third, the second where the shortest folds into one. Split, the
+            column is the measure and never hands out more than 7.4em.
+            Stacked, the row is wider than that, so the heading carries a cap
+            of its own — `8em`, a guard rather than a width to design to:
+            `text-balance` breaks a line at the same word anywhere in the
+            band, so the cap moves nothing on screen, and it never binds in
+            two columns.
 
             The weight is 460, the one weight set at the call site on a
             heading, and on purpose: set by eye a shade under the heading
             row's 500, because large type reads heavier than small at one
             weight. */}
-        <h1 className="min-h-[2lh] text-5xl font-[460] tracking-tighter text-balance @sm:text-6xl @xl:text-4xl @min-[40.5rem]:text-5xl @min-[48.5rem]:text-6xl @min-[56.5rem]:text-7xl">
+        <h1 className="min-h-[2lh] max-w-[8em] text-5xl font-[460] tracking-tighter text-balance @sm:text-6xl @xl:text-7xl">
           <Typewriter lines={LINES} />
         </h1>
 
-        <div className="mt-6 @xl:mt-0">
+        <div className="mt-6 @min-[58rem]:mt-0">
           <p className="text-muted-foreground max-w-[46ch] text-base text-balance">
             {count()} loops you can stack and level to taste. Nothing to sign up
             for, and the mix you built is still here tomorrow.
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <ShuffleButton />
+          {/* Side by side while the pair fits, and two full-width buttons
+              once it does not, which is a phone under about 400px. The row
+              is held to the pair's own width, so on one line there is no
+              space for `grow` to hand out and each button keeps its label's
+              width; wrapped, each line holds one button and it takes the
+              whole line. What it used to wrap into was 168px over 174, both
+              flush left — two widths that differ by six pixels read as an
+              accident rather than a stack. */}
+          <div className="mt-6 flex max-w-fit flex-wrap items-center gap-3">
+            <ShuffleButton className="grow" />
 
             {/* An anchor wearing the variants: a jump down the page announced
                 as a press is the wrong verb. */}
             <a
-              className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
+              className={cn(
+                buttonVariants({ size: "lg", variant: "outline" }),
+                "grow",
+              )}
               href="#category-nature"
             >
               Browse the shelves
