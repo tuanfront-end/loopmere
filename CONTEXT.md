@@ -1098,6 +1098,14 @@ trang; nó ghi "84 loops", nên số sound đổi thì render lại.
 - Ảnh hero: AVIF, `fetchPriority="high"`, `sizes` theo bề rộng thật của khung.
 - Speed Insights gắn ở layout; chỉ có số liệu khi chạy trên Vercel và project
   đã bật nó.
+- Web Analytics (`@vercel/analytics`) gắn ngay cạnh, cùng điều kiện. Nó đi qua
+  wrapper client `WebAnalytics`, vì `beforeSend` là một hàm mà layout là server
+  component. Wrapper bỏ `?share=` khỏi URL trước khi gửi: tham số đó chính là mix
+  của người nghe, và footer hứa những gì người nghe dựng không đi đâu cả. Tag
+  chiến dịch thì giữ nguyên. Tên tham số là `SHARE_PARAM` trong
+  `constants/share.ts`, dùng chung cho bên gửi, bên nhận và bộ lọc, để đổi tên ở
+  một chỗ không lặng lẽ làm lộ mix. Câu "Nothing here tracks you" trong panel
+  Lofi viết lại thành "only counts visits, anonymously".
 
 **Truy cập.** axe-core: **0 vi phạm** ở 390 và 1440, kể cả khi mở panel.
 

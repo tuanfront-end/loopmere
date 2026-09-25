@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ToolPanel } from "../tool-panel";
 
 import { Button } from "@/components/ui/button";
+import { SHARE_PARAM } from "@/constants/share";
 import { sounds } from "@/data/sounds";
 import { useCloseListener } from "@/hooks/use-close-listener";
 import { useSoundStore } from "@/stores/sound";
@@ -30,7 +31,7 @@ export function SharedMix() {
   useCloseListener(() => setIsOpen(false));
 
   useEffect(() => {
-    const share = new URLSearchParams(window.location.search).get("share");
+    const share = new URLSearchParams(window.location.search).get(SHARE_PARAM);
 
     if (!share) return;
 
