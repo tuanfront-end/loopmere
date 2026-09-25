@@ -8,6 +8,7 @@ import { Shell } from "@/components/moodist/shell";
 import { StoreConsumer } from "@/components/moodist/store-consumer";
 import { Toolbar } from "@/components/moodist/toolbar";
 import { ToolsProvider } from "@/components/moodist/tools-provider";
+import { WebAnalytics } from "@/components/moodist/web-analytics";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/seo";
@@ -91,6 +92,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Real visitors' Core Web Vitals, reported to the Vercel project.
             It sends nothing off Vercel, and its script loads after the page. */}
         <SpeedInsights />
+        {/* Anonymous page views, to the same project and on the same terms —
+            less a shared mix, which the wrapper takes off the URL first. */}
+        <WebAnalytics />
       </body>
     </html>
   );

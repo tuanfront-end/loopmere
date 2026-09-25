@@ -9,6 +9,7 @@ import { ToolPanel } from "../tool-panel";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SHARE_PARAM } from "@/constants/share";
 import { useCopy } from "@/hooks/use-copy";
 import { useSoundStore } from "@/stores/sound";
 
@@ -44,7 +45,7 @@ export function ShareLinkModal({ onClose, show }: ShareLinkModalProps) {
   const url = useMemo(() => {
     const origin = isMounted ? window.location.origin : "";
 
-    return `${origin}/?share=${encodeURIComponent(mix)}`;
+    return `${origin}/?${SHARE_PARAM}=${encodeURIComponent(mix)}`;
   }, [mix, isMounted]);
 
   return (

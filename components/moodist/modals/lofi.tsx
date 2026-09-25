@@ -58,10 +58,9 @@ export function LofiModal({ onClose, show }: LofiModalProps) {
         <>
           {/* The embed is a third party, so the visitor decides, not the page. */}
           <p className="text-muted-foreground text-sm">
-            These stations play through embedded YouTube players. Opening them
-            connects you to YouTube, which collects data under its own privacy
-            policy. Nothing here tracks you, and nothing here can stop that
-            either.
+            These stations are embedded YouTube players. Loading them connects
+            you to YouTube, which collects data under its own privacy policy.
+            Loopmere itself only counts visits, anonymously.
           </p>
 
           <div className="flex gap-2">
