@@ -35,6 +35,8 @@ function Slider({
         ? () => label
         : undefined;
 
+  const vertical = props.orientation === "vertical";
+
   return (
     <SliderPrimitive.Root
       className={cn("data-horizontal:w-full data-vertical:h-full", className)}
@@ -43,12 +45,18 @@ function Slider({
       value={value}
       min={min}
       max={max}
-      // Edge alignment, set after hydration. Plain "edge" positions each thumb
-      // before React loads with an inline script per slider — eighty-six of
-      // them, parsed and run while the HTML streams, a quarter of the main
-      // thread's load-time work on a slow phone. The thumbs land in the same
-      // place; they appear a moment later.
-      thumbAlignment="edge-client-only"
+      // Centre alignment, with the edge geometry drawn in CSS below. Base UI's
+      // two edge modes measure the thumb against the control in JavaScript —
+      // once after mount, then only when the value moves — and the
+      // ResizeObserver meant to catch everything else never attaches outside
+      // Strict Mode: it is set up in the thumb's layout effect, which runs
+      // before the control's ref does. So a slider that mounted at zero width
+      // stayed hidden for good. Every card behind a shelf's Show more mounts
+      // inside `display: none`, measured NaN, and came out with no thumb once
+      // revealed — in the production build only, which is why dev never
+      // showed it. Nothing here measures now: the thumb is in place in the
+      // server's HTML, hidden or not, with no inline script per slider either.
+      thumbAlignment="center"
       {...props}
     >
       {/* No blanket opacity on the Control. A disabled slider here is shown on
@@ -62,45 +70,62 @@ function Slider({
           rail nobody can see rather than from the circle they can. Reserved
           here rather than at each call site, because every call site was
           getting it wrong in a different way. */}
-      <SliderPrimitive.Control className="relative flex w-full touch-none items-center select-none data-horizontal:min-h-6 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col">
+      {/* Edge alignment in three declarations, each half the thumb: the
+          control's padding, which Base UI subtracts when it turns a pointer
+          into a value; the track's negative margin, which hands the drawn
+          rail its full length back; and the thumb rail's inset, which is the
+          box a thumb's `left: n%` resolves against. At 0 the thumb's edge
+          meets the rail's, at 100 the other edge, and a press lands the
+          thumb's centre under the pointer — the same geometry the measured
+          mode drew. The fill still stops at n% of the full rail, which is
+          always under the thumb: never more than a radius from its centre. */}
+      <SliderPrimitive.Control className="relative flex w-full touch-none items-center select-none data-horizontal:min-h-6 data-horizontal:px-3 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col data-vertical:py-3">
         <SliderPrimitive.Track
           data-slot="slider-track"
-          className="relative grow overflow-hidden rounded-full bg-muted select-none data-horizontal:h-1 data-horizontal:w-full data-vertical:h-full data-vertical:w-1"
+          className="relative grow overflow-hidden rounded-full bg-muted select-none data-horizontal:-mx-3 data-horizontal:h-1 data-horizontal:w-full data-vertical:-my-3 data-vertical:h-full data-vertical:w-1"
         >
           <SliderPrimitive.Indicator
             data-slot="slider-range"
             className="bg-primary select-none data-horizontal:h-full data-vertical:w-full data-disabled:bg-muted-foreground/15"
           />
         </SliderPrimitive.Track>
-        {Array.from({ length: _values.length }, (_, index) => (
-          <SliderPrimitive.Thumb
-            data-slot="slider-thumb"
-            getAriaLabel={thumbLabel}
-            key={index}
-            // The thumb is the same object whether the slider is live or not:
-            // same 24px, same white, same cast. Only what it sits on says
-            // which — the indicator behind it keeps the brand hue for a live
-            // slider and drops to a neutral for a disabled one. It used to
-            // shrink to a flat 12px grey dot, which read as a different
-            // control and jumped size the moment a sound joined the mix.
-            //
-            // The ring still comes off: that one is behaviour, not shape.
-            //
-            // Three ring colours, and the variant order decides between them
-            // rather than the order they are written in: `focus-visible` is
-            // sorted after `hover`, and `active` after both. So the pointer
-            // gets a faint brand halo, the keyboard keeps `--ring` — which is
-            // the app's focus colour everywhere else and already brand ink —
-            // and a thumb being dragged deepens. It used to be one neutral at
-            // half alpha for all three, which said a control was live without
-            // saying whose.
-            // `bg-card` is the top of the light ladder and the *bottom* of the
-            // dark one, so on dark the thumb came out darker than the track it
-            // rides and vanished. What it has to be on either side is the
-            // brightest thing in the control, which on dark is the ink.
-            className="relative block size-6 shrink-0 rounded-full bg-card shadow-soft dark:bg-foreground transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 hover:ring-primary/45 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-hidden active:ring-3 active:ring-primary/70 disabled:pointer-events-none data-disabled:hover:ring-0"
-          />
-        ))}
+        {/* The thumb rail: the travel, a thumb's radius in from each end. */}
+        <div
+          className={cn(
+            "absolute",
+            vertical ? "inset-x-0 inset-y-3" : "inset-x-3 inset-y-0",
+          )}
+        >
+          {Array.from({ length: _values.length }, (_, index) => (
+            <SliderPrimitive.Thumb
+              data-slot="slider-thumb"
+              getAriaLabel={thumbLabel}
+              key={index}
+              // The thumb is the same object whether the slider is live or not:
+              // same 24px, same white, same cast. Only what it sits on says
+              // which — the indicator behind it keeps the brand hue for a live
+              // slider and drops to a neutral for a disabled one. It used to
+              // shrink to a flat 12px grey dot, which read as a different
+              // control and jumped size the moment a sound joined the mix.
+              //
+              // The ring still comes off: that one is behaviour, not shape.
+              //
+              // Three ring colours, and the variant order decides between them
+              // rather than the order they are written in: `focus-visible` is
+              // sorted after `hover`, and `active` after both. So the pointer
+              // gets a faint brand halo, the keyboard keeps `--ring` — which is
+              // the app's focus colour everywhere else and already brand ink —
+              // and a thumb being dragged deepens. It used to be one neutral at
+              // half alpha for all three, which said a control was live without
+              // saying whose.
+              // `bg-card` is the top of the light ladder and the *bottom* of the
+              // dark one, so on dark the thumb came out darker than the track it
+              // rides and vanished. What it has to be on either side is the
+              // brightest thing in the control, which on dark is the ink.
+              className="relative block size-6 shrink-0 rounded-full bg-card shadow-soft dark:bg-foreground transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 hover:ring-primary/45 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-hidden active:ring-3 active:ring-primary/70 disabled:pointer-events-none data-disabled:hover:ring-0"
+            />
+          ))}
+        </div>
       </SliderPrimitive.Control>
     </SliderPrimitive.Root>
   );

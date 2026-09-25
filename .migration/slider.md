@@ -53,8 +53,20 @@ and never reached it. The wrapper now carries it down through the thumb's
 same control. `seo-check` catches this one; it was silent before only because
 no slider was rendered on a freshly loaded page.
 
+A second one, when Show more was found revealing cards with no thumb: the
+wrapper no longer uses either of Base UI's edge modes. Both measure the thumb
+in JavaScript — once after mount, then only when the value moves — and their
+ResizeObserver never attaches outside Strict Mode, because it is set up in the
+thumb's layout effect, which runs before the control's ref. A slider mounted
+inside `display: none` measures NaN and keeps `visibility: hidden` for good,
+in the production build only. The wrapper now runs `thumbAlignment="center"`
+and draws the edge geometry in CSS: padding on the control (which Base UI
+subtracts when it maps a pointer to a value), a negative margin handing the
+track its length back, and an inset rail the thumb positions against.
+
 ## Verify by hand
 
 Drag a sound's level to both ends and watch the fill follow. Keyboard: focus
 a thumb, arrow keys should step it. The thumb should read as lifted off the
-track, not drawn on it.
+track, not drawn on it. On a production build, press Show more on a shelf: the
+cards it reveals carry their thumbs.
