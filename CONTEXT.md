@@ -1069,8 +1069,15 @@ trang; nó ghi "84 loops", nên số sound đổi thì render lại.
   cần, `SoundCard` là `memo`, `globalVolume` áp thẳng vào `Howl` (điểm 4 ở
   trên).
 - Shell là grid khai sẵn ba cột, nên rail phải đến muộn không đẩy cột giữa.
-- Slider dùng `edge-client-only`: bỏ 86 script chèn trước hydrate, thumb vẫn
-  đúng chỗ — đo ở 90%.
+- Slider không đo gì bằng JavaScript: `thumbAlignment="center"`, còn hình học
+  edge vẽ bằng CSS trong wrapper — không script chèn trước hydrate, thumb có
+  sẵn trong HTML của server. Bản trước dùng `edge-client-only` và **mất thumb ở
+  mọi card nằm sau Show more, chỉ ở bản production**: Base UI đo thumb một lần
+  sau mount, card đang `display: none` đo ra NaN, còn ResizeObserver đáng lẽ đo
+  lại thì dựng trong layout effect của thumb — chạy trước khi ref của control
+  được gắn — nên không bao giờ gắn. Strict Mode chạy effect hai lần nên dev che
+  mất lỗi. Đo lại sau khi sửa: tâm thumb lệch công thức edge cũ 0.007px, bấm ở
+  25% và 70% thì tâm thumb nằm đúng dưới con trỏ.
 - Ảnh hero: AVIF, `fetchPriority="high"`, `sizes` theo bề rộng thật của khung.
 - Speed Insights gắn ở layout; chỉ có số liệu khi chạy trên Vercel và project
   đã bật nó.
