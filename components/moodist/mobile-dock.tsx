@@ -269,7 +269,14 @@ function tabClass(active: boolean) {
  * button — the sound card's arrangement, and for the card's reason: a control
  * inside a control cannot be announced.
  */
-function MiniPlayer({ selected }: { selected: Array<string> }) {
+function MiniPlayer({
+  selected,
+  tucked,
+}: {
+  selected: Array<string>;
+  /** The bar has left: stay above the home indicator it was padding for. */
+  tucked: boolean;
+}) {
   const isPlaying = useSoundStore((state) => state.isPlaying);
   const togglePlay = useSoundStore((state) => state.togglePlay);
 
@@ -284,7 +291,10 @@ function MiniPlayer({ selected }: { selected: Array<string> }) {
         // and `rounded-lg` is the nearest step at 24.
         "bg-card/85 shadow-soft-lg relative mx-3 mb-2 flex items-center gap-3 rounded-lg p-2 pl-3 backdrop-blur-xl backdrop-saturate-150 sm:mx-auto sm:max-w-lg",
         "has-[[data-slot=mini-open]:hover]:bg-card transition-[opacity,translate,background-color] duration-300 ease-out",
-        empty ? "pointer-events-none translate-y-3 opacity-0" : "pointer-events-auto",
+        empty
+          ? "pointer-events-none translate-y-3 opacity-0"
+          : "pointer-events-auto",
+        !empty && tucked && "-translate-y-[env(safe-area-inset-bottom,0px)]",
       )}
       // Invisible is not enough: at opacity 0 it still took a Tab stop.
       inert={empty}
@@ -403,14 +413,15 @@ export function MobileDock() {
       <div
         className={cn(
           "pointer-events-none fixed inset-x-0 bottom-0 z-40 transition-transform duration-300 ease-out lg:hidden",
-          // The bar's own height and not a pixel more, so the player drops to
-          // the bottom edge rather than leaving with it.
-          tucked && "translate-y-16",
+          // The bar's own height, safe area and all, so no strip of empty
+          // glass is left under the home indicator; the player takes the
+          // safe area back and stops just above it.
+          tucked && "translate-y-[calc(4rem+env(safe-area-inset-bottom,0px))]",
         )}
         onFocus={untuck}
       >
         <Drawer {...control("mix")}>
-          <MiniPlayer selected={selected} />
+          <MiniPlayer selected={selected} tucked={tucked} />
 
           <DrawerContent>
             <DrawerHeader>

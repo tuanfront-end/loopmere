@@ -751,9 +751,13 @@ Ba thứ phải chỉnh theo dock:
   dải ghim chỉ để giữ cái tên thì chính là thanh vừa bỏ; nó chỉ trở lại trên
   thanh "Build me a mix", nơi nó đi kèm một việc để làm.
 
-`env(safe-area-inset-bottom)` đã nằm trong padding của thanh nhưng đang trả 0:
-`viewport` chưa có `viewportFit: "cover"`. Bật nó là việc riêng — phải kiểm
-lề ngang ở điện thoại xoay ngang, chỗ tai thỏ ăn vào gutter 24px.
+**Viewport là `cover`.** Không có nó iOS Safari vẫn vẽ trang tới tận mép dưới
+nhưng báo safe area bằng 0, nên nửa dưới thanh tab — cả hàng nhãn — nằm dưới
+thanh home, bị cắt (báo từ một iPhone thật). Giờ thanh đệm
+`env(safe-area-inset-bottom)`; đo với inset 34px giả lập qua CDP, nhãn kết thúc
+cách mép dưới 44px. Khi thanh lui, nó lui cả phần đệm, và player lấy lại đúng
+phần đó để đứng trên thanh home. Xoay ngang thì tai thỏ ăn vào gutter, nên
+`body` và sheet đệm `safe-area-inset-left/right`.
 
 ### Chỗ mà `responsive-check` không nhìn thấy
 
