@@ -8,6 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { removeKeepingFocus } from "@/lib/focus";
 import { cn } from "@/lib/utils";
 import { useSoundStore } from "@/stores/sound";
 
@@ -36,7 +37,25 @@ export function FavoriteButton({ id, label }: FavoriteButtonProps) {
           "text-muted-foreground hover:bg-muted hover:text-foreground",
           isFavorite && "text-coral-ink hover:text-coral-ink",
         )}
-        onClick={() => toggleFavorite(id)}
+        data-slot="favorite-button"
+        // Anywhere else the heart stays where it is. In Favourites it takes
+        // its card off the shelf, so focus moves to the heart on the card that
+        // closes the gap — or to the shelf's title once the shelf is empty.
+        onClick={(event) => {
+          const shelf = event.currentTarget.closest("#category-favorites");
+          const toggle = () => toggleFavorite(id);
+
+          if (shelf)
+            removeKeepingFocus(
+              event.currentTarget,
+              shelf.querySelectorAll<HTMLElement>(
+                "[data-slot=favorite-button]",
+              ),
+              toggle,
+              () => shelf.querySelector("h2"),
+            );
+          else toggle();
+        }}
       >
         <HugeiconsIcon
           className={cn("size-4", isFavorite && "fill-coral/40")}

@@ -8,7 +8,7 @@ import {
   Undo02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
@@ -24,6 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { sounds } from "@/data/sounds";
+import { removeKeepingFocus } from "@/lib/focus";
 import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
@@ -63,7 +64,14 @@ function Section({
   );
 }
 
-function MixRow({ id }: { id: string }) {
+function MixRow({
+  id,
+  shuffleButton,
+}: {
+  id: string;
+  /** Where focus goes when this row was the last one — see its X. */
+  shuffleButton: React.RefObject<HTMLButtonElement | null>;
+}) {
   const volume = useSoundStore((state) => state.sounds[id].volume);
   const isPaused = useSoundStore((state) => state.sounds[id].isPaused);
   const setVolume = useSoundStore((state) => state.setVolume);
@@ -110,11 +118,25 @@ function MixRow({ id }: { id: string }) {
         <Button
           aria-label={`Take ${labels[id]} out of the mix`}
           className="-mr-1 shrink-0"
+          data-slot="mix-remove"
           size="icon-sm"
           variant="ghost"
           // The level stays with the sound; putting it back in the mix from
           // its card brings the level back with it.
-          onClick={() => unselect(id)}
+          //
+          // Focus moves to the X on the row that closes the gap. After the
+          // last row it goes to Shuffle: Play and Clear are both disabled on
+          // an empty desk, and Shuffle is the one way back to a mix from it.
+          onClick={(event) =>
+            removeKeepingFocus(
+              event.currentTarget,
+              event.currentTarget
+                .closest("ul")!
+                .querySelectorAll<HTMLElement>("[data-slot=mix-remove]"),
+              () => unselect(id),
+              () => shuffleButton.current,
+            )
+          }
         >
           <XMarkIcon />
         </Button>
@@ -154,6 +176,7 @@ export function MixDesk({
   const unselectAll = useSoundStore((state) => state.unselectAll);
   const restoreHistory = useSoundStore((state) => state.restoreHistory);
   const hasHistory = useSoundStore((state) => !!state.history);
+  const shuffleButton = useRef<HTMLButtonElement>(null);
 
   const selected = useSoundStore(
     useShallow((state) =>
@@ -174,6 +197,7 @@ export function MixDesk({
             render={
               <Button
                 aria-label="Pick four sounds at random"
+                ref={shuffleButton}
                 size="icon"
                 variant="ghost"
                 onClick={shuffle}
@@ -229,7 +253,7 @@ export function MixDesk({
       {selected.length ? (
         <ul className="mt-4 flex flex-col gap-2">
           {selected.map((id) => (
-            <MixRow id={id} key={id} />
+            <MixRow id={id} key={id} shuffleButton={shuffleButton} />
           ))}
         </ul>
       ) : (
