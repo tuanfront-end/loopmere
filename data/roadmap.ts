@@ -72,6 +72,22 @@ export const roadmap: Array<RoadmapItem> = [
   },
   {
     blurb:
+      "Drag the level on any card and that sound joins the mix, playing at the level you set.",
+    id: "level-starts-sound",
+    shipped: "2026-09",
+    status: "shipped",
+    title: "Start a sound from its level",
+  },
+  {
+    blurb:
+      "On a phone, a player sits over a tab bar along the bottom edge, one tap from anywhere.",
+    id: "phone-player",
+    shipped: "2026-09",
+    status: "shipped",
+    title: "Play and pause from anywhere",
+  },
+  {
+    blurb:
       "Rainy study, Deep forest and Night train start from one click, and the same click stops them.",
     id: "starter-mixes",
     shipped: "2026-09",
@@ -88,7 +104,7 @@ export const roadmap: Array<RoadmapItem> = [
   },
   {
     blurb:
-      "Press Play them all in the Saved panel and your whole shelf starts, each loop at the level you left it.",
+      "Press Play them all in the Saved panel and the whole shelf starts, each loop where you left it.",
     id: "play-favourites",
     shipped: "2026-09",
     status: "shipped",
