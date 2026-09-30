@@ -111,10 +111,16 @@ export function App() {
           each took a full section gap, which put a 56px-tall tray of buttons
           alone in the middle of 256px of nothing — a third of a phone screen
           spent on the space around one control. They are one group and they
-          take one gap; inside it, 32. */}
+          take one gap; inside it, 32.
+
+          The tray only from `lg`. Under it the phone's player floats over the
+          tab bar with the same transport in it, one thumb away from anywhere
+          on the page rather than in one place on it. */}
       <div className="flex flex-col gap-8 xl:hidden">
         <CategoryRail />
-        <PlayControls />
+        <div className="hidden lg:block">
+          <PlayControls />
+        </div>
       </div>
 
       {allCategories.map((category) => (

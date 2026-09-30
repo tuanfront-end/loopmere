@@ -8,7 +8,7 @@ import {
   Undo02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
@@ -24,6 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { sounds } from "@/data/sounds";
+import { removeKeepingFocus } from "@/lib/focus";
 import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
@@ -63,7 +64,14 @@ function Section({
   );
 }
 
-function MixRow({ id }: { id: string }) {
+function MixRow({
+  id,
+  shuffleButton,
+}: {
+  id: string;
+  /** Where focus goes when this row was the last one — see its X. */
+  shuffleButton: React.RefObject<HTMLButtonElement | null>;
+}) {
   const volume = useSoundStore((state) => state.sounds[id].volume);
   const isPaused = useSoundStore((state) => state.sounds[id].isPaused);
   const setVolume = useSoundStore((state) => state.setVolume);
@@ -110,11 +118,25 @@ function MixRow({ id }: { id: string }) {
         <Button
           aria-label={`Take ${labels[id]} out of the mix`}
           className="-mr-1 shrink-0"
+          data-slot="mix-remove"
           size="icon-sm"
           variant="ghost"
           // The level stays with the sound; putting it back in the mix from
           // its card brings the level back with it.
-          onClick={() => unselect(id)}
+          //
+          // Focus moves to the X on the row that closes the gap. After the
+          // last row it goes to Shuffle: Play and Clear are both disabled on
+          // an empty desk, and Shuffle is the one way back to a mix from it.
+          onClick={(event) =>
+            removeKeepingFocus(
+              event.currentTarget,
+              event.currentTarget
+                .closest("ul")!
+                .querySelectorAll<HTMLElement>("[data-slot=mix-remove]"),
+              () => unselect(id),
+              () => shuffleButton.current,
+            )
+          }
         >
           <XMarkIcon />
         </Button>
@@ -136,7 +158,17 @@ function MixRow({ id }: { id: string }) {
   );
 }
 
-function TheMix() {
+/**
+ * The transport and a row per sound in the mix, with no heading of its own: the
+ * rail puts it under an eyebrow, and the phone's mix sheet under the sheet's
+ * title.
+ */
+export function MixDesk({
+  empty = "Nothing picked yet. Tap a card in the middle and it starts — every sound you add gets its own level here.",
+}: {
+  /** What the desk says with nothing on it, which depends on where it is. */
+  empty?: string;
+}) {
   const isPlaying = useSoundStore((state) => state.isPlaying);
   const togglePlay = useSoundStore((state) => state.togglePlay);
   const noSelected = useSoundStore((state) => state.noSelected());
@@ -144,6 +176,7 @@ function TheMix() {
   const unselectAll = useSoundStore((state) => state.unselectAll);
   const restoreHistory = useSoundStore((state) => state.restoreHistory);
   const hasHistory = useSoundStore((state) => !!state.history);
+  const shuffleButton = useRef<HTMLButtonElement>(null);
 
   const selected = useSoundStore(
     useShallow((state) =>
@@ -152,9 +185,7 @@ function TheMix() {
   );
 
   return (
-    <Section
-      title={selected.length ? `The mix · ${selected.length}` : "The mix"}
-    >
+    <>
       <div className="flex items-center gap-1">
         <Button className="flex-1" disabled={noSelected} onClick={togglePlay}>
           {isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -166,6 +197,7 @@ function TheMix() {
             render={
               <Button
                 aria-label="Pick four sounds at random"
+                ref={shuffleButton}
                 size="icon"
                 variant="ghost"
                 onClick={shuffle}
@@ -221,20 +253,34 @@ function TheMix() {
       {selected.length ? (
         <ul className="mt-4 flex flex-col gap-2">
           {selected.map((id) => (
-            <MixRow id={id} key={id} />
+            <MixRow id={id} key={id} shuffleButton={shuffleButton} />
           ))}
         </ul>
       ) : (
         <p className="text-muted-foreground mt-4 px-2.5 text-sm text-balance">
-          Nothing picked yet. Tap a card in the middle and it starts — every
-          sound you add gets its own level here.
+          {empty}
         </p>
       )}
+    </>
+  );
+}
+
+function TheMix() {
+  const count = useSoundStore(
+    (state) =>
+      Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected)
+        .length,
+  );
+
+  return (
+    <Section title={count ? `The mix · ${count}` : "The mix"}>
+      <MixDesk />
     </Section>
   );
 }
 
-function Levels() {
+/** The two master levels, headed by whoever draws them — see `MixDesk`. */
+export function LevelSliders() {
   const globalVolume = useSettingsStore((state) => state.globalVolume);
   const alarmVolume = useSettingsStore((state) => state.alarmVolume);
   const setGlobalVolume = useSettingsStore((state) => state.setGlobalVolume);
@@ -246,31 +292,37 @@ function Levels() {
   ] as const;
 
   return (
-    <Section title="Levels">
-      <div className="flex flex-col gap-5 px-2.5">
-        {rows.map(([label, value, setValue]) => (
-          <div key={label}>
-            <div className="flex items-baseline justify-between">
-              <p className="text-sm font-medium">{label}</p>
-              <p className="text-muted-foreground text-xs tabular-nums">
-                {Math.round(value * 100)}%
-              </p>
-            </div>
-            <Slider
-              format={PERCENT}
-              aria-label={`${label} level`}
-              className="mt-3"
-              max={1}
-              min={0}
-              step={0.01}
-              value={[value]}
-              onValueChange={(next) =>
-                setValue(Array.isArray(next) ? next[0] : next)
-              }
-            />
+    <div className="flex flex-col gap-5 px-2.5">
+      {rows.map(([label, value, setValue]) => (
+        <div key={label}>
+          <div className="flex items-baseline justify-between">
+            <p className="text-sm font-medium">{label}</p>
+            <p className="text-muted-foreground text-xs tabular-nums">
+              {Math.round(value * 100)}%
+            </p>
           </div>
-        ))}
-      </div>
+          <Slider
+            format={PERCENT}
+            aria-label={`${label} level`}
+            className="mt-3"
+            max={1}
+            min={0}
+            step={0.01}
+            value={[value]}
+            onValueChange={(next) =>
+              setValue(Array.isArray(next) ? next[0] : next)
+            }
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Levels() {
+  return (
+    <Section title="Levels">
+      <LevelSliders />
     </Section>
   );
 }

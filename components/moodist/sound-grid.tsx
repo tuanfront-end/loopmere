@@ -11,7 +11,12 @@ import { useSoundStore } from "@/stores/sound";
 
 import type { Sounds } from "@/data/types";
 
-const DEFAULT_VISIBLE_SOUNDS = 9;
+/**
+ * Twelve, because it is a whole number of rows at every count the grid takes —
+ * six rows of two, four of three, three of four. It was nine, which was three
+ * even rows of three and left one card alone on its last row at two and four.
+ */
+const DEFAULT_VISIBLE_SOUNDS = 12;
 
 interface SoundGridProps {
   functional: boolean;
@@ -44,8 +49,15 @@ export function SoundGrid({ functional, id, sounds }: SoundGridProps) {
   return (
     <div>
       {/* Sized against the centre column, not the window: with a rail on
-          each side the viewport stopped being what decides this. */}
-      <div className="grid grid-cols-1 gap-4 @xl:grid-cols-2 @4xl:grid-cols-3">
+          each side the viewport stopped being what decides this.
+
+          Two on a phone, three from 576 and four from 768 — which is a
+          tablet, and every laptop from 1440 up once the rails have taken
+          their share. 1280 and 1366 hand the column 612 and 698 and stay on
+          three: four there is a 125px card with an 85px slider in it. The
+          phone's gap is 12, so two cards on 327px keep 157 each; the card's
+          own padding is still the larger of the two. */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 @xl:grid-cols-3 @3xl:grid-cols-4">
         {sounds.map((sound, index) => (
           <SoundCard
             key={sound.id}

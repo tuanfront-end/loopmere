@@ -40,6 +40,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
           toast: "cn-toast",
         },
       }}
+      // Clear of the phone's dock under `lg` — `--toast-bottom` in globals.css.
+      offset={{ bottom: "var(--toast-bottom)" }}
+      mobileOffset={{ bottom: "var(--toast-bottom)" }}
       {...props}
     />
   )

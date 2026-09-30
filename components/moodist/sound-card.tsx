@@ -76,7 +76,12 @@ export const SoundCard = memo(function SoundCard({
         // viewport and this is the second, so it takes the smaller of the two
         // numbers the spacing rule gives a nested surface. 20 from `sm`, where
         // the card is no longer most of the screen's width.
-        "group/sound bg-card relative rounded-lg border p-4 sm:p-5",
+        //
+        // A column, so the slider can sit on the floor. Two cards to a row on
+        // a phone put "Rain on car roof" on two lines beside a neighbour on
+        // one, and a slider hung under its label then sat 20px lower in one
+        // card than in the next.
+        "group/sound bg-card relative flex flex-col rounded-lg border p-4 sm:p-5",
         // Named rather than `all`: the card animates a colour and a cast, and
         // a blanket transition also puts every layout property on a timer.
         "transition-[border-color,box-shadow]",
@@ -113,11 +118,19 @@ export const SoundCard = memo(function SoundCard({
       <button
         aria-label={`${label} sound`}
         aria-pressed={isSelected}
-        // The hover is the toggle's own: a transparent 1px border laid exactly
-        // over the card's, tinted on hover, and the cast. On the card it
-        // answered the pointer over the heart and the slider too, where a
-        // click does something else, and it was not on the control at all.
-        className="hover:border-primary/60 hover:shadow-soft focus-visible:ring-ring/50 absolute -inset-px cursor-pointer rounded-lg border border-transparent transition-[border-color,box-shadow] outline-none focus-visible:ring-3"
+        // Drawn by the toggle — a transparent 1px border laid exactly over the
+        // card's, tinted, and the cast — but answering the whole card. It
+        // answered the toggle alone for a while, and the card went flat the
+        // moment the pointer crossed onto the heart or the slider: the thing
+        // being hovered was still this card, and the card said it was not.
+        // The two controls keep their own hovers on top of it.
+        //
+        // Both halves are written. `group-hover` is the one a pointer ever
+        // reaches, since hovering the toggle hovers the card around it; the
+        // plain `hover` is the same paint for a reader that forces `:hover`
+        // on the control alone — `hover-check` does, and without it every
+        // card reads as a control with no hover.
+        className="hover:border-primary/60 hover:shadow-soft group-hover/sound:border-primary/60 group-hover/sound:shadow-soft focus-visible:ring-ring/50 absolute -inset-px cursor-pointer rounded-lg border border-transparent transition-[border-color,box-shadow] outline-none focus-visible:ring-3"
         data-slot="sound-toggle"
         type="button"
         onClick={toggle}
@@ -173,19 +186,20 @@ export const SoundCard = memo(function SoundCard({
 
       <div
         className={cn(
-          "mt-4 text-sm font-medium transition-colors",
+          "mt-4 mb-4 text-sm font-medium transition-colors",
           isSelected && isPaused && "text-muted-foreground",
         )}
       >
         {label}
       </div>
 
-      {/* Always drawn, disabled until the sound is in the mix. It used to
-          appear with the pick, so every pick and un-pick changed the card's
-          height and shoved the rest of the shelf down a line — and a card
-          that showed nothing there gave no hint the level existed. */}
-      <div className="relative z-10 mt-4 flex h-6 items-center">
-        <VolumeSlider disabled={!isSelected} id={id} label={label} />
+      {/* Always drawn, and live before the sound is in the mix: reaching for
+          the level is a way in, like the card itself — the slider says how.
+          It used to appear with the pick, so every pick and un-pick changed
+          the card's height and shoved the rest of the shelf down a line.
+          `mt-auto` holds it to the card's floor, level with its row. */}
+      <div className="relative z-10 mt-auto flex h-6 items-center">
+        <VolumeSlider id={id} label={label} />
       </div>
     </div>
   );

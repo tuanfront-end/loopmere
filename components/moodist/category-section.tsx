@@ -32,7 +32,21 @@ export function CategorySection({
         </div>
 
         <div>
-          <h2 className="text-2xl tracking-tight">{title}</h2>
+          {/* Favourites' title can be handed focus but is never a Tab stop:
+              un-hearting the shelf's last card takes the heart with it, and
+              focus comes here rather than to the top of the page.
+
+              The ring it wears then is the global one, rounded to the
+              controls' radius and given six pixels either side, which the
+              negative margin hands back so the words do not move. Square
+              and tight, it read as a box drawn round a word — the "F" two
+              pixels off the ring. */}
+          <h2
+            className="-mx-1.5 rounded-sm px-1.5 text-2xl tracking-tight"
+            tabIndex={id === "favorites" ? -1 : undefined}
+          >
+            {title}
+          </h2>
           {blurb && (
             <p className="text-muted-foreground mt-1 max-w-[52ch] text-sm">
               {blurb}

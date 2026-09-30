@@ -4,86 +4,21 @@ import {
   Coffee02Icon,
   FavouriteIcon,
   Github01Icon,
-  Moon02Icon,
   Route01Icon,
-  Sun03Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { Logo } from "./logo";
 import { SoundIcon } from "./sound-icon";
-import { useTheme } from "./theme-provider";
+import { ThemeToggle } from "./theme-toggle";
 
 import { buttonVariants } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { COFFEE_URL, REPO_URL, UPSTREAM_URL } from "@/constants/links";
 import { sounds } from "@/data/sounds";
+import { useActiveShelf } from "@/hooks/use-active-shelf";
 import { cn } from "@/lib/utils";
 import { useSoundStore } from "@/stores/sound";
-
-/**
- * Which shelf the reader is actually looking at, so the rail answers the
- * scroll rather than only the click. No JavaScript means no highlight, which
- * is the rail as it was before — never a rail with nothing in it.
- *
- * The last shelf whose top has crossed a line a third down the screen, read
- * on each frame the page moves. An `IntersectionObserver` over a narrow band
- * was the first attempt and it lit the wrong row: past the final shelf no
- * section is inside the band at all, so the callback stops firing and the
- * highlight stays wherever it was when the reader left the band. Measuring
- * answers every scroll position, including the ones with nothing in view.
- *
- * `end` is the section after the last shelf. Once it crosses the line the
- * reader has left the shelves, and no row stays lit to say otherwise.
- */
-function useActiveShelf(ids: Array<string>, end: string) {
-  const [active, setActive] = useState<string | null>(null);
-  const key = ids.join();
-
-  useEffect(() => {
-    const shelves = key.split(",");
-
-    /**
-     * Nine reads with no write between them, so one layout answers all nine
-     * and the browser has already coalesced the scroll events down to the
-     * frame rate. A `requestAnimationFrame` gate on top of that buys a flag to
-     * get wrong rather than any measurable work.
-     */
-    const measure = () => {
-      const line = window.innerHeight / 3;
-      let current: string | null = null;
-
-      for (const id of shelves) {
-        const section = document.getElementById(`category-${id}`);
-
-        if (section && section.getBoundingClientRect().top <= line) {
-          current = id;
-        }
-      }
-
-      const after = document.getElementById(end);
-
-      if (after && after.getBoundingClientRect().top <= line) {
-        current = null;
-      }
-
-      setActive(current);
-    };
-
-    measure();
-    window.addEventListener("scroll", measure, { passive: true });
-    window.addEventListener("resize", measure, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", measure);
-      window.removeEventListener("resize", measure);
-    };
-  }, [end, key]);
-
-  return active;
-}
 
 interface ShelfLinkProps {
   active: boolean;
@@ -122,36 +57,6 @@ function ShelfLink({ active, count, icon, id, title }: ShelfLinkProps) {
         {count}
       </span>
     </a>
-  );
-}
-
-/**
- * The row is a `<label>` and the switch is the control inside it, so the text
- * and the track are one hit target rather than a 32px sliver with a dead word
- * beside it. Drawn as a rail row — tint on hover, flat, no cast — because that
- * is what everything else in this column does.
- */
-function ThemeToggle() {
-  const { resolved, setTheme } = useTheme();
-  const isDark = resolved === "dark";
-
-  return (
-    <label className="hover:bg-accent text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-3 rounded-sm py-2.5 pr-2 pl-2.5 text-sm font-medium transition-colors short:py-2">
-      <span aria-hidden="true" className="shrink-0">
-        <HugeiconsIcon
-          className="size-5"
-          icon={isDark ? Moon02Icon : Sun03Icon}
-          strokeWidth={1.5}
-        />
-      </span>
-      Dark mode
-      <Switch
-        aria-label="Dark mode"
-        checked={isDark}
-        className="ml-auto"
-        onCheckedChange={(next) => setTheme(next ? "dark" : "light")}
-      />
-    </label>
   );
 }
 
@@ -222,7 +127,7 @@ export function LeftRail() {
             belongs to; the two things you press are the last word in the
             column. */}
         <div className="mb-1">
-          <ThemeToggle />
+          <ThemeToggle className="short:py-2" />
         </div>
 
         {/* An anchor wearing the variants, not a `Button render={<a/>}`: Base

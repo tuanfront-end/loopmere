@@ -225,20 +225,22 @@ lấy Tram, `morse-code` lấy Walkie Talkie, `windshield-wipers` lấy Car Wash
 
 ## Shell — trái, giữa, phải
 
-Trang chạy trên một app shell ba cột, và **chỉ có một breakpoint**: `xl`
-(1280px).
+Trang chạy trên một app shell ba cột, và có **ba cách bày**, tách ở `lg`
+(1024px) và `xl` (1280px):
 
-| | Dưới `xl` | Từ `xl` |
-|---|---|---|
-| Thương hiệu, điều hướng | thanh trên cùng sticky | cột trái |
-| Play / pause, âm lượng, mix đang chạy | `PlayControls` trong luồng | cột phải |
-| 13 công cụ | nút tròn nổi góc phải dưới | cột phải |
-| Rail 9 kệ cuộn ngang | `CategoryRail` | cột trái |
+| | Dưới `lg` — điện thoại, tablet dọc | `lg` → `xl` | Từ `xl` |
+|---|---|---|---|
+| Thương hiệu | dòng tên đầu hero, cuộn đi theo trang | thanh trên cùng sticky | cột trái |
+| Nhảy kệ | tab Shelves → sheet | menu Shelves trên thanh | cột trái |
+| Play / pause, mix đang chạy | mini-player nổi → sheet The mix | thanh + `PlayControls` trong luồng | cột phải |
+| 13 công cụ | tab Tools → sheet | nút tròn nổi góc phải dưới | cột phải |
+| Dark mode | tab More → sheet | theo hệ thống | cột trái |
+| Rail 9 kệ cuộn ngang | `CategoryRail` | `CategoryRail` | cột trái |
 
-Hai cách bày, **mỗi cách tự đủ**. Cái không tồn tại là một bề rộng mà nửa bộ
-chrome biến mất — đó là lý do chỉ một breakpoint chứ không phải hai: ở
-`lg` cột trái vừa chỗ nhưng cột phải thì không, và một app trộn âm có điều
-hướng mà không có bàn trộn thì tệ hơn là gấp lại hẳn.
+**Mỗi cách tự đủ.** Cái không tồn tại là một bề rộng mà nửa bộ chrome biến
+mất: ở `lg` cột trái vừa chỗ nhưng cột phải thì không, và một app trộn âm có
+điều hướng mà không có bàn trộn thì tệ hơn là gấp lại hẳn — nên rail vẫn chỉ
+đến từ `xl`. Dưới `lg` xem § Tab bar và player dưới `lg`.
 
 Hai rail là **panel nổi trên nền trang**, không phải cột chia bằng đường kẻ
 — đọc theo ảnh tham chiếu chứ không theo X. Card chỉ nhỉnh hơn nền một
@@ -246,26 +248,40 @@ whisper nên mỗi panel lấy đúng cái hairline mà surface ladder đòi, v�
 `h-[calc(100dvh-1.5rem)]` giữ lề 12px nhìn thấy được ở trên và dưới suốt
 chiều cuộn.
 
-### Ba điều lệch khỏi house style, cả ba đều cố ý
+### Hai điều lệch khỏi house style, cả hai đều cố ý
 
 - **Không có mega menu Explore.** Luật đó viết cho template bán kèm cả chục
   route. Ở đây "route" duy nhất là chín cái kệ trên cùng một trang, nên nav là
   chín anchor trong cột trái.
-- **Menu mobile là `DropdownMenu`, không phải Drawer.** Luật Drawer đứng vững
-  khi nav cao bằng màn hình và cuộn bên trong; mười anchor thì không. Đổi lại
-  là không phải kéo một primitive mới vào bản port Base UI — `components/ui/`
-  chưa có `drawer` lẫn `sheet`, và mỗi component thêm vào là một báo cáo
-  `.migration/` nữa.
-- **`PlayControls` không còn `sticky`.** Header sticky và cột phải đều giữ
-  play/pause, nên hai viên thuốc kính cùng tranh đỉnh màn hình là thứ bản
-  trước đã có — viên dưới `z-20` chui xuống dưới viên trên `z-50`.
+- **`PlayControls` không `sticky`, và chỉ có ở `lg` → `xl`.** Header sticky
+  đã giữ play/pause, nên hai viên thuốc kính cùng tranh đỉnh màn hình là thứ
+  bản trước đã có — viên dưới `z-20` chui xuống dưới viên trên `z-50`. Dưới
+  `lg` mini-player giữ transport, nên khay trong luồng thành bản thứ hai.
 
 ### Lưới đo theo cột giữa, không theo cửa sổ
 
-`SoundGrid` và footer dùng container query (`@xl`, `@4xl`) chứ không phải
-breakpoint viewport. Với một rail mỗi bên, cửa sổ thôi không còn là thứ quyết
-định lưới bao nhiêu cột: ở 1280 cửa sổ là "desktop" nhưng cột giữa chỉ 612px.
-Ngưỡng hai cột là `@xl` (576px) sau khi đo — `@2xl` để 1280 rơi về một cột.
+`SoundGrid` và footer dùng container query chứ không phải breakpoint
+viewport. Với một rail mỗi bên, cửa sổ thôi không còn là thứ quyết định lưới
+bao nhiêu cột: ở 1280 cửa sổ là "desktop" nhưng cột giữa chỉ 612px.
+
+Lưới sound: **2 cột** mặc định, **3** từ `@xl` (576px), **4** từ `@3xl`
+(768px). Đo được:
+
+| Cửa sổ | Cột giữa | Lưới | Card |
+|---|---|---|---|
+| 320 | 320 | 2 | 130px |
+| 390 | 390 | 2 | 165px |
+| 768 | 768 | 4 | 164px |
+| 1024 | 1024 | 4 | 228px |
+| 1280 | 612 | 3 | 172px |
+| 1366 | 698 | 3 | 201px |
+| 1440 | 772 | 4 | 165px |
+
+1280 và 1366 cố ý ở 3: 4 cột ở đó là card 125px với slider 85px. Hai cột
+trên điện thoại đi với `gap-3`, và card là `flex-col` với slider `mt-auto`:
+nhãn dài như "Rain on Window" xuống hai dòng ở 320 thì slider vẫn nằm đáy,
+ngang với card bên cạnh. `DEFAULT_VISIBLE_SOUNDS` là 12 — số hàng tròn ở cả
+2, 3 và 4 cột; 9 để lại một card lẻ ở hàng cuối khi 2 và 4.
 
 ### Chữ phải viết lại vì cột hẹp đi
 
@@ -291,8 +307,8 @@ chín từ một lần layout — gom thêm sau `requestAnimationFrame` chỉ đ
 
 `<a href="#category-rain">` chứ không phải JavaScript: `scroll-padding-top`
 trong `globals.css` đã chừa chỗ, nên link hạ cánh đúng chỗ **và** vẫn chạy khi
-không có JavaScript. Từ `xl` không còn thanh nào ghim trên cột giữa nên khoảng
-chừa hạ từ `6rem` xuống `1.5rem`, bằng đúng lề của shell.
+không có JavaScript. Chỉ `lg` → `xl` có thanh ghim trên cột giữa nên `6rem`
+chỉ ở đó; dưới `lg` và từ `xl` là `1.5rem`, bằng đúng lề của shell.
 
 ### Một chỗ trùng đã bỏ
 
@@ -429,6 +445,12 @@ Giờ:
   **bản nháp của cú bấm sắp tới** chứ không phải một trang trí thứ hai. Đây là
   cách đọc rộng hơn luật depth: luật cho một tín hiệu, mà ở đây bóng gánh toàn
   bộ phần chiều sâu còn viền brand không gánh tí nào.
+  Hover trả lời **cả card**, kể cả khi con trỏ nằm trên trái tim hay slider:
+  toggle vẽ viền và bóng qua `group-hover/sound:`. Có một thời nó chỉ trả lời
+  toggle, và card phẳng ra ngay khi con trỏ bước sang hai control nằm trên nó
+  — thứ đang được hover vẫn là card này. Toggle giữ thêm `hover:` cùng giá trị
+  vì `hover-check` ép `:hover` lên riêng control, không lên card bao nó; thiếu
+  cặp đó gate đọc mọi card thành control không có hover.
   Tab — hàng rail trái và pill của category rail — thì *nhuộm*: `bg-accent`,
   phẳng, không bóng; pill cũng lấy `border-primary/60`, card lấy thêm bóng.
   Cả hai đều tránh `bg-muted`, vì đó đúng là màu của track slider và của trái
@@ -440,12 +462,25 @@ Giờ:
   viền thì đọc được ở mọi cỡ và không tiêu diện tích nào. Dùng `ring` chứ
   không phải `border`, vì hover gỡ border ra, mà viền này là **trạng thái**
   chứ không phải dấu hiệu đang-nằm-yên.
-- **Slider luôn được vẽ**, và ở trạng thái `disabled` khi sound chưa vào mix.
-  Trước đó nó `return null`, nên mỗi lần bấm là card đổi chiều cao và cả kệ
-  nhảy một dòng. Bản trung gian chừa chỗ trống — hết giật nhưng card rỗng một
-  phần ba ở đáy; vẽ hẳn một cái disabled thì vừa hết giật vừa nói cho người
-  dùng biết mức âm lượng có tồn tại. Giá phải trả đo được: 83 input thừa,
-  1860 node cho cả trang, DOMContentLoaded 190ms.
+- **Slider luôn được vẽ, và luôn sống.** Trước đó nó `return null`, nên mỗi
+  lần bấm là card đổi chiều cao và cả kệ nhảy một dòng. Bản trung gian chừa chỗ
+  trống — hết giật nhưng card rỗng một phần ba ở đáy. Giá phải trả đo được: 83
+  input thừa, 1860 node cho cả trang, DOMContentLoaded 190ms.
+  Có một thời nó `disabled` khi sound chưa vào mix, tức control trông "bấm
+  được" nhất trên card lại là cái duy nhất không làm gì. Giờ với tới slider là
+  một cửa vào mix, như chính card: bấm track, kéo thumb, bấm thumb hay mũi tên
+  bàn phím thì card được chọn, mix chạy, ở đúng mức tay vừa đặt. Lúc chưa vào
+  mix slider mang `idle` — fill trung tính thay vì brand, để lưới không xanh cả
+  mảng và ring của card đang phát vẫn là tín hiệu.
+  **Ngón tay thì phải đọc ý trước.** Điện thoại xếp hai card một hàng, nên
+  ngón cái cuộn kệ sớm muộn cũng đặt lên một slider; Base UI đặt giá trị ngay
+  lúc chạm, và một slider nhận mọi cú chạm sẽ bật tiếng ở mọi lần cuộn bắt đầu
+  ở đó. Nên khi `idle`, control là `touch-pan-y` — vuốt dọc đi thẳng xuống
+  trang, `pointercancel` đánh dấu nó là cuộn — và `VolumeSlider` bỏ qua giá
+  trị lúc chạm xuống, chỉ chọn card khi là một cú chạm (qua `click`, ở mức chỗ
+  chạm) hoặc kéo ngang ≥ 8px trước khi đi dọc. Vào mix rồi thì trở lại
+  `touch-none` và mọi thay đổi là một mức, như cũ. Chuột và bàn phím không phải
+  đoán: chúng chọn ngay.
 - **Bỏ chọn không còn xoá mức âm lượng.** Trước đây `toggle()` gọi kèm
   `setVolume(id, 0.5)`, nên bấm ra rồi bấm vào là mất mức đã chỉnh — và chính
   cái mất đó là lý do duy nhất nút pause trên card đáng tồn tại. Giờ card là
@@ -627,10 +662,9 @@ mobile rơi vào 12–16px, và gutter section 24px là lớp thứ nhất.
 
 Tổng: trang từ ~14.7k xuống **13.4k px**.
 
-Một chỗ còn để lại: nút tools nổi (`fixed right-6 bottom-6`) đè lên dải chip ở
-ngay màn hình đầu. Dải chip cuộn ngang nên không có chip nào bị khoá hẳn, và
-`pr-14` cho nó chỗ để cuộn chip cuối ra khỏi nút. Bản thân việc một FAB nằm đè
-lên nội dung khi cuộn thì vẫn còn.
+Nút tools nổi từng đè lên dải chip ở ngay màn hình đầu. Giờ nó chỉ còn ở
+`lg` → `xl`, nên dải chip dưới `lg` tràn ra hai mép màn hình (`-mx-6 px-6`)
+thay vì chừa `pr-14` cho nó.
 
 ### Hai menu mobile thành sheet
 
@@ -659,6 +693,67 @@ chụp — ảnh chụp chỉ cho thấy danh sách bị cắt, đúng như mộ
 Phải đo `scrollHeight - clientHeight` mới ra.
 
 Chữa: popup thành `block`. **Một hộp cuộn thì là một block.**
+
+### Tab bar và player dưới `lg`
+
+`MobileDock` là toàn bộ chrome dưới `lg`: một thanh bốn tab dính mép dưới —
+kiểu Airbnb — và một mini-player nổi ngay trên nó khi mix có ít nhất một
+sound — kiểu Spotify. Nó thay thanh trên cùng (logo và nút menu ở góc xa ngón
+cái nhất) và nút tools nổi (đè lên thứ nằm dưới nó).
+
+| Tab | Làm gì | Sáng khi |
+|---|---|---|
+| Shelves | sheet nhảy kệ, đánh dấu kệ đang xem, cuối có Back to the top | mặc định — đây là tab "nhà" |
+| Favourites | anchor tới `#category-favorites`, badge đếm ở góc icon | scrollspy nói đang ở kệ Favourites |
+| Tools | sheet tools dùng chung `ToolsSheetBody` với nút nổi, bỏ gợi ý phím | sheet mở |
+| More | sheet: Dark mode, Roadmap, GitHub, cà phê | sheet mở |
+
+Tab đang sáng: glyph `text-primary-ink`, nhãn lên `text-foreground`; tab khác
+`text-muted-foreground`. Không nền, không chấm — cách rail trái và Airbnb cùng
+nói trạng thái. Badge là mực `bg-foreground`, vì brand đầy chỉ dành cho nút
+chính.
+
+**Mini-player** là transport duy nhất dưới `lg` khi hero đã cuộn đi: ba icon
+đầu của mix, tên các sound, "Playing · 3 sounds", và nút play/pause brand. Chạm
+vào thân nó mở sheet The mix — `MixDesk` và `LevelSliders` tách ra từ rail
+phải, cùng một component. Nó dựng như sound card: thân là một nút phủ, nút play
+nằm trên với `z-10`, không control nào lồng trong control nào. Mix rỗng thì nó
+mờ đi và `inert`, không bị gỡ khỏi DOM, để lần chọn card đầu tiên thấy nó trồi
+lên.
+
+**Thanh "Build me a mix" ở trên** thay mini-player khi mix còn trống: qua khỏi
+hero (`#hero` rời mép trên, đo bằng `IntersectionObserver`) mà chưa chọn gì thì
+nút đầu tiên của hero được đưa lại, trong một thanh kính cùng hình với
+mini-player — cùng góc 24px, cùng nút lùi 8px — kèm logo, vì lúc đó không còn
+chỗ nào trên màn hình mang tên trang. Ai đã có Saved thì có thêm nút viền
+"▶ Saved" (`playFavourites`, chung với panel Saved ở hero) cạnh nút brand, và
+logo lùi về chỉ còn biểu tượng để nhường chỗ; dưới 360px nút brand đổi nhãn thành "Shuffle" — bỏ chữ ở nút Saved thì ▶ trơ trọi không nói nó phát gì. Mix có sound là nó rút lên và player ở
+dưới trồi lên: một lời mời ở trên khi chưa có gì để phát, một transport ở dưới
+khi đã có. Lúc nó hiện, `html[data-start-bar]` nâng `scroll-padding-top` lên
+92px để anchor nhảy kệ không hạ cánh dưới nó.
+
+**Thanh lui khi cuộn xuống, về khi cuộn lên**, như Airbnb. Ngưỡng 8px để ngón
+tay trôi nhẹ không làm nó nháy; luôn hiện ở 80px đầu và cuối trang. Khi lui,
+cả dock dịch đúng `translate-y-16` — chiều cao thanh — nên mini-player tụt
+xuống mép màn hình chứ không đi theo. Một cú nhảy do chính dock gây ra (tab
+Favourites, hàng trong sheet Shelves) giữ thanh đứng yên 1.2 giây: thanh trượt
+mất dưới ngón tay vừa bấm đọc ra là bấm hỏng.
+
+Ba thứ phải chỉnh theo dock:
+
+- **Toast** đứng ngay trên phần dock đang che: `MobileDock` ghi
+  `--dock-cover` (thanh 65, player thêm 64, thanh lui còn 1, cộng 12 hở) và
+  `--toast-bottom` trong `globals.css` đọc nó. Bản đầu cố định 9rem theo
+  trường hợp cao nhất, nên trên một thanh trơn toast nổi cách 80px — gần giữa
+  màn hình điện thoại khi thanh của trình duyệt đã lấy phần của nó.
+- **`scroll-padding-top`** — § Anchor thật.
+- **Tên thương hiệu** thành một dòng tĩnh đầu hero, cuộn đi theo trang. Một
+  dải ghim chỉ để giữ cái tên thì chính là thanh vừa bỏ; nó chỉ trở lại trên
+  thanh "Build me a mix", nơi nó đi kèm một việc để làm.
+
+`env(safe-area-inset-bottom)` đã nằm trong padding của thanh nhưng đang trả 0:
+`viewport` chưa có `viewportFit: "cover"`. Bật nó là việc riêng — phải kiểm
+lề ngang ở điện thoại xoay ngang, chỗ tai thỏ ăn vào gutter 24px.
 
 ### Chỗ mà `responsive-check` không nhìn thấy
 
@@ -1114,6 +1209,9 @@ trang; nó ghi "84 loops", nên số sound đổi thì render lại.
 - Phím tắt Shift+chữ tắt được ở panel Keyboard (WCAG 2.1.4); gợi ý phím ở rail
   và menu ẩn theo.
 - Escape đóng panel kể cả khi focus đang ở ô nhập (`lib/keys.ts`).
+- Control nào gỡ chính hàng của nó — X ở mix, tim trên thẻ trong Favourites —
+  gỡ qua `removeKeepingFocus` (`lib/focus.ts`), để focus sang hàng lấp chỗ
+  thay vì rơi về `<body>`.
 - Animation chạy bằng JS nghe `prefers-reduced-motion`: vòng thở, confetti,
   cuộn trang.
 - Slider đọc "90%" thay vì `0.8999…` và có vòng focus; hai Select có tên; sheet
@@ -1146,9 +1244,18 @@ dark mode (bản gốc có System / Light / Dark trong menu) và Undo sau khi xo
 
 **Nút mở trang chọn form issue, không mở PR.** Người nghe không mở PR, còn
 developer đã có link repo ở footer và rail. Hai form, đề xuất và báo lỗi, và
-không có issue trống. Sound mới và lỗi *trong* một sound thì đi sang Moodist, qua
-một link ngay trên trang chọn đó: kho sound là của Moodist, và mỗi sound mới còn
-cần một icon Thiings mà licence không cho phân phối.
+không có issue trống — và một form thứ ba, **A new sound**, mà dòng "Missing a
+sound? Tell us which one" dưới nút mở thẳng vào. Lỗi *trong* một bản thu thì đi
+form báo lỗi. Cả hai từng được đẩy sang tracker của Moodist, với lý do kho sound
+là của họ và mỗi sound mới cần một icon Thiings không được phân phối. Lý do thứ
+hai đã có lời giải từ trước — icon nằm trên Blob, build mới kéo về, nên thêm
+một cái chỉ là đẩy thêm một file — còn lý do thứ nhất hết đúng khi Loopmere tự
+lớn thêm kệ. Yêu cầu gửi sang Moodist là yêu cầu rơi vào chỗ mình không theo
+dõi. Điều kiện còn lại là của mình: bản thu phải dưới Pixabay Content Licence
+hoặc CC0, như cả bộ hiện có, và form nói vậy.
+
+Lede của section vì thế nói Moodist cho Loopmere **những loop đầu tiên** và bộ
+công cụ, không nói loop "đến từ Moodist": câu đó sai từ loop thứ 85.
 
 **Mỗi mục Next và Later có một issue**, làm chỗ để người nghe theo dõi và thảo
 luận. Trạng thái thì chỉ nằm trong `data/roadmap.ts`.
@@ -1206,3 +1313,11 @@ trong `layout.tsx`.
 
 **5. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
 Chrome thật để xác nhận vòng install → waiting → reload.
+
+**6. `interact-check` không chạy hết được trang này nữa.** Bước `slide` của nó
+nhấn Home rồi End trên từng slider và không trả trạng thái lại; slider của card
+giờ đưa sound vào mix, nên sau chừng 25 card là 25 loop cùng tải và phát, và
+Chrome headless chậm dần (4s → 13s → 33s mỗi slider) tới khi một lệnh CDP quá
+30s và script chết. Không phải vòng lặp trong code — bấm 30 card bằng tay ra
+đúng cảnh đó. Cần sửa ở skill (walker reload hoặc trả mức cũ sau mỗi slider),
+tức một issue upstream; `npm run check` không gọi script này.
