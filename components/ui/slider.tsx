@@ -15,8 +15,17 @@ function Slider({
   value,
   min = 0,
   max = 100,
+  idle = false,
   ...props
-}: SliderPrimitive.Root.Props) {
+}: SliderPrimitive.Root.Props & {
+  /**
+   * Live, but not in use yet — a sound card's level before the sound is in
+   * the mix. The fill drops to the neutral a disabled one takes, and the rail
+   * lets a vertical swipe through to the page, so a thumb scrolling a phone's
+   * shelf can land on it without setting anything.
+   */
+  idle?: boolean;
+}) {
   const _values = Array.isArray(value)
     ? value
     : Array.isArray(defaultValue)
@@ -59,10 +68,10 @@ function Slider({
       thumbAlignment="center"
       {...props}
     >
-      {/* No blanket opacity on the Control. A disabled slider here is shown on
-          every card that is not in the mix, so each part recedes on its own
-          terms: the rail stays, the fill stops being brand, the thumb stops
-          looking raised. */}
+      {/* No blanket opacity on the Control. An idle slider is shown on every
+          card that is not in the mix, so each part recedes on its own terms:
+          the rail stays and the fill stops being brand, while the thumb keeps
+          its shape and its hover — it is still the thing to reach for. */}
       {/* `min-h-6` is the thumb's own height. Without it the control's box is
           the 4px track and the 24px thumb overflows it by ten pixels at each
           end — so a row declaring `p-3` left the thumb **three** pixels off
@@ -79,14 +88,22 @@ function Slider({
           thumb's centre under the pointer — the same geometry the measured
           mode drew. The fill still stops at n% of the full rail, which is
           always under the thumb: never more than a radius from its centre. */}
-      <SliderPrimitive.Control className="relative flex w-full touch-none items-center select-none data-horizontal:min-h-6 data-horizontal:px-3 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col data-vertical:py-3">
+      <SliderPrimitive.Control
+        className={cn(
+          "relative flex w-full items-center select-none data-horizontal:min-h-6 data-horizontal:px-3 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col data-vertical:py-3",
+          idle ? "touch-pan-y" : "touch-none",
+        )}
+      >
         <SliderPrimitive.Track
           data-slot="slider-track"
           className="relative grow overflow-hidden rounded-full bg-muted select-none data-horizontal:-mx-3 data-horizontal:h-1 data-horizontal:w-full data-vertical:-my-3 data-vertical:h-full data-vertical:w-1"
         >
           <SliderPrimitive.Indicator
             data-slot="slider-range"
-            className="bg-primary select-none data-horizontal:h-full data-vertical:w-full data-disabled:bg-muted-foreground/15"
+            className={cn(
+              "bg-primary select-none data-horizontal:h-full data-vertical:w-full data-disabled:bg-muted-foreground/15",
+              idle && "bg-muted-foreground/15",
+            )}
           />
         </SliderPrimitive.Track>
         {/* The thumb rail: the travel, a thumb's radius in from each end. */}
@@ -103,8 +120,8 @@ function Slider({
               key={index}
               // The thumb is the same object whether the slider is live or not:
               // same 24px, same white, same cast. Only what it sits on says
-              // which — the indicator behind it keeps the brand hue for a live
-              // slider and drops to a neutral for a disabled one. It used to
+              // which — the indicator behind it keeps the brand hue for a slider
+              // in use and drops to a neutral for an idle or disabled one. It used to
               // shrink to a flat 12px grey dot, which read as a different
               // control and jumped size the moment a sound joined the mix.
               //
