@@ -515,6 +515,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* A phone on its side puts the notch over the gutter once the viewport
+       is `cover` — `layout.tsx`. Nought everywhere else. */
+    padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
   }
   html {
     @apply font-sans font-normal;
