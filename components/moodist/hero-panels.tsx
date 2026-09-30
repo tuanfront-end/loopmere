@@ -181,6 +181,24 @@ export function HeroStarters() {
 }
 
 /**
+ * The whole Favourites shelf in as the mix, each loop at the level it kept,
+ * and the mix on. Two doors: this panel's button, and the phone's top bar.
+ *
+ * Levels are read on the call rather than subscribed to: a caller would
+ * otherwise re-render on every level anybody drags anywhere.
+ */
+export function playFavourites(ids: Array<string>) {
+  const { override, play, sounds } = useSoundStore.getState();
+
+  override(
+    Object.fromEntries(
+      ids.map((id) => [id, sounds[id].volume > 0 ? sounds[id].volume : 0.5]),
+    ),
+  );
+  play();
+}
+
+/**
  * The shelf you build yourself.
  *
  * This slot held the transport and a readout of the global level, which is the
@@ -195,8 +213,6 @@ export function HeroStarters() {
  */
 export function HeroFavourites() {
   const favorites = useSoundStore(useShallow((state) => state.getFavorites()));
-  const override = useSoundStore((state) => state.override);
-  const play = useSoundStore((state) => state.play);
   const togglePlay = useSoundStore((state) => state.togglePlay);
   const isPlaying = useSoundStore((state) => state.isPlaying);
 
@@ -252,19 +268,7 @@ export function HeroFavourites() {
               return;
             }
 
-            // Read on the click rather than subscribed to: this panel would
-            // otherwise re-render on every level anybody drags anywhere.
-            const { sounds } = useSoundStore.getState();
-
-            override(
-              Object.fromEntries(
-                favorites.map((id) => [
-                  id,
-                  sounds[id].volume > 0 ? sounds[id].volume : 0.5,
-                ]),
-              ),
-            );
-            play();
+            playFavourites(favorites);
           }}
         >
           {sounding ? <PauseIcon /> : <PlayIcon />}

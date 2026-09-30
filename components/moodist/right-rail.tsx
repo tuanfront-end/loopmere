@@ -136,7 +136,17 @@ function MixRow({ id }: { id: string }) {
   );
 }
 
-function TheMix() {
+/**
+ * The transport and a row per sound in the mix, with no heading of its own: the
+ * rail puts it under an eyebrow, and the phone's mix sheet under the sheet's
+ * title.
+ */
+export function MixDesk({
+  empty = "Nothing picked yet. Tap a card in the middle and it starts — every sound you add gets its own level here.",
+}: {
+  /** What the desk says with nothing on it, which depends on where it is. */
+  empty?: string;
+}) {
   const isPlaying = useSoundStore((state) => state.isPlaying);
   const togglePlay = useSoundStore((state) => state.togglePlay);
   const noSelected = useSoundStore((state) => state.noSelected());
@@ -152,9 +162,7 @@ function TheMix() {
   );
 
   return (
-    <Section
-      title={selected.length ? `The mix · ${selected.length}` : "The mix"}
-    >
+    <>
       <div className="flex items-center gap-1">
         <Button className="flex-1" disabled={noSelected} onClick={togglePlay}>
           {isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -226,15 +234,29 @@ function TheMix() {
         </ul>
       ) : (
         <p className="text-muted-foreground mt-4 px-2.5 text-sm text-balance">
-          Nothing picked yet. Tap a card in the middle and it starts — every
-          sound you add gets its own level here.
+          {empty}
         </p>
       )}
+    </>
+  );
+}
+
+function TheMix() {
+  const count = useSoundStore(
+    (state) =>
+      Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected)
+        .length,
+  );
+
+  return (
+    <Section title={count ? `The mix · ${count}` : "The mix"}>
+      <MixDesk />
     </Section>
   );
 }
 
-function Levels() {
+/** The two master levels, headed by whoever draws them — see `MixDesk`. */
+export function LevelSliders() {
   const globalVolume = useSettingsStore((state) => state.globalVolume);
   const alarmVolume = useSettingsStore((state) => state.alarmVolume);
   const setGlobalVolume = useSettingsStore((state) => state.setGlobalVolume);
@@ -246,31 +268,37 @@ function Levels() {
   ] as const;
 
   return (
-    <Section title="Levels">
-      <div className="flex flex-col gap-5 px-2.5">
-        {rows.map(([label, value, setValue]) => (
-          <div key={label}>
-            <div className="flex items-baseline justify-between">
-              <p className="text-sm font-medium">{label}</p>
-              <p className="text-muted-foreground text-xs tabular-nums">
-                {Math.round(value * 100)}%
-              </p>
-            </div>
-            <Slider
-              format={PERCENT}
-              aria-label={`${label} level`}
-              className="mt-3"
-              max={1}
-              min={0}
-              step={0.01}
-              value={[value]}
-              onValueChange={(next) =>
-                setValue(Array.isArray(next) ? next[0] : next)
-              }
-            />
+    <div className="flex flex-col gap-5 px-2.5">
+      {rows.map(([label, value, setValue]) => (
+        <div key={label}>
+          <div className="flex items-baseline justify-between">
+            <p className="text-sm font-medium">{label}</p>
+            <p className="text-muted-foreground text-xs tabular-nums">
+              {Math.round(value * 100)}%
+            </p>
           </div>
-        ))}
-      </div>
+          <Slider
+            format={PERCENT}
+            aria-label={`${label} level`}
+            className="mt-3"
+            max={1}
+            min={0}
+            step={0.01}
+            value={[value]}
+            onValueChange={(next) =>
+              setValue(Array.isArray(next) ? next[0] : next)
+            }
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Levels() {
+  return (
+    <Section title="Levels">
+      <LevelSliders />
     </Section>
   );
 }

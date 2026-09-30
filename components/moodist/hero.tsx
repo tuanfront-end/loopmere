@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { HeroFavourites, HeroStarters } from "./hero-panels";
+import { Logo } from "./logo";
 import { ShuffleButton } from "./shuffle-button";
 import { Typewriter } from "./typewriter";
 
@@ -37,7 +38,25 @@ const LINES = [
 
 export function Hero() {
   return (
-    <section className="mx-auto w-full max-w-[1200px] px-6 pt-10 sm:px-8 sm:pt-14 xl:pt-8">
+    <section
+      className="mx-auto w-full max-w-[1200px] px-6 pt-6 sm:px-8 sm:pt-8 lg:pt-14 xl:pt-8"
+      // Watched by the phone's top bar, which offers this section's first
+      // button once the section is gone — `MobileDock`.
+      id="hero"
+    >
+      {/* The name, under `lg`, where there is no top bar to carry it any more
+          — the phone's chrome is a tab bar at the bottom edge. It scrolls
+          away with the page rather than pinning: it is said once, at the
+          door, and a pinned strip holding only a name is the bar that left.
+          The heading below starts eight pixels higher than it did under the
+          bar. */}
+      <div className="mb-10 flex items-center gap-2 sm:mb-14 lg:hidden">
+        <Logo className="size-6" />
+        <span className="font-heading text-base font-medium tracking-tight">
+          Loopmere
+        </span>
+      </div>
+
       {/* Two even columns, bottom-aligned — the reference lands the heading's
           last line and the button row on very nearly the same rule, and
           `items-end` is what keeps that true whatever either column's copy

@@ -3,10 +3,8 @@
 import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import {
-  Coffee02Icon,
   FavouriteIcon,
   Github01Icon,
-  Menu01Icon,
   ShuffleIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -18,16 +16,6 @@ import { SoundIcon } from "./sound-icon";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-  drawerRow,
-} from "@/components/ui/drawer";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -35,7 +23,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { COFFEE_URL, REPO_URL } from "@/constants/links";
+import { REPO_URL } from "@/constants/links";
 import { sounds } from "@/data/sounds";
 import { cn } from "@/lib/utils";
 import { useSoundStore } from "@/stores/sound";
@@ -60,9 +48,14 @@ function ShelfIcon({ id }: { id: string }) {
   );
 }
 
+/**
+ * The top bar, for the one band of widths that has it: `lg` to `xl`. Above
+ * that the rails carry all of this; under it a phone has its tab bar at the
+ * bottom edge instead, where the thumb is — `MobileDock`. The sheet of
+ * shelves this bar used to open under `lg` went down there with it.
+ */
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
-  const [navOpen, setNavOpen] = useState(false);
 
   const isPlaying = useSoundStore((state) => state.isPlaying);
   const togglePlay = useSoundStore((state) => state.togglePlay);
@@ -103,13 +96,13 @@ export function SiteHeader() {
   ));
 
   return (
-    <header className="sticky top-0 z-50 xl:hidden">
+    <header className="sticky top-0 z-50 hidden lg:block xl:hidden">
       <div
         className={cn(
           "mx-auto flex items-center gap-1 transition-[height,max-width,margin,padding,border-radius,background-color,box-shadow] duration-300 ease-out",
           scrolled
-            ? "bg-card/60 shadow-soft-lg mt-3 h-12 max-w-[calc(100%-1.5rem)] rounded-full px-2 ring-1 ring-white/50 ring-inset dark:ring-white/10 backdrop-blur-xl backdrop-saturate-125 sm:h-14 sm:max-w-[960px] sm:px-3"
-            : "h-14 max-w-[1200px] px-6 sm:h-16 sm:px-8",
+            ? "bg-card/60 shadow-soft-lg mt-3 h-14 max-w-[960px] rounded-full px-3 ring-1 ring-white/50 ring-inset dark:ring-white/10 backdrop-blur-xl backdrop-saturate-125"
+            : "h-16 max-w-[1200px] px-8",
         )}
       >
         <a
@@ -122,10 +115,7 @@ export function SiteHeader() {
           </span>
         </a>
 
-        <nav
-          aria-label="Main"
-          className="ml-2 hidden items-center gap-1 lg:flex"
-        >
+        <nav aria-label="Main" className="ml-2 flex items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
@@ -165,18 +155,17 @@ export function SiteHeader() {
         <div className="ml-auto flex items-center gap-1">
           {noSelected ? (
             <Button
-              aria-label="Surprise me"
               className="shrink-0"
               size="sm"
               variant="outline"
               onClick={shuffle}
             >
               <HugeiconsIcon icon={ShuffleIcon} strokeWidth={1.5} />
-              <span className="hidden sm:inline">Surprise me</span>
+              Surprise me
             </Button>
           ) : (
             <>
-              <span className="bg-chip text-primary-ink hidden h-9 shrink-0 items-center rounded-full px-3 text-xs font-medium tabular-nums sm:inline-flex">
+              <span className="bg-chip text-primary-ink inline-flex h-9 shrink-0 items-center rounded-full px-3 text-xs font-medium tabular-nums">
                 {selected} in the mix
               </span>
 
@@ -201,137 +190,13 @@ export function SiteHeader() {
               announces a navigation as a press. */}
           <a
             aria-label="Source on GitHub"
-            // Through `cn`, not bare: `buttonVariants` does not merge, so the
-            // base `inline-flex` and this `hidden` both survive and the wider
-            // rule wins — the link showed at every width.
-            className={cn(
-              buttonVariants({ size: "icon-sm", variant: "ghost" }),
-              "hidden lg:inline-flex",
-            )}
+            className={buttonVariants({ size: "icon-sm", variant: "ghost" })}
             href={REPO_URL}
             rel="noreferrer noopener"
             target="_blank"
           >
             <HugeiconsIcon icon={Github01Icon} strokeWidth={1.5} />
           </a>
-
-          {/* A sheet rather than a menu. Ten rows anchored to a 36px button in
-              the top-right corner is a panel reaching across the screen away
-              from the thumb holding the phone, scrolling inside itself at
-              `max-h-[70dvh]`; the same ten at the bottom edge are where the
-              hand already is, and the sheet can be thrown shut without aiming.
-              The desktop `Shelves` menu above stays a menu: it is pointed at. */}
-          <Drawer open={navOpen} onOpenChange={setNavOpen}>
-            <DrawerTrigger
-              render={
-                <Button
-                  aria-label="Menu"
-                  className="lg:hidden"
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  <HugeiconsIcon icon={Menu01Icon} strokeWidth={1.5} />
-                </Button>
-              }
-            />
-
-            <DrawerContent>
-              <DrawerHeader>
-                <DrawerTitle>Jump to a shelf</DrawerTitle>
-                <DrawerDescription>
-                  Eight that came with the app and the one you fill yourself.
-                </DrawerDescription>
-              </DrawerHeader>
-
-              {/* Every row that goes somewhere is a real anchor that shuts the
-                  sheet on its way, not `DrawerClose render={<a/>}`. That one
-                  is a button underneath: Base UI logged an error for the
-                  missing <button> each time the sheet opened, and the fix it
-                  suggests, `nativeButton={false}`, puts role="button" on the
-                  link — a jump to a shelf announced as a press. The rail's
-                  coffee link is an anchor for the same reason. */}
-              <div className="flex flex-col gap-1">
-                {shelves.map((shelf) => (
-                  <a
-                    className={drawerRow}
-                    href={shelf.href}
-                    key={shelf.id}
-                    onClick={() => setNavOpen(false)}
-                  >
-                    <ShelfIcon id={shelf.id} />
-                    {shelf.title}
-                    <span className="text-muted-foreground ml-auto text-xs tabular-nums">
-                      {shelf.count}
-                    </span>
-                  </a>
-                ))}
-              </div>
-
-              {/* Under a rule and always there, the way the left rail carries
-                  it from `xl` up. */}
-              <div className="mx-2.5 mt-2 border-t pt-2">
-                <div className="-mx-2.5">
-                  <a
-                    className={drawerRow}
-                    href="#category-favorites"
-                    onClick={() => setNavOpen(false)}
-                  >
-                    <span aria-hidden="true" className="shrink-0">
-                      <HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />
-                    </span>
-                    Favourites
-                    <span className="text-muted-foreground ml-auto text-xs tabular-nums">
-                      {favorites.length}
-                    </span>
-                  </a>
-                </div>
-              </div>
-
-              <div className="mt-5 flex flex-col gap-1">
-                <DrawerClose className={drawerRow} onClick={shuffle}>
-                  <HugeiconsIcon
-                    className="size-4 shrink-0"
-                    icon={ShuffleIcon}
-                    strokeWidth={1.5}
-                  />
-                  Surprise me
-                </DrawerClose>
-
-                <a
-                  className={drawerRow}
-                  href={REPO_URL}
-                  rel="noreferrer noopener"
-                  target="_blank"
-                  onClick={() => setNavOpen(false)}
-                >
-                  <HugeiconsIcon
-                    className="size-4 shrink-0"
-                    icon={Github01Icon}
-                    strokeWidth={1.5}
-                  />
-                  Source on GitHub
-                </a>
-
-                {/* A row, not the outline button the rail gives it. Inside a
-                    sheet every other way out is a row, and one button among
-                    them would read as the thing the sheet was opened for. */}
-                <a
-                  className={drawerRow}
-                  href={COFFEE_URL}
-                  rel="noreferrer noopener"
-                  target="_blank"
-                  onClick={() => setNavOpen(false)}
-                >
-                  <HugeiconsIcon
-                    className="size-4 shrink-0"
-                    icon={Coffee02Icon}
-                    strokeWidth={1.5}
-                  />
-                  Buy me a coffee
-                </a>
-              </div>
-            </DrawerContent>
-          </Drawer>
         </div>
       </div>
     </header>

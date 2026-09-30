@@ -525,17 +525,46 @@
 }
 
 @layer base {
-  /* The header is sticky, so anchors need somewhere to land. From `xl` the
-     rails replace it and nothing is pinned over the centre column any more,
-     so the landing clearance drops to the shell's own margin — otherwise an
-     anchor arrives with a screenful of nothing above it. */
+  /* An anchor lands clear of whatever is pinned over the centre column, and
+     only one band of widths pins anything there: the sticky top bar, from
+     `lg` to `xl`. Under `lg` the chrome is a tab bar along the bottom edge,
+     and from `xl` the rails stand beside the column rather than over it, so
+     both land on the shell's own margin — anything more arrives with a strip
+     of nothing above the shelf. */
   html {
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 1.5rem;
   }
 
-  @media (width >= 80rem) {
+  @media (64rem <= width < 80rem) {
     html {
-      scroll-padding-top: 1.5rem;
+      scroll-padding-top: 6rem;
+    }
+  }
+
+  /* The phone's one pinned thing at the top: the bar offering Build me a mix
+     past the hero, while the mix is empty. `MobileDock` sets the attribute
+     for as long as the bar is down — 12px in, 56px tall, and the shell's
+     24px under it. */
+  @media (width < 64rem) {
+    html[data-start-bar] {
+      scroll-padding-top: 5.75rem;
+    }
+  }
+
+  /* Under `lg` the phone's dock is fixed to the bottom edge, so a toast rises
+     just clear of it instead of landing on it. `--dock-cover` is how much the
+     dock covers at the moment — bar, player, or both — written by
+     `MobileDock`; the fallback is the bar alone. Read by the Toaster's two
+     offsets; Sonner's own 24 everywhere else. */
+  :root {
+    --toast-bottom: 24px;
+  }
+
+  @media (width < 64rem) {
+    :root {
+      --toast-bottom: calc(
+        var(--dock-cover, 77px) + env(safe-area-inset-bottom, 0px)
+      );
     }
   }
 

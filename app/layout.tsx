@@ -2,6 +2,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Google_Sans_Flex } from "next/font/google";
 
+import { MobileDock } from "@/components/moodist/mobile-dock";
 import { ServiceWorker } from "@/components/moodist/service-worker";
 import { THEME_SCRIPT } from "@/components/moodist/theme-provider";
 import { Shell } from "@/components/moodist/shell";
@@ -84,6 +85,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <ToolsProvider>
               <Shell>{children}</Shell>
               <Toolbar />
+              <MobileDock />
             </ToolsProvider>
           </StoreConsumer>
         </TooltipProvider>
