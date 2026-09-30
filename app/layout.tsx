@@ -53,6 +53,12 @@ export const viewport: Viewport = {
     { color: "#fdfcfa", media: "(prefers-color-scheme: light)" },
     { color: "#161514", media: "(prefers-color-scheme: dark)" },
   ],
+  // The page is drawn to the screen's edges, and the insets say where the
+  // hardware takes over. Without it iOS Safari still drew to the bottom edge
+  // but reported an inset of 0, so the phone's tab bar sat half under the
+  // home indicator with its labels cut off. The sideways insets a phone
+  // turned on its side reports are paid in `globals.css`.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

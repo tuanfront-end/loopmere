@@ -78,8 +78,9 @@ function DrawerContent({
             // them. A scrolling box is a block.
             "bg-card text-foreground relative -mb-(--bleed) block w-full rounded-t-lg border-t outline-none",
             "max-h-[calc(85dvh+var(--bleed))] overflow-y-auto overscroll-contain touch-auto",
-            // Safe area for the home indicator, plus the bleed that is never seen.
-            "px-6 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px)+var(--bleed))]",
+            // Safe area for the home indicator, the notch on a phone turned on
+            // its side, and the bleed that is never seen.
+            "pt-3 pr-[max(1.5rem,env(safe-area-inset-right,0px))] pb-[calc(1.5rem+env(safe-area-inset-bottom,0px)+var(--bleed))] pl-[max(1.5rem,env(safe-area-inset-left,0px))]",
             "[transform:translateY(var(--drawer-swipe-movement-y))] transition-transform duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
             "data-swiping:select-none data-starting-style:[transform:translateY(calc(100%-var(--bleed)+2px))] data-ending-style:[transform:translateY(calc(100%-var(--bleed)+2px))] data-ending-style:duration-[calc(var(--drawer-swipe-strength)*400ms)]",
             "motion-reduce:transition-none",
