@@ -1,0 +1,46 @@
+name: A new sound
+description: A loop you would like on one of the shelves.
+title: "Sound: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every loop here arrives under the [Pixabay Content Licence](https://pixabay.com/service/license-summary/) or [CC0](https://creativecommons.org/publicdomain/zero/1.0/). If you know a recording under either, link it below and it goes on the shelf sooner.
+  - type: input
+    id: sound
+    attributes:
+      label: The sound
+      placeholder: Rain on a tin roof
+    validations:
+      required: true
+  - type: dropdown
+    id: shelf
+    attributes:
+      label: Which shelf it belongs on
+      options:
+        - Nature
+        - Rain
+        - Animals
+        - Urban
+        - Places
+        - Transport
+        - Things
+        - Noise
+        - Not sure
+    validations:
+      required: false
+  - type: input
+    id: recording
+    attributes:
+      label: A recording, if you know one
+      placeholder: https://pixabay.com/sound-effects/...
+    validations:
+      required: false
+  - type: textarea
+    id: moment
+    attributes:
+      label: When you would play it
+      description: What you would be doing with it on. It helps pick which recording.
+    validations:
+      required: false

@@ -4,9 +4,9 @@
  * else, so moving an item is one edit here. CONTEXT.md § Roadmap holds the
  * three states and why the list lives in the repo rather than on GitHub.
  *
- * Shipped holds only what this port added. The loops, the tools, presets,
- * sharing, the theme switch and the Undo on a cleared mix were all Moodist's
- * before they were Loopmere's, so none of them is here.
+ * Shipped holds only what this port added. The first loops, the tools,
+ * presets, sharing, the theme switch and the Undo on a cleared mix were all
+ * Moodist's before they were Loopmere's, so none of them is here.
  */
 
 /** In the order a reader meets them. */

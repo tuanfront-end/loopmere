@@ -1,5 +1,5 @@
 name: Something's broken
-description: Something in Loopmere does not work the way it should.
+description: Something in Loopmere does not work the way it should — a control, or a loop that clicks, cuts out or plays wrong.
 labels: ["bug"]
 body:
   - type: textarea

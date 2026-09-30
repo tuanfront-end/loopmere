@@ -10,7 +10,7 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   REPO_URL,
   SUGGEST_URL,
-  UPSTREAM_ISSUES_URL,
+  SOUND_URL,
 } from "@/constants/links";
 import { later, next, shipped, type RoadmapItem } from "@/data/roadmap";
 
@@ -170,8 +170,9 @@ export function Roadmap() {
           </h2>
 
           <p className="text-muted-foreground mt-4 max-w-[52ch] text-base text-balance">
-            The loops and the tools come from Moodist, by MAZE. Below is what
-            we added on top of them, and what we build next.
+            Loopmere began as a port of Moodist, by MAZE, which gave it its
+            first loops and its tools. Below is what we added since, and what
+            we build next.
           </p>
 
           <div className="mt-8 flex flex-col items-start gap-3">
@@ -189,19 +190,20 @@ export function Roadmap() {
               It opens on GitHub and needs a free account.
             </p>
 
-            {/* New sounds are Moodist's to add, so the request goes there —
-                the issue chooser on this repo says the same. One line, because
-                it is fine print under the call to action; the lede has already
-                said whose the loops are. */}
+            {/* Straight to the new-sound form. Loops are added here now — the
+                shelves are ours to grow, and the icons already come from the
+                Blob rather than the repo — so the request stays on this
+                tracker instead of being sent to Moodist's. One line, because
+                it is fine print under the call to action. */}
             <p className="text-muted-foreground text-sm">
               Missing a sound?{" "}
               <a
                 className="hover:text-foreground rounded-full underline underline-offset-4 transition-colors"
-                href={UPSTREAM_ISSUES_URL}
+                href={SOUND_URL}
                 rel="noreferrer noopener"
                 target="_blank"
               >
-                Ask Moodist for it
+                Tell us which one
               </a>
               .
             </p>

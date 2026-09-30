@@ -1244,9 +1244,18 @@ dark mode (bản gốc có System / Light / Dark trong menu) và Undo sau khi xo
 
 **Nút mở trang chọn form issue, không mở PR.** Người nghe không mở PR, còn
 developer đã có link repo ở footer và rail. Hai form, đề xuất và báo lỗi, và
-không có issue trống. Sound mới và lỗi *trong* một sound thì đi sang Moodist, qua
-một link ngay trên trang chọn đó: kho sound là của Moodist, và mỗi sound mới còn
-cần một icon Thiings mà licence không cho phân phối.
+không có issue trống — và một form thứ ba, **A new sound**, mà dòng "Missing a
+sound? Tell us which one" dưới nút mở thẳng vào. Lỗi *trong* một bản thu thì đi
+form báo lỗi. Cả hai từng được đẩy sang tracker của Moodist, với lý do kho sound
+là của họ và mỗi sound mới cần một icon Thiings không được phân phối. Lý do thứ
+hai đã có lời giải từ trước — icon nằm trên Blob, build mới kéo về, nên thêm
+một cái chỉ là đẩy thêm một file — còn lý do thứ nhất hết đúng khi Loopmere tự
+lớn thêm kệ. Yêu cầu gửi sang Moodist là yêu cầu rơi vào chỗ mình không theo
+dõi. Điều kiện còn lại là của mình: bản thu phải dưới Pixabay Content Licence
+hoặc CC0, như cả bộ hiện có, và form nói vậy.
+
+Lede của section vì thế nói Moodist cho Loopmere **những loop đầu tiên** và bộ
+công cụ, không nói loop "đến từ Moodist": câu đó sai từ loop thứ 85.
 
 **Mỗi mục Next và Later có một issue**, làm chỗ để người nghe theo dõi và thảo
 luận. Trạng thái thì chỉ nằm trong `data/roadmap.ts`.
