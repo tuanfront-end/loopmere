@@ -4,6 +4,7 @@ import {
   AudioWave01Icon,
   CheckListIcon,
   Clock01Icon,
+  HelpCircleIcon,
   KeyboardIcon,
   MusicNote01Icon,
   Settings02Icon,
@@ -84,6 +85,10 @@ const SettingsModal = dynamic(
   () => import("./modals/settings").then((mod) => mod.SettingsModal),
   { ssr: false },
 );
+const ControlsModal = dynamic(
+  () => import("./modals/controls").then((mod) => mod.ControlsModal),
+  { ssr: false },
+);
 const ShortcutsModal = dynamic(
   () => import("./modals/shortcuts").then((mod) => mod.ShortcutsModal),
   { ssr: false },
@@ -92,6 +97,7 @@ const ShortcutsModal = dynamic(
 export type PanelName =
   | "binaural"
   | "breathing"
+  | "controls"
   | "countdown"
   | "isochronic"
   | "lofi"
@@ -183,6 +189,12 @@ export const TOOL_GROUPS: Array<{ title: string; tools: Array<Tool> }> = [
         shortcut: "⇧G",
       },
       {
+        icon: HelpCircleIcon,
+        label: "Controls",
+        name: "controls",
+        shortcut: "⇧/",
+      },
+      {
         icon: KeyboardIcon,
         label: "Keyboard",
         name: "shortcuts",
@@ -195,6 +207,7 @@ export const TOOL_GROUPS: Array<{ title: string; tools: Array<Tool> }> = [
 const CLOSED = {
   binaural: false,
   breathing: false,
+  controls: false,
   countdown: false,
   isochronic: false,
   lofi: false,
@@ -310,6 +323,7 @@ export function ToolsProvider({ children }: { children: React.ReactNode }) {
   useHotkeys("shift+b", () => open("breathing"), { enabled });
   useHotkeys("shift+g", () => open("settings"), { enabled });
   useHotkeys("shift+h", () => open("shortcuts"), { enabled });
+  useHotkeys("shift+slash", () => open("controls"), { enabled });
 
   const value = useMemo(() => ({ open }), [open]);
 
@@ -375,6 +389,12 @@ export function ToolsProvider({ children }: { children: React.ReactNode }) {
         <SettingsModal
           show={panels.settings}
           onClose={() => close("settings")}
+        />
+      )}
+      {mounted("controls") && (
+        <ControlsModal
+          show={panels.controls}
+          onClose={() => close("controls")}
         />
       )}
       {mounted("shortcuts") && (

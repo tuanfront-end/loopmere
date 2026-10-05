@@ -37,6 +37,73 @@ function at(turn: number, radius: number) {
   return [14 + radius * Math.sin(turn), 14 - radius * Math.cos(turn)] as const;
 }
 
+/**
+ * The dial itself, drawn for `pan`: a ring with a notch at the middle, the
+ * turn off it in the brand round the ring, and the pointer. Also the picture
+ * of the control in the Controls panel.
+ */
+export function KnobGlyph({
+  className,
+  pan,
+}: {
+  className?: string;
+  pan: number;
+}) {
+  const turn = pan * SWEEP;
+  const [tipX, tipY] = at(turn, 9);
+  const [baseX, baseY] = at(turn, 3.5);
+  const [startX, startY] = at(0, 12);
+  const [endX, endY] = at(turn, 12);
+
+  return (
+    <svg
+      aria-hidden="true"
+      className={cn("size-7", className)}
+      viewBox="0 0 28 28"
+    >
+      {/* The ring, and a notch at the top for the middle. */}
+      <circle
+        className="fill-card stroke-border"
+        cx="14"
+        cy="14"
+        r="12"
+        strokeWidth="2"
+      />
+      <line
+        className="stroke-muted-foreground/50"
+        strokeLinecap="round"
+        strokeWidth="1.5"
+        x1="14"
+        x2="14"
+        y1="0.75"
+        y2="2.75"
+      />
+
+      {/* How far off the middle, drawn round the ring in the brand: the
+          level's fill, read as a turn rather than a length. */}
+      {pan !== 0 && (
+        <path
+          className="stroke-primary"
+          d={`M ${startX} ${startY} A 12 12 0 0 ${pan > 0 ? 1 : 0} ${endX} ${endY}`}
+          fill="none"
+          strokeLinecap="round"
+          strokeWidth="2.5"
+        />
+      )}
+
+      <line
+        className="stroke-foreground"
+        strokeLinecap="round"
+        strokeWidth="2"
+        x1={baseX}
+        x2={tipX}
+        y1={baseY}
+        y2={tipY}
+      />
+    </svg>
+  );
+}
+
 interface BalanceKnobProps {
   className?: string;
   id: string;
@@ -62,12 +129,6 @@ export function BalanceKnob({ className, id, label }: BalanceKnobProps) {
 
     setPan(id, Math.abs(stepped) < STEP / 2 ? 0 : Number(stepped.toFixed(2)));
   };
-
-  const turn = pan * SWEEP;
-  const [tipX, tipY] = at(turn, 9);
-  const [baseX, baseY] = at(turn, 3.5);
-  const [startX, startY] = at(0, 12);
-  const [endX, endY] = at(turn, 12);
 
   return (
     <Tooltip>
@@ -121,47 +182,7 @@ export function BalanceKnob({ className, id, label }: BalanceKnobProps) {
           drag.current = null;
         }}
       >
-        <svg aria-hidden="true" className="size-7" viewBox="0 0 28 28">
-          {/* The ring, and a notch at the top for the middle. */}
-          <circle
-            className="fill-card stroke-border"
-            cx="14"
-            cy="14"
-            r="12"
-            strokeWidth="2"
-          />
-          <line
-            className="stroke-muted-foreground/50"
-            strokeLinecap="round"
-            strokeWidth="1.5"
-            x1="14"
-            x2="14"
-            y1="0.75"
-            y2="2.75"
-          />
-
-          {/* How far off the middle, drawn round the ring in the brand: the
-              level's fill, read as a turn rather than a length. */}
-          {pan !== 0 && (
-            <path
-              className="stroke-primary"
-              d={`M ${startX} ${startY} A 12 12 0 0 ${pan > 0 ? 1 : 0} ${endX} ${endY}`}
-              fill="none"
-              strokeLinecap="round"
-              strokeWidth="2.5"
-            />
-          )}
-
-          <line
-            className="stroke-foreground"
-            strokeLinecap="round"
-            strokeWidth="2"
-            x1={baseX}
-            x2={tipX}
-            y1={baseY}
-            y2={tipY}
-          />
-        </svg>
+        <KnobGlyph pan={pan} />
       </TooltipTrigger>
       <TooltipContent>Balance · {short(pan)}</TooltipContent>
     </Tooltip>

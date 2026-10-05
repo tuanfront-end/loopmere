@@ -4,6 +4,7 @@ import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   Delete02Icon,
+  HelpCircleIcon,
   ShuffleIcon,
   Undo02Icon,
 } from "@hugeicons/core-free-icons";
@@ -52,17 +53,23 @@ const labels: Record<string, string> = Object.fromEntries(
  * have to.
  */
 function Section({
+  action,
   children,
   title,
 }: {
+  /** Sits at the end of the eyebrow's line. */
+  action?: React.ReactNode;
   children: React.ReactNode;
   title: string;
 }) {
   return (
     <section>
-      <h2 className="text-muted-foreground px-2.5 text-xs tracking-widest uppercase">
-        {title}
-      </h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-muted-foreground px-2.5 text-xs tracking-widest uppercase">
+          {title}
+        </h2>
+        {action}
+      </div>
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -329,6 +336,7 @@ export function MixDesk({
 }
 
 function TheMix() {
+  const { open } = useTools();
   const count = useSoundStore(
     (state) =>
       Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected)
@@ -336,7 +344,27 @@ function TheMix() {
   );
 
   return (
-    <Section title={count ? `The mix · ${count}` : "The mix"}>
+    <Section
+      // The way into the Controls panel from where its glyphs are: the desk
+      // is where Swell, the dial and Now and then sit wordless side by side.
+      action={
+        <Tooltip>
+          <TooltipTrigger
+            aria-label="What the controls do"
+            className="text-muted-foreground hover:bg-muted hover:text-foreground -my-2 -mr-1.5 grid size-8 place-items-center rounded-sm transition-colors"
+            onClick={() => open("controls")}
+          >
+            <HugeiconsIcon
+              className="size-4"
+              icon={HelpCircleIcon}
+              strokeWidth={1.5}
+            />
+          </TooltipTrigger>
+          <TooltipContent>What the controls do</TooltipContent>
+        </Tooltip>
+      }
+      title={count ? `The mix · ${count}` : "The mix"}
+    >
       <MixDesk />
     </Section>
   );

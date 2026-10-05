@@ -25,6 +25,7 @@ const SHORTCUTS = [
   { keys: ["Shift", "T"], label: "Checklist" },
   { keys: ["Shift", "B"], label: "Breathing" },
   { keys: ["Shift", "G"], label: "Levels" },
+  { keys: ["Shift", "/"], label: "What the controls do" },
   { keys: ["Shift", "H"], label: "This list" },
 ];
 
