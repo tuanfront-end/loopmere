@@ -72,6 +72,14 @@ export const roadmap: Array<RoadmapItem> = [
   },
   {
     blurb:
+      "Type a name above the shelves and every sound it matches shows where it is and whether it plays.",
+    id: "sound-search",
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Find a sound by name",
+  },
+  {
+    blurb:
       "Drag the level on any card and that sound joins the mix, playing at the level you set.",
     id: "level-starts-sound",
     shipped: "2026-09",

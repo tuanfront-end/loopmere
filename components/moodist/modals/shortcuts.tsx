@@ -12,6 +12,7 @@ interface ShortcutsModalProps {
 }
 
 const SHORTCUTS = [
+  { keys: ["/"], label: "Search sounds" },
   { keys: ["Shift", "M"], label: "Tools menu" },
   { keys: ["Shift", "Space"], label: "Play or pause" },
   { keys: ["Shift", "R"], label: "Clear the mix" },
