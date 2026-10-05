@@ -72,14 +72,6 @@ export const roadmap: Array<RoadmapItem> = [
   },
   {
     blurb:
-      "Set each sound to the left or the right, so with headphones on the mix sounds like a place.",
-    id: "balance",
-    issue: 15,
-    status: "later",
-    title: "Place each sound left or right",
-  },
-  {
-    blurb:
       "The three mixes on the first screen grow into a shelf of scenes, each one click to start.",
     id: "scenes",
     issue: 16,
@@ -93,6 +85,15 @@ export const roadmap: Array<RoadmapItem> = [
     issue: 6,
     status: "later",
     title: "Your own sounds on a shelf",
+  },
+  {
+    blurb:
+      "Set each sound to the left or the right, so with headphones on the mix sounds like a place.",
+    id: "balance",
+    issue: 15,
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Place each sound left or right",
   },
   {
     blurb:

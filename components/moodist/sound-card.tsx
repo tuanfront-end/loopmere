@@ -47,10 +47,11 @@ export const SoundCard = memo(function SoundCard({
   const volume = useSoundStore((state) => state.sounds[id].volume);
 
   const isSwelling = useSoundStore((state) => state.sounds[id].isSwelling);
+  const pan = useSoundStore((state) => state.sounds[id].pan);
 
   const isLoading = useLoadingStore((state) => state.loaders[src]);
 
-  const sound = useSound(src, { loop: true, swell: isSwelling, volume });
+  const sound = useSound(src, { loop: true, pan, swell: isSwelling, volume });
 
   useEffect(() => {
     if (locked) return;

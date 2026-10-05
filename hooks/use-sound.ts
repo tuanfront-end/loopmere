@@ -58,6 +58,7 @@ function swellAt(curve: SwellCurve | null, time: number) {
  * @param {string} src - The source URL of the sound file.
  * @param {Object} [options] - Options for sound playback.
  * @param {boolean} [options.loop=false] - Whether the sound should loop.
+ * @param {number} [options.pan=0] - Where it sits between the ears, -1 left to 1 right.
  * @param {boolean} [options.swell=false] - Whether its level rises and falls on a slow wave.
  * @param {number} [options.volume=0.5] - The initial volume of the sound, ranging from 0.0 to 1.0.
  * @returns {{ play: () => void, stop: () => void, pause: () => void, fadeOut: (duration: number) => void, isLoading: boolean }} An object containing control functions for the sound:
@@ -71,6 +72,7 @@ export function useSound(
   src: string,
   options: {
     loop?: boolean;
+    pan?: number;
     preload?: boolean;
     swell?: boolean;
     volume?: number;
@@ -129,6 +131,19 @@ export function useSound(
       sound.loop(options.loop ?? false);
     }
   }, [sound, options.loop]);
+
+  // A Web Audio stereo panner, set on the Howl so every play of it inherits
+  // the place. Left alone at centre: a sound never moved gets no panner node.
+  //
+  // Only once the file has loaded. A Howl queues a stereo call made before
+  // that, and the queue dropped it: a sound placed to one side came back
+  // centred after a reload.
+  useEffect(() => {
+    const pan = options.pan ?? 0;
+
+    if (!sound || !hasLoaded) return;
+    if ((sound.stereo() ?? 0) !== pan) sound.stereo(pan);
+  }, [sound, options.pan, hasLoaded]);
 
   /**
    * The level the Howl sits at is this sound's own times the global one, and

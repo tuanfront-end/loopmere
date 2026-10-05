@@ -9,9 +9,9 @@ import { ToolPanel } from "../tool-panel";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SHARE_PARAM, SWELL_KEY } from "@/constants/share";
+import { PAN_KEY, SHARE_PARAM, SWELL_KEY } from "@/constants/share";
 import { useCopy } from "@/hooks/use-copy";
-import { useSoundStore } from "@/stores/sound";
+import { extrasOf, useSoundStore } from "@/stores/sound";
 
 interface ShareLinkModalProps {
   onClose: () => void;
@@ -27,13 +27,14 @@ export function ShareLinkModal({ onClose, show }: ShareLinkModalProps) {
 
   const mix = useMemo(() => {
     const ids = Object.keys(sounds).filter((id) => sounds[id].isSelected);
-    const swell = ids.filter((id) => sounds[id].isSwelling);
+    const { pan, swell } = extrasOf(sounds, ids);
 
     return JSON.stringify({
       ...Object.fromEntries(
         ids.map((id) => [id, Number(sounds[id].volume.toFixed(2))]),
       ),
       ...(swell.length > 0 && { [SWELL_KEY]: swell }),
+      ...(Object.keys(pan).length > 0 && { [PAN_KEY]: pan }),
     });
   }, [sounds]);
 
