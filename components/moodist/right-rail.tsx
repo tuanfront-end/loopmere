@@ -4,6 +4,7 @@ import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   Delete02Icon,
+  HelpCircleIcon,
   ShuffleIcon,
   Undo02Icon,
 } from "@hugeicons/core-free-icons";
@@ -13,6 +14,7 @@ import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { PauseButton } from "./pause-button";
+import { BalanceKnob } from "./balance-knob";
 import { OccasionalButton } from "./occasional-button";
 import { SoundIcon } from "./sound-icon";
 import { SwellButton } from "./swell-button";
@@ -51,17 +53,23 @@ const labels: Record<string, string> = Object.fromEntries(
  * have to.
  */
 function Section({
+  action,
   children,
   title,
 }: {
+  /** Sits at the end of the eyebrow's line. */
+  action?: React.ReactNode;
   children: React.ReactNode;
   title: string;
 }) {
   return (
     <section>
-      <h2 className="text-muted-foreground px-2.5 text-xs tracking-widest uppercase">
-        {title}
-      </h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-muted-foreground px-2.5 text-xs tracking-widest uppercase">
+          {title}
+        </h2>
+        {action}
+      </div>
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -95,13 +103,6 @@ function Resting({ until }: { until: number }) {
   );
 }
 
-/** A balance in words, for the thumb's value text. */
-function describePan(pan: number) {
-  if (pan === 0) return "Centre";
-
-  return `${Math.round(Math.abs(pan) * 100)}% ${pan < 0 ? "left" : "right"}`;
-}
-
 function MixRow({
   id,
   shuffleButton,
@@ -113,8 +114,6 @@ function MixRow({
   const volume = useSoundStore((state) => state.sounds[id].volume);
   const isPaused = useSoundStore((state) => state.sounds[id].isPaused);
   const setVolume = useSoundStore((state) => state.setVolume);
-  const pan = useSoundStore((state) => state.sounds[id].pan);
-  const setPan = useSoundStore((state) => state.setPan);
   const unselect = useSoundStore((state) => state.unselect);
   const restingUntil = useRestStore((state) => state.until[id]);
 
@@ -190,10 +189,14 @@ function MixRow({
         </Button>
       </div>
 
-      {/* Swell ends the level's row rather than joining the buttons above:
-          it moves this level, and a fourth button up there left a name like
-          "Rain on car roof" eighty pixels to be read in. */}
+      {/* The level's row: where the sound sits, how loud, and the ways it
+          moves on its own. Swell ends it rather than joining the buttons
+          above, where a fourth left a name like "Rain on car roof" eighty
+          pixels to be read in; balance leads it as a pan pot leads a
+          channel strip, so a sound stays two rows. */}
       <div className="mt-3 flex items-center gap-2">
+        <BalanceKnob className="-my-1 -ml-1" id={id} label={labels[id]} />
+
         <Slider
           format={PERCENT}
           aria-label={`${labels[id]} level`}
@@ -220,37 +223,6 @@ function MixRow({
           id={id}
           label={labels[id]}
         />
-      </div>
-
-      {/* Balance, under the level and the same length, so the two thumbs
-          read as one sound's place: how loud and from which side. Its readout
-          sits in Swell's column and doubles as the way back to the middle. */}
-      <div className="mt-1 flex items-center gap-2">
-        <Slider
-          aria-label={`${labels[id]} balance`}
-          centred
-          className="min-w-0 flex-1"
-          max={1}
-          min={-1}
-          step={0.05}
-          value={[pan]}
-          valueText={describePan}
-          onValueChange={(next) =>
-            setPan(id, Array.isArray(next) ? next[0] : next)
-          }
-        />
-
-        <button
-          aria-label={`Centre ${labels[id]}`}
-          className="text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring/50 -my-1 -mr-1 grid size-8 shrink-0 place-items-center rounded-sm text-xs font-medium tabular-nums transition-colors outline-none focus-visible:ring-3 disabled:hover:bg-transparent"
-          disabled={pan === 0}
-          type="button"
-          onClick={() => setPan(id, 0)}
-        >
-          {pan === 0
-            ? "L·R"
-            : `${pan < 0 ? "L" : "R"}${Math.round(Math.abs(pan) * 100)}`}
-        </button>
       </div>
     </li>
   );
@@ -364,6 +336,7 @@ export function MixDesk({
 }
 
 function TheMix() {
+  const { open } = useTools();
   const count = useSoundStore(
     (state) =>
       Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected)
@@ -371,7 +344,27 @@ function TheMix() {
   );
 
   return (
-    <Section title={count ? `The mix · ${count}` : "The mix"}>
+    <Section
+      // The way into the Controls panel from where its glyphs are: the desk
+      // is where Swell, the dial and Now and then sit wordless side by side.
+      action={
+        <Tooltip>
+          <TooltipTrigger
+            aria-label="What the controls do"
+            className="text-muted-foreground hover:bg-muted hover:text-foreground -my-2 -mr-1.5 grid size-8 place-items-center rounded-sm transition-colors"
+            onClick={() => open("controls")}
+          >
+            <HugeiconsIcon
+              className="size-4"
+              icon={HelpCircleIcon}
+              strokeWidth={1.5}
+            />
+          </TooltipTrigger>
+          <TooltipContent>What the controls do</TooltipContent>
+        </Tooltip>
+      }
+      title={count ? `The mix · ${count}` : "The mix"}
+    >
       <MixDesk />
     </Section>
   );
@@ -479,9 +472,7 @@ export function RightRail() {
   const shortcuts = useSettingsStore((state) => state.shortcuts);
 
   return (
-    // The bottom padding grows by the radio's height while it sits over the
-    // rail's foot, so the last tools scroll clear of it.
-    <div className="no-scrollbar flex h-full flex-col gap-8 overflow-y-auto p-5 pb-[calc(1.25rem+var(--radio-cover,0px))]">
+    <div className="no-scrollbar flex h-full flex-col gap-8 overflow-y-auto p-5">
       <TheMix />
       <Levels />
       <Tools />
@@ -516,6 +507,10 @@ export function RightRail() {
               )),
         )}
       </div>
+
+      {/* The Lofi radio's player, portalled in from the page while a station
+          is on, under everything else the rail holds. */}
+      <div className="empty:hidden" id="radio-slot" />
     </div>
   );
 }

@@ -54,6 +54,12 @@ for (const size of [72, 128, 144, 152, 192, 256, 512]) {
 
 await writeFile("app/apple-icon.png", await png(square, 180));
 
+// Android crops an installed app's icon to its own shape — a circle, a
+// squircle — and an `any` icon is shrunk onto a white plate to survive that.
+// The squared tile is safe to crop: the mark sits within 30% of the centre,
+// inside the 40% a maskable icon keeps.
+await writeFile("public/assets/pwa/maskable-512.png", await png(square, 512));
+
 const favicon = await Promise.all(
   [16, 32, 48].map(async (size) => ({ data: await png(tile, size), size })),
 );

@@ -53,7 +53,9 @@ export function pageMeta({
     description,
     openGraph: {
       description,
-      locale: 'en',
+      // Open Graph's locale is language and territory, `en_US`; a bare `en`
+      // is not one of its values.
+      locale: 'en_US',
       siteName: SITE_NAME,
       title: card,
       type: 'website',

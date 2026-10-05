@@ -3,6 +3,7 @@
 import { Loading03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { memo, useCallback, useEffect } from "react";
+import { toast } from "sonner";
 
 import { FavoriteButton } from "./favorite-button";
 import { SoundIcon } from "./sound-icon";
@@ -61,6 +62,17 @@ export const SoundCard = memo(function SoundCard({
     [id],
   );
 
+  // A file that would not load — offline, and not yet saved for offline use —
+  // takes the sound back out of the mix. Left in, the card wore the ring of a
+  // sound that was playing while nothing played, and the next press, which
+  // is the one that tries again, would have taken it out instead.
+  const onLoadError = useCallback(() => {
+    useSoundStore.getState().unselect(id);
+    toast(`${label} could not load. Pick it again to retry.`, {
+      id: `load-${id}`,
+    });
+  }, [id, label]);
+
   const isLoading = useLoadingStore((state) => state.loaders[src]);
 
   const sound = useSound(src, {
@@ -68,6 +80,7 @@ export const SoundCard = memo(function SoundCard({
     loopWindow,
     pan,
     occasional: isOccasional,
+    onLoadError,
     onRest,
     swell: isSwelling,
     volume,

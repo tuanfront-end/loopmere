@@ -1,21 +1,32 @@
 "use client";
 
 import { ForwardIcon, PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { ArrowsPointingOutIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { MinusSignIcon, MusicNote01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useEffect, useRef } from "react";
-import YouTube, { type YouTubePlayer } from "react-youtube";
+import dynamic from "next/dynamic";
+import { useEffect, useRef, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
+
+import type { YouTubePlayer } from "react-youtube";
 
 import { Button } from "@/components/ui/button";
 import { PERCENT, Slider } from "@/components/ui/slider";
 import { FADE_OUT } from "@/constants/events";
 import { STATIONS } from "@/data/stations";
 import { subscribe } from "@/lib/event";
+import { scrollBehavior } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { useRadioStore } from "@/stores/radio";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
+
+/**
+ * The embed's code, fetched the first time a station is tuned. Nothing plays
+ * until somebody picks one, and imported up front it sat in the first load of
+ * every visit, most of which never open the radio.
+ */
+const YouTube = dynamic(() => import("react-youtube"), { ssr: false });
 
 const OPTS = {
   height: "100%",
@@ -34,15 +45,33 @@ function level() {
   );
 }
 
+/** The width from which the player sits in the right rail rather than over the page. */
+const DOCKED = "(min-width: 1280px)";
+
+function subscribeDocked(onChange: () => void) {
+  const query = window.matchMedia(DOCKED);
+
+  query.addEventListener("change", onChange);
+
+  return () => query.removeEventListener("change", onChange);
+}
+
 /**
  * The Lofi radio's one player, mounted once for the whole page and outside
  * every dialog. It lived inside the Lofi panel, which unmounts its contents on
  * close, so shutting the panel to reach the mix shut the music off with it.
  *
- * It stays on screen while it plays: YouTube's terms do not allow a player to
- * be hidden and heard. Shrinking it to a pill pauses it, and the pill says so.
- * On a phone it sits over the tab bar; from `xl` it sits at the foot of the
- * right rail, which pads its own scroll by the player's height.
+ * From `xl` it is part of the right rail, under its last tools, scrolled with
+ * them rather than floated over them; the rail scrolls to it when a station
+ * is picked. Under `xl` there is no rail, so it floats over the tab bar.
+ * Crossing `xl` moves it between the two, which reloads the stream — a window
+ * resize, never a phone.
+ *
+ * Shrinking it folds the video away and keeps playing.
+ *
+ * YouTube's terms ask for a visible player of at least 200 by 200 while it
+ * plays, and a folded one is not. Kept that way on purpose; folding back to
+ * pausing is the `playing` effect below.
  */
 export function RadioPlayer() {
   const current = useRadioStore((state) => state.current);
@@ -53,11 +82,30 @@ export function RadioPlayer() {
   const { setMinimised, setPlaying, setVolume, stop, tune } =
     useRadioStore.getState();
 
+  const docked = useSyncExternalStore(
+    subscribeDocked,
+    () => window.matchMedia(DOCKED).matches,
+    () => false,
+  );
+
   const player = useRef<YouTubePlayer | null>(null);
-  const box = useRef<HTMLDivElement>(null);
   // Paused by the mix's own Pause, so the mix's Play brings it back; a pause
   // pressed on the radio itself stays paused.
   const pausedByMix = useRef(false);
+
+  // The embed is a new one each time the player appears, and each time it
+  // crosses `xl` between the rail and the page. The ref used to keep the one
+  // just destroyed, and the effects below spoke to it until the new one was
+  // ready. Cleared with it, they wait for `onReady` instead.
+  const shown = current !== null;
+
+  useEffect(() => {
+    if (!shown) return;
+
+    return () => {
+      player.current = null;
+    };
+  }, [shown, docked]);
 
   // The store's intent, carried to YouTube.
   useEffect(() => {
@@ -65,9 +113,9 @@ export function RadioPlayer() {
 
     if (!target) return;
 
-    if (playing && !minimised) target.playVideo();
+    if (playing) target.playVideo();
     else target.pauseVideo();
-  }, [playing, minimised]);
+  }, [playing]);
 
   // Its own level and Everything, both read fresh: Everything moving does not
   // re-render this, as it re-renders no card.
@@ -98,7 +146,7 @@ export function RadioPlayer() {
           radio.setPlaying(false);
         } else if (state.isPlaying && pausedByMix.current) {
           pausedByMix.current = false;
-          if (radio.current && !radio.minimised) radio.setPlaying(true);
+          if (radio.current) radio.setPlaying(true);
         }
       }),
     [],
@@ -132,169 +180,159 @@ export function RadioPlayer() {
     [],
   );
 
-  // How much of the rail's foot the player covers, for the rail to scroll
-  // clear of. Zero while there is no player, and under `xl`, where it is not
-  // over the rail.
+  // In the rail, a station just picked may be below the fold: bring it up,
+  // by scrolling the rail alone, to its foot, where the player is. Once the
+  // Lofi panel has closed: closing hands focus back to whatever opened it,
+  // which scrolls the rail to that button and undid a scroll made earlier.
   useEffect(() => {
-    const root = document.documentElement;
-    const element = box.current;
+    if (!docked || !current) return;
 
-    if (!element) {
-      root.style.setProperty("--radio-cover", "0px");
-      return;
-    }
+    const timer = setTimeout(() => {
+      const rail = document.getElementById("radio-slot")?.parentElement;
 
-    const observer = new ResizeObserver(() =>
-      root.style.setProperty("--radio-cover", `${element.offsetHeight + 16}px`),
-    );
+      rail?.scrollTo({ behavior: scrollBehavior(), top: rail.scrollHeight });
+    }, 400);
 
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-      root.style.setProperty("--radio-cover", "0px");
-    };
-  }, [current]);
+    return () => clearTimeout(timer);
+  }, [docked, current]);
 
   if (!current) return null;
+
+  const slot = docked ? document.getElementById("radio-slot") : null;
+
+  if (docked && !slot) return null;
 
   const all = [...ownStations, ...STATIONS];
   const next = () =>
     tune(all[(all.findIndex((s) => s.id === current.id) + 1) % all.length]);
 
-  return (
-    <div
+  const card = (
+    <section
+      aria-label="Lofi radio"
       className={cn(
-        "fixed z-40",
-        // Over the tab bar on a phone; over the toolbar's buttons from `lg`;
-        // at the foot of the right rail, inside its padding, from `xl`.
-        "inset-x-3 bottom-[calc(var(--dock-cover,77px)+env(safe-area-inset-bottom,0px))] sm:right-3 sm:left-auto sm:w-80",
-        "lg:right-6 lg:bottom-20",
-        "xl:right-8 xl:bottom-8 xl:w-[300px] 2xl:w-[320px]",
+        "bg-card flex flex-col gap-3 border p-3",
+        docked
+          ? // A row of the rail, like the mix desk's: flat, its hairline.
+            "rounded-sm"
+          : // Over the page, lifted off it, and placed clear of what is
+            // fixed there: the tab bar on a phone, the toolbar from `lg`.
+            "shadow-soft-lg fixed inset-x-3 bottom-[calc(var(--dock-cover,77px)+env(safe-area-inset-bottom,0px))] z-40 rounded-lg sm:right-3 sm:left-auto sm:w-80 lg:right-6 lg:bottom-20",
       )}
-      ref={box}
     >
-      {minimised ? (
-        <div className="bg-card/90 shadow-soft-lg ml-auto flex w-fit items-center gap-1 rounded-full border p-1 pl-3 backdrop-blur-xl">
-          <HugeiconsIcon
-            aria-hidden="true"
-            className="text-primary-ink size-4 shrink-0"
-            icon={MusicNote01Icon}
-            strokeWidth={1.5}
-          />
-          <span className="max-w-44 truncate px-1 text-sm font-medium">
-            {current.title}
-          </span>
-          <Button
-            aria-label={`Play ${current.title}`}
-            className="rounded-full"
-            size="icon-sm"
-            onClick={() => setMinimised(false)}
-          >
-            <PlayIcon />
-          </Button>
-          <Button
-            aria-label="Turn the radio off"
-            className="rounded-full"
-            size="icon-sm"
-            variant="ghost"
-            onClick={stop}
-          >
-            <XMarkIcon />
-          </Button>
+      <div className="flex items-start gap-2">
+        <HugeiconsIcon
+          aria-hidden="true"
+          className="text-primary-ink mt-0.5 size-4 shrink-0"
+          icon={MusicNote01Icon}
+          strokeWidth={1.5}
+        />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium">{current.title}</p>
+          <p className="text-muted-foreground truncate text-xs">
+            {current.channel}
+          </p>
         </div>
-      ) : null}
-
-      {/* Mounted while minimised too, only out of sight and paused: opening
-          it again picks the stream up where it is rather than reloading. */}
-      <section
-        aria-label="Lofi radio"
-        className={cn(
-          "bg-card shadow-soft-lg flex flex-col gap-3 rounded-lg border p-3",
-          minimised && "hidden",
-        )}
-      >
-        <div className="flex items-start gap-2">
-          <div className="min-w-0 flex-1 pl-1">
-            <p className="text-muted-foreground truncate text-xs">
-              {current.channel}
-            </p>
-            <p className="truncate text-sm font-medium">{current.title}</p>
-          </div>
-          <Button
-            aria-label="Shrink the radio, pausing it"
-            size="icon-sm"
-            variant="ghost"
-            onClick={() => setMinimised(true)}
-          >
+        <Button
+          aria-expanded={!minimised}
+          aria-label={minimised ? "Show the video" : "Fold the video away"}
+          size="icon-sm"
+          variant="ghost"
+          onClick={() => setMinimised(!minimised)}
+        >
+          {minimised ? (
+            <ArrowsPointingOutIcon />
+          ) : (
             <HugeiconsIcon icon={MinusSignIcon} strokeWidth={1.5} />
-          </Button>
-          <Button
-            aria-label="Turn the radio off"
-            className="-mr-1"
-            size="icon-sm"
-            variant="ghost"
-            onClick={stop}
-          >
-            <XMarkIcon />
-          </Button>
-        </div>
+          )}
+        </Button>
+        <Button
+          aria-label="Turn the radio off"
+          className="-mr-1"
+          size="icon-sm"
+          variant="ghost"
+          onClick={stop}
+        >
+          <XMarkIcon />
+        </Button>
+      </div>
 
-        {/* 200px is YouTube's floor for an embedded player. */}
-        <div className="h-[200px] overflow-hidden rounded-sm bg-black">
-          <YouTube
-            className="size-full"
-            iframeClassName="size-full"
-            opts={OPTS}
-            title={`${current.title}, ${current.channel}`}
-            videoId={current.id}
-            onPause={() => {
-              if (!pausedByMix.current) setPlaying(false);
-            }}
-            onPlay={() => {
-              pausedByMix.current = false;
-              setPlaying(true);
-            }}
-            onReady={(event) => {
-              player.current = event.target;
-              event.target.setVolume(level());
-              if (!useRadioStore.getState().playing) event.target.pauseVideo();
-            }}
-          />
-        </div>
+      {/* Folded to no height rather than hidden, so the frame is still laid
+          out and the stream keeps going; 200px open, YouTube's floor.
+          `inert` while folded: the player's own controls stayed in the tab
+          order, and focus went into a frame nobody could see. */}
+      <div
+        className={cn(
+          "overflow-hidden rounded-sm bg-black",
+          minimised ? "h-0" : "h-[200px]",
+        )}
+        inert={minimised}
+      >
+        <YouTube
+          className="size-full"
+          iframeClassName="size-full"
+          opts={OPTS}
+          title={`${current.title}, ${current.channel}`}
+          videoId={current.id}
+          onPause={() => {
+            if (!pausedByMix.current) setPlaying(false);
+          }}
+          onPlay={() => {
+            pausedByMix.current = false;
+            setPlaying(true);
+          }}
+          onReady={(event) => {
+            player.current = event.target;
+            event.target.setVolume(level());
+            if (!useRadioStore.getState().playing) event.target.pauseVideo();
+          }}
+        />
+      </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            aria-label={
-              playing ? `Pause ${current.title}` : `Play ${current.title}`
-            }
-            size="icon-sm"
-            onClick={() => setPlaying(!playing)}
-          >
-            {playing ? <PauseIcon /> : <PlayIcon />}
-          </Button>
-          <Button
-            aria-label="Next station"
-            size="icon-sm"
-            variant="ghost"
-            onClick={next}
-          >
-            <ForwardIcon />
-          </Button>
-          <Slider
-            aria-label="Radio level"
-            className="ml-1 min-w-0 flex-1"
-            format={PERCENT}
-            max={1}
-            min={0}
-            step={0.01}
-            value={[volume]}
-            onValueChange={(value) =>
-              setVolume(Array.isArray(value) ? value[0] : value)
-            }
-          />
-        </div>
-      </section>
-    </div>
+      <div className="flex items-center gap-2">
+        <Button
+          aria-label={
+            playing ? `Pause ${current.title}` : `Play ${current.title}`
+          }
+          size="icon-sm"
+          onClick={() => setPlaying(!playing)}
+        >
+          {playing ? <PauseIcon /> : <PlayIcon />}
+        </Button>
+        <Button
+          aria-label="Next station"
+          size="icon-sm"
+          variant="ghost"
+          onClick={next}
+        >
+          <ForwardIcon />
+        </Button>
+        <Slider
+          aria-label="Radio level"
+          className="ml-1 min-w-0 flex-1"
+          format={PERCENT}
+          max={1}
+          min={0}
+          step={0.01}
+          value={[volume]}
+          onValueChange={(value) =>
+            setVolume(Array.isArray(value) ? value[0] : value)
+          }
+        />
+      </div>
+    </section>
   );
+
+  // In the rail it is a section of the rail, under the eyebrow every other
+  // section there wears.
+  return slot
+    ? createPortal(
+        <div>
+          <h2 className="text-muted-foreground px-2.5 text-xs tracking-widest uppercase">
+            Radio
+          </h2>
+          <div className="mt-4">{card}</div>
+        </div>,
+        slot,
+      )
+    : card;
 }

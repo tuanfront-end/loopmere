@@ -1,8 +1,6 @@
 "use client";
 
 import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
-import { Location01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 
 import { signature, usePicked } from "./hero-panels";
 import { SoundIcon } from "./sound-icon";
@@ -23,20 +21,21 @@ function SceneCard({ scene }: { scene: Scene }) {
     // its own. The sound card's hover — the brand hairline and the cast —
     // and its state, the inset ring, so a scene that is on reads the way a
     // loop that is on does.
+    //
+    // A toggle, so the name holds still and `aria-pressed` carries the state,
+    // as on Swell. The name used to change with it — "Pause Night village" —
+    // and a screen reader read that out as "Pause Night village, pressed".
+    // Pressed is *sounding*, not merely loaded: a press on a scene that is the
+    // mix but paused plays it, and a toggle reading pressed before and after
+    // that press would say it had done nothing.
     <button
-      aria-label={
-        sounding
-          ? `Pause ${scene.title}`
-          : active
-            ? `Play ${scene.title} again`
-            : `Play ${scene.title}, a mix of ${ids.length} loops`
-      }
-      aria-pressed={active}
+      aria-label={scene.title}
+      aria-pressed={sounding}
       // A record from `data/scenes`, read in passing: its 14px lines are a
       // product object's, like the hero's panels.
       data-object
       className={cn(
-        "bg-card group/scene relative flex flex-col rounded-lg border p-4 text-left transition-[border-color,box-shadow] sm:p-5",
+        "bg-card group/scene relative flex flex-col rounded-lg border p-4 text-left transition-[border-color,box-shadow]",
         "hover:border-primary/60 hover:shadow-soft focus-visible:ring-ring/50 outline-none focus-visible:ring-3",
         active && "ring-primary ring-2 ring-inset",
       )}
@@ -53,28 +52,23 @@ function SceneCard({ scene }: { scene: Scene }) {
         store.play();
       }}
     >
-      <span aria-hidden="true" className="flex gap-1">
-        {ids.map((id) => (
-          <SoundIcon id={id} key={id} size={28} />
-        ))}
-      </span>
-
-      <span className="mt-4 text-base font-medium">{scene.title}</span>
-      <span className="text-muted-foreground mt-1 text-sm text-pretty">
-        {scene.blurb}
-      </span>
-
-      <span className="mt-auto flex items-center justify-between pt-4">
-        <span className="text-muted-foreground text-xs">
-          {ids.length} loops
+      {/* Renders and transport share the top row, the play chip in the
+          corner, so the box is three lines tall: what is in it, its name,
+          the place. The count of loops that sat under them said what the
+          renders already show. */}
+      <span className="flex items-start justify-between gap-3">
+        <span aria-hidden="true" className="flex gap-1">
+          {ids.map((id) => (
+            <SoundIcon id={id} key={id} size={24} />
+          ))}
         </span>
 
-        {/* The card's own transport, drawn: brand when the scene is the mix,
-            a quiet chip until then, so a grid of twelve does not shout. */}
+        {/* Brand when the scene is the mix, a quiet chip until then, so a
+            grid of twelve does not shout. */}
         <span
           aria-hidden="true"
           className={cn(
-            "grid size-8 place-items-center rounded-sm transition-colors",
+            "-mt-1 -mr-1 grid size-8 shrink-0 place-items-center rounded-sm transition-colors",
             active
               ? "bg-primary text-primary-foreground"
               : "bg-muted text-muted-foreground group-hover/scene:text-foreground",
@@ -86,6 +80,11 @@ function SceneCard({ scene }: { scene: Scene }) {
             <PlayIcon className="size-3.5" />
           )}
         </span>
+      </span>
+
+      <span className="mt-3 text-sm font-medium">{scene.title}</span>
+      <span className="text-muted-foreground mt-0.5 line-clamp-2 text-sm text-pretty">
+        {scene.blurb}
       </span>
     </button>
   );
@@ -105,12 +104,12 @@ export function Scenes() {
       id="scenes"
     >
       <div className="flex items-start gap-4">
-        <div aria-hidden="true" className="text-primary-ink shrink-0">
-          <HugeiconsIcon
-            className="size-8"
-            icon={Location01Icon}
-            strokeWidth={1.5}
-          />
+        {/* A Thiings render, 32px, the way every shelf head is drawn. A
+            village at night is a whole place in one object, which is what a
+            scene is; it is also Night village's own render, until the set
+            has one made for this shelf. */}
+        <div aria-hidden="true" className="shrink-0">
+          <SoundIcon id="night-village" size={32} />
         </div>
 
         <div>

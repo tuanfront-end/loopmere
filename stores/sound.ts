@@ -163,8 +163,10 @@ export const useSoundStore = create<SoundStore>()(
         const current = get().sounds;
         const sounds = { ...current };
 
+        // Own keys only: a mix can arrive from a link, and `current.constructor`
+        // is truthy on any object, so the check used to let it in as a sound.
         Object.keys(newSounds).forEach((id) => {
-          if (current[id]) {
+          if (Object.hasOwn(current, id)) {
             sounds[id] = {
               ...current[id],
               isPaused: false,
