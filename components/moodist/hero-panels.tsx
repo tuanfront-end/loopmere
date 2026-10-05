@@ -252,12 +252,10 @@ export function HeroFavourites() {
 
       {/* The footer is the pressable part, so it bleeds like the starter
           rows: the button's corners sit 6 inside the card's on three sides.
-          The line bleeds with it, so the rule and the button under it are one
-          width rather than a short line over a wider bar.
 
-          16 above the line and 16 below it. It was 16 and 12, and a line
-          nearer one block reads as that block's underline. */}
-      <div className="-mx-2.5 mt-4 -mb-2.5 border-t pt-4">
+          No rule over it. A filled button already ends the panel, and a line
+          on top of it was a second edge saying the same thing. */}
+      <div className="-mx-2.5 mt-4 -mb-2.5">
         <Button
           className="w-full"
           disabled={!favorites.length}
