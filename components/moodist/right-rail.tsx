@@ -8,11 +8,12 @@ import {
   Undo02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { PauseButton } from "./pause-button";
+import { OccasionalButton } from "./occasional-button";
 import { SoundIcon } from "./sound-icon";
 import { SwellButton } from "./swell-button";
 import { TOOL_GROUPS, useTools } from "./tools-provider";
@@ -27,6 +28,7 @@ import {
 import { sounds } from "@/data/sounds";
 import { removeKeepingFocus } from "@/lib/focus";
 import { cn } from "@/lib/utils";
+import { useRestStore } from "@/stores/rest";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
 import { PERCENT } from "@/components/ui/slider";
@@ -65,6 +67,34 @@ function Section({
   );
 }
 
+/** The sounds that can come now and then, from their data. */
+const events = new Set(
+  sounds.categories
+    .flatMap((category) => category.sounds)
+    .filter((sound) => sound.event)
+    .map((sound) => sound.id),
+);
+
+/** "in 40s", counting down, for a sound resting between plays. */
+function Resting({ until }: { until: number }) {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const left = Math.max(0, Math.ceil((until - now) / 1000));
+
+  return (
+    <>
+      <span className="sr-only">Resting, back </span>
+      {left >= 90 ? `in ${Math.round(left / 60)} min` : `in ${left}s`}
+    </>
+  );
+}
+
 /** A balance in words, for the thumb's value text. */
 function describePan(pan: number) {
   if (pan === 0) return "Centre";
@@ -86,6 +116,7 @@ function MixRow({
   const pan = useSoundStore((state) => state.sounds[id].pan);
   const setPan = useSoundStore((state) => state.setPan);
   const unselect = useSoundStore((state) => state.unselect);
+  const restingUntil = useRestStore((state) => state.until[id]);
 
   return (
     <li
@@ -115,8 +146,15 @@ function MixRow({
           {labels[id]}
         </span>
 
+        {/* Between plays of a "now and then" sound the level gives way to
+            when it is back: a sound in the mix, unpaused and silent, says
+            what it is waiting for rather than looking broken. */}
         <span className="text-muted-foreground ml-auto text-xs tabular-nums">
-          {Math.round(volume * 100)}%
+          {restingUntil ? (
+            <Resting until={restingUntil} />
+          ) : (
+            `${Math.round(volume * 100)}%`
+          )}
         </span>
 
         <PauseButton
@@ -168,6 +206,14 @@ function MixRow({
             setVolume(id, Array.isArray(next) ? next[0] : next)
           }
         />
+
+        {events.has(id) && (
+          <OccasionalButton
+            className="-my-1 size-8 shrink-0"
+            id={id}
+            label={labels[id]}
+          />
+        )}
 
         <SwellButton
           className="-my-1 -mr-1 size-8 shrink-0"

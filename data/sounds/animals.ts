@@ -11,6 +11,7 @@ export const animals: Category = {
       src: getAssetPath('/sounds/animals/birds.mp3'),
     },
     {
+      event: true,
       id: 'seagulls',
       label: 'Seagulls',
       src: getAssetPath('/sounds/animals/seagulls.mp3'),
@@ -21,11 +22,13 @@ export const animals: Category = {
       src: getAssetPath('/sounds/animals/crickets.mp3'),
     },
     {
+      event: true,
       id: 'wolf',
       label: 'Wolf',
       src: getAssetPath('/sounds/animals/wolf.mp3'),
     },
     {
+      event: true,
       id: 'owl',
       label: 'Owl',
       src: getAssetPath('/sounds/animals/owl.mp3'),
@@ -36,11 +39,13 @@ export const animals: Category = {
       src: getAssetPath('/sounds/animals/frog.mp3'),
     },
     {
+      event: true,
       id: 'dog-barking',
       label: 'Dog Barking',
       src: getAssetPath('/sounds/animals/dog-barking.mp3'),
     },
     {
+      event: true,
       id: 'horse-gallop',
       label: 'Horse Gallop',
       src: getAssetPath('/sounds/animals/horse-gallop.mp3'),
@@ -51,11 +56,13 @@ export const animals: Category = {
       src: getAssetPath('/sounds/animals/cat-purring.mp3'),
     },
     {
+      event: true,
       id: 'crows',
       label: 'Crows',
       src: getAssetPath('/sounds/animals/crows.mp3'),
     },
     {
+      event: true,
       id: 'whale',
       label: 'Whale',
       src: getAssetPath('/sounds/animals/whale.mp3'),
@@ -66,6 +73,7 @@ export const animals: Category = {
       src: getAssetPath('/sounds/animals/beehive.mp3'),
     },
     {
+      event: true,
       id: 'woodpecker',
       label: 'Woodpecker',
       src: getAssetPath('/sounds/animals/woodpecker.mp3'),
@@ -76,11 +84,13 @@ export const animals: Category = {
       src: getAssetPath('/sounds/animals/chickens.mp3'),
     },
     {
+      event: true,
       id: 'cows',
       label: 'Cows',
       src: getAssetPath('/sounds/animals/cows.mp3'),
     },
     {
+      event: true,
       id: 'sheep',
       label: 'Sheep',
       src: getAssetPath('/sounds/animals/sheep.mp3'),

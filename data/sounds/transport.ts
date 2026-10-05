@@ -6,6 +6,7 @@ export const transport: Category = {
   id: 'transport',
   sounds: [
     {
+      event: true,
       id: 'train',
       label: 'Train',
       // The file ends in 24.8s of digital silence after the train has gone,

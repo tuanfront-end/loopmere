@@ -16,6 +16,7 @@ export const rain: Category = {
       src: getAssetPath('/sounds/rain/heavy-rain.mp3'),
     },
     {
+      event: true,
       id: 'thunder',
       label: 'Thunder',
       src: getAssetPath('/sounds/rain/thunder.mp3'),

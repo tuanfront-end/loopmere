@@ -10,6 +10,11 @@ import { mergePersisted } from "@/lib/persist";
 type SoundValue = {
   isFavorite: boolean;
   /**
+   * Plays through, then rests a while before it plays again, rather than
+   * looping without a break. Only a sound marked `event` in its data.
+   */
+  isOccasional: boolean;
+  /**
    * In the mix but silent. Separate from `isSelected` so a sound can be
    * quietened without leaving the mix and losing the level it was set to,
    * and separate from the store's global `isPlaying`, which stops everything.
@@ -53,6 +58,7 @@ interface SoundStore {
   shuffle: () => void;
   sounds: Record<string, SoundValue>;
   toggleFavorite: (id: string) => void;
+  toggleOccasional: (id: string) => void;
   togglePause: (id: string) => void;
   toggleSwell: (id: string) => void;
   togglePlay: () => void;
@@ -68,6 +74,7 @@ function createInitialSounds() {
     category.sounds.forEach((sound) => {
       initialSounds[sound.id] = {
         isFavorite: false,
+        isOccasional: false,
         isPaused: false,
         isSelected: false,
         isSwelling: false,
@@ -112,6 +119,7 @@ function cleared(sounds: Record<string, SoundValue>) {
       id,
       {
         ...sound,
+        isOccasional: false,
         isPaused: false,
         isSelected: false,
         isSwelling: false,
@@ -247,6 +255,18 @@ export const useSoundStore = create<SoundStore>()(
           sounds: {
             ...sounds,
             [id]: { ...sound, isFavorite: !sound.isFavorite },
+          },
+        });
+      },
+
+      toggleOccasional(id) {
+        const sounds = get().sounds;
+        const sound = sounds[id];
+
+        set({
+          sounds: {
+            ...sounds,
+            [id]: { ...sound, isOccasional: !sound.isOccasional },
           },
         });
       },
