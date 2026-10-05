@@ -16,8 +16,19 @@ function Slider({
   min = 0,
   max = 100,
   idle = false,
+  centred = false,
+  valueText,
   ...props
 }: SliderPrimitive.Root.Props & {
+  /**
+   * A position either side of a middle rather than an amount — a balance. No
+   * fill, which would read as a level growing from the left, a notch at the
+   * middle of the rail for the thumb to be measured against, and a 16px thumb:
+   * it sits under a level, and is the lesser of the two.
+   */
+  centred?: boolean;
+  /** The words a screen reader says for a value, where a number format will not do. */
+  valueText?: (value: number) => string;
   /**
    * Live, but not in use yet — a sound card's level before the sound is in
    * the mix. The fill drops to the neutral a disabled one takes, and the rail
@@ -90,33 +101,55 @@ function Slider({
           always under the thumb: never more than a radius from its centre. */}
       <SliderPrimitive.Control
         className={cn(
-          "relative flex w-full items-center select-none data-horizontal:min-h-6 data-horizontal:px-3 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col data-vertical:py-3",
+          "relative flex w-full items-center select-none data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col data-vertical:py-3",
+          // Half the thumb each side, so the geometry below holds at either size.
+          centred
+            ? "data-horizontal:min-h-4 data-horizontal:px-2"
+            : "data-horizontal:min-h-6 data-horizontal:px-3",
           idle ? "touch-pan-y" : "touch-none",
         )}
       >
         <SliderPrimitive.Track
           data-slot="slider-track"
-          className="relative grow overflow-hidden rounded-full bg-muted select-none data-horizontal:-mx-3 data-horizontal:h-1 data-horizontal:w-full data-vertical:-my-3 data-vertical:h-full data-vertical:w-1"
+          className={cn(
+            "relative grow overflow-hidden rounded-full bg-muted select-none data-horizontal:h-1 data-horizontal:w-full data-vertical:-my-3 data-vertical:h-full data-vertical:w-1",
+            centred ? "data-horizontal:-mx-2" : "data-horizontal:-mx-3",
+          )}
         >
-          <SliderPrimitive.Indicator
-            data-slot="slider-range"
-            className={cn(
-              "bg-primary select-none data-horizontal:h-full data-vertical:w-full data-disabled:bg-muted-foreground/15",
-              idle && "bg-muted-foreground/15",
-            )}
-          />
+          {!centred && (
+            <SliderPrimitive.Indicator
+              data-slot="slider-range"
+              className={cn(
+                "bg-primary select-none data-horizontal:h-full data-vertical:w-full data-disabled:bg-muted-foreground/15",
+                idle && "bg-muted-foreground/15",
+              )}
+            />
+          )}
         </SliderPrimitive.Track>
+        {centred && (
+          <span
+            aria-hidden="true"
+            className="bg-muted-foreground/40 pointer-events-none absolute top-1/2 left-1/2 h-2.5 w-px -translate-x-1/2 -translate-y-1/2"
+          />
+        )}
         {/* The thumb rail: the travel, a thumb's radius in from each end. */}
         <div
           className={cn(
             "absolute",
-            vertical ? "inset-x-0 inset-y-3" : "inset-x-3 inset-y-0",
+            vertical
+              ? "inset-x-0 inset-y-3"
+              : centred
+                ? "inset-x-2 inset-y-0"
+                : "inset-x-3 inset-y-0",
           )}
         >
           {Array.from({ length: _values.length }, (_, index) => (
             <SliderPrimitive.Thumb
               data-slot="slider-thumb"
               getAriaLabel={thumbLabel}
+              getAriaValueText={
+                valueText ? (_, value) => valueText(value) : undefined
+              }
               key={index}
               // The thumb is the same object whether the slider is live or not:
               // same 24px, same white, same cast. Only what it sits on says
@@ -139,7 +172,10 @@ function Slider({
               // dark one, so on dark the thumb came out darker than the track it
               // rides and vanished. What it has to be on either side is the
               // brightest thing in the control, which on dark is the ink.
-              className="relative block size-6 shrink-0 rounded-full bg-card shadow-soft dark:bg-foreground transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 hover:ring-primary/45 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-hidden active:ring-3 active:ring-primary/70 disabled:pointer-events-none data-disabled:hover:ring-0"
+              className={cn(
+                centred ? "size-4" : "size-6",
+                "relative block shrink-0 rounded-full bg-card shadow-soft dark:bg-foreground transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 hover:ring-primary/45 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-hidden active:ring-3 active:ring-primary/70 disabled:pointer-events-none data-disabled:hover:ring-0",
+              )}
             />
           ))}
         </div>

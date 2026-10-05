@@ -11,7 +11,7 @@ import { ToolPanel } from "../tool-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { usePresetStore } from "@/stores/preset";
-import { useSoundStore } from "@/stores/sound";
+import { extrasOf, type MixExtras, useSoundStore } from "@/stores/sound";
 import { keepKeys } from "@/lib/keys";
 
 interface PresetsModalProps {
@@ -21,17 +21,23 @@ interface PresetsModalProps {
 
 /**
  * A mix as one comparable string: its loops in one order, each with its level
- * to the hundredth — the slider's own step — and a mark if it swells. Levels
+ * to the hundredth — the slider's own step — a mark if it swells, and where it
+ * sits if off centre. Levels
  * count, not just loops, because a preset is a mix at *those* levels: two
  * presets can share every loop and differ only in how loud, and only the one
- * that is on is playing. Swell counts for the same reason.
+ * that is on is playing. Swell and place count for the same reason.
  */
-const signature = (levels: Record<string, number>, swell: Array<string> = []) =>
+const signature = (
+  levels: Record<string, number>,
+  { pan = {}, swell = [] }: MixExtras = {},
+) =>
   Object.keys(levels)
     .sort()
     .map(
       (id) =>
-        `${id}:${Math.round(levels[id] * 100)}${swell.includes(id) ? "~" : ""}`,
+        `${id}:${Math.round(levels[id] * 100)}${swell.includes(id) ? "~" : ""}${
+          pan[id] ? `@${Math.round(pan[id] * 100)}` : ""
+        }`,
     )
     .join();
 
@@ -56,7 +62,7 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
       .filter((id) => sounds[id].isSelected)
       .map((id) => [id, sounds[id].volume]),
   );
-  const swell = Object.keys(mix).filter((id) => sounds[id].isSwelling);
+  const extras = extrasOf(sounds, Object.keys(mix));
 
   /**
    * The saved preset the mix *is*, if any — matched on what is on rather than
@@ -69,7 +75,7 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
     ? undefined
     : presets.find(
         (preset) =>
-          signature(preset.sounds, preset.swell) === signature(mix, swell),
+          signature(preset.sounds, preset) === signature(mix, extras),
       );
 
   return (
@@ -85,7 +91,7 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
           event.preventDefault();
           if (!name || noSelected || saved) return;
 
-          addPreset(name, mix, swell);
+          addPreset(name, mix, extras);
           setName("");
           toast.success(`Saved as ${name}.`);
         }}
@@ -172,7 +178,7 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
                         return;
                       }
 
-                      override(preset.sounds, preset.swell);
+                      override(preset.sounds, preset);
                       play();
                       onClose();
                     }}

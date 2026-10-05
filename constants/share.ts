@@ -12,3 +12,6 @@ export const SHARE_PARAM = "share";
  * still opens there; it just arrives holding still.
  */
 export const SWELL_KEY = "swell";
+
+/** Where the sounds off centre sit, as `{ id: -1…1 }`, beside the same way. */
+export const PAN_KEY = "pan";
