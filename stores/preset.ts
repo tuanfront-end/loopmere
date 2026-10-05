@@ -7,21 +7,29 @@ import { v4 as uuid } from 'uuid';
 import { mergePersisted, uniqueById } from '@/lib/persist';
 
 interface PresetStore {
-  addPreset: (label: string, sounds: Record<string, number>) => void;
+  addPreset: (
+    label: string,
+    sounds: Record<string, number>,
+    swell: Array<string>,
+  ) => void;
   changeName: (id: string, newName: string) => void;
   deletePreset: (id: string) => void;
   presets: Array<{
     id: string;
     label: string;
     sounds: Record<string, number>;
+    /** The ids among `sounds` that swell. Absent on presets saved before it. */
+    swell?: Array<string>;
   }>;
 }
 
 export const usePresetStore = create<PresetStore>()(
   persist(
     (set, get) => ({
-      addPreset(label: string, sounds: Record<string, number>) {
-        set({ presets: [{ id: uuid(), label, sounds }, ...get().presets] });
+      addPreset(label, sounds, swell) {
+        set({
+          presets: [{ id: uuid(), label, sounds, swell }, ...get().presets],
+        });
       },
 
       changeName(id: string, newName: string) {

@@ -5,8 +5,8 @@
  * three states and why the list lives in the repo rather than on GitHub.
  *
  * Shipped holds only what this port added. The first loops, the tools,
- * presets, sharing, the theme switch and the Undo on a cleared mix were all
- * Moodist's before they were Loopmere's, so none of them is here.
+ * presets, sharing, the theme switch, the Undo on a cleared mix and Swell were
+ * all Moodist's before they were Loopmere's, so none of them is here.
  */
 
 /** In the order a reader meets them. */
@@ -40,11 +40,11 @@ export type RoadmapItem = PlannedItem | ShippedItem;
 export const roadmap: Array<RoadmapItem> = [
   {
     blurb:
-      "Thunder rolls in every few minutes and birds call now and then, each on its own timing.",
-    id: "come-and-go",
-    issue: 3,
+      "Close the Lofi panel and the station plays on, in a small player that stays while you change your mix.",
+    id: "radio-plays-on",
+    issue: 14,
     status: "next",
-    title: "Sounds that come and go",
+    title: "Lofi radio that keeps playing",
   },
   {
     blurb:
@@ -64,6 +64,30 @@ export const roadmap: Array<RoadmapItem> = [
   },
   {
     blurb:
+      "Thunder, an owl or wind chimes can sound now and then instead of on a loop, each on its own timing.",
+    id: "come-and-go",
+    issue: 3,
+    status: "later",
+    title: "Sounds that come and go",
+  },
+  {
+    blurb:
+      "Set each sound to the left or the right, so with headphones on the mix sounds like a place.",
+    id: "balance",
+    issue: 15,
+    status: "later",
+    title: "Place each sound left or right",
+  },
+  {
+    blurb:
+      "The three mixes on the first screen grow into a shelf of scenes, each one click to start.",
+    id: "scenes",
+    issue: 16,
+    status: "later",
+    title: "More ready-made scenes",
+  },
+  {
+    blurb:
       "Add an audio file of your own. It stays in this browser, like every mix you build here.",
     id: "your-own-sounds",
     issue: 6,
@@ -77,6 +101,14 @@ export const roadmap: Array<RoadmapItem> = [
     shipped: "2026-10",
     status: "shipped",
     title: "Find a sound by name",
+  },
+  {
+    blurb:
+      "Paste a YouTube link into Lofi radio and it joins the stations, still there on your next visit.",
+    id: "own-stations",
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Your own radio stations",
   },
   {
     blurb:

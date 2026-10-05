@@ -21,14 +21,18 @@ interface PresetsModalProps {
 
 /**
  * A mix as one comparable string: its loops in one order, each with its level
- * to the hundredth — the slider's own step. Levels count, not just loops,
- * because a preset is a mix at *those* levels: two presets can share every
- * loop and differ only in how loud, and only the one that is on is playing.
+ * to the hundredth — the slider's own step — and a mark if it swells. Levels
+ * count, not just loops, because a preset is a mix at *those* levels: two
+ * presets can share every loop and differ only in how loud, and only the one
+ * that is on is playing. Swell counts for the same reason.
  */
-const signature = (levels: Record<string, number>) =>
+const signature = (levels: Record<string, number>, swell: Array<string> = []) =>
   Object.keys(levels)
     .sort()
-    .map((id) => `${id}:${Math.round(levels[id] * 100)}`)
+    .map(
+      (id) =>
+        `${id}:${Math.round(levels[id] * 100)}${swell.includes(id) ? "~" : ""}`,
+    )
     .join();
 
 export function PresetsModal({ onClose, show }: PresetsModalProps) {
@@ -52,6 +56,7 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
       .filter((id) => sounds[id].isSelected)
       .map((id) => [id, sounds[id].volume]),
   );
+  const swell = Object.keys(mix).filter((id) => sounds[id].isSwelling);
 
   /**
    * The saved preset the mix *is*, if any — matched on what is on rather than
@@ -62,7 +67,10 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
    */
   const saved = noSelected
     ? undefined
-    : presets.find((preset) => signature(preset.sounds) === signature(mix));
+    : presets.find(
+        (preset) =>
+          signature(preset.sounds, preset.swell) === signature(mix, swell),
+      );
 
   return (
     <ToolPanel
@@ -77,7 +85,7 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
           event.preventDefault();
           if (!name || noSelected || saved) return;
 
-          addPreset(name, mix);
+          addPreset(name, mix, swell);
           setName("");
           toast.success(`Saved as ${name}.`);
         }}
@@ -164,7 +172,7 @@ export function PresetsModal({ onClose, show }: PresetsModalProps) {
                         return;
                       }
 
-                      override(preset.sounds);
+                      override(preset.sounds, preset.swell);
                       play();
                       onClose();
                     }}

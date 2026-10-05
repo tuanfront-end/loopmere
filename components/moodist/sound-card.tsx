@@ -6,6 +6,7 @@ import { memo, useCallback, useEffect } from "react";
 
 import { FavoriteButton } from "./favorite-button";
 import { SoundIcon } from "./sound-icon";
+import { SwellButton } from "./swell-button";
 import { VolumeSlider } from "./volume-slider";
 
 import { useSound } from "@/hooks/use-sound";
@@ -45,9 +46,11 @@ export const SoundCard = memo(function SoundCard({
   // the Everything slider moving does not re-render every card on the page.
   const volume = useSoundStore((state) => state.sounds[id].volume);
 
+  const isSwelling = useSoundStore((state) => state.sounds[id].isSwelling);
+
   const isLoading = useLoadingStore((state) => state.loaders[src]);
 
-  const sound = useSound(src, { loop: true, volume });
+  const sound = useSound(src, { loop: true, swell: isSwelling, volume });
 
   useEffect(() => {
     if (locked) return;
@@ -172,14 +175,17 @@ export const SoundCard = memo(function SoundCard({
           )}
         </div>
 
-        {/* One button, always the same one, always in the same place. A pause
-            used to appear beside it the moment a card was picked, which shoved
-            the heart thirty-six pixels left under whatever pointer was already
-            resting on it — and said nothing the card was not saying twice
-            over, since the card's own click and the slider's nought both end
-            in silence. Quietening without leaving the mix is a mixing-desk
-            move and it lives at the mixing desk, in the rail. */}
+        {/* Two buttons, always drawn, always in the same place. A pause used
+            to appear beside the heart the moment a card was picked, which
+            shoved the heart thirty-six pixels left under whatever pointer was
+            already resting on it — and said nothing the card was not saying
+            twice over, since the card's own click and the slider's nought
+            both end in silence. Quietening without leaving the mix is a
+            mixing-desk move and it lives at the mixing desk, in the rail.
+            Swell stays here as well because it is a way to hear the sound,
+            not only to tune it, and drawn from the start it moves nothing. */}
         <div className="relative z-10 -mt-1.5 -mr-1.5 flex items-center">
+          <SwellButton id={id} label={label} startsSound />
           <FavoriteButton id={id} label={label} />
         </div>
       </div>
