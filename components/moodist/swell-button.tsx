@@ -15,17 +15,28 @@ interface SwellButtonProps {
   className?: string;
   id: string;
   label: string;
+  /**
+   * On a card, a press on a sound out of the mix brings it in, swelling: the
+   * card's rule for its slider, where reaching for a control is a way in.
+   */
+  startsSound?: boolean;
 }
 
 /**
  * Lets one sound's level rise and fall on a slow wave of its own, so a loop
- * that holds still reads less like a loop. From Moodist 3.1, where it sits
- * under the card and appears with the pick; here it sits at the end of the
- * level it moves, in the mix desk, so no card changes height for it.
+ * that holds still reads less like a loop. From Moodist 3.1, where it appears
+ * under the card with the pick and changes the card's height. Here it is
+ * always drawn: beside the heart on the card, and at the end of the level it
+ * moves in the mix desk.
  *
  * A toggle, so the name holds still and `aria-pressed` carries the state.
  */
-export function SwellButton({ className, id, label }: SwellButtonProps) {
+export function SwellButton({
+  className,
+  id,
+  label,
+  startsSound = false,
+}: SwellButtonProps) {
   const isSwelling = useSoundStore((state) => state.sounds[id].isSwelling);
   const toggleSwell = useSoundStore((state) => state.toggleSwell);
 
@@ -43,9 +54,22 @@ export function SwellButton({ className, id, label }: SwellButtonProps) {
             : "text-muted-foreground hover:bg-muted hover:text-foreground",
           className,
         )}
-        onClick={() => toggleSwell(id)}
+        onClick={() => {
+          const { locked, play, select, sounds } = useSoundStore.getState();
+
+          if (!startsSound || sounds[id].isSelected) {
+            toggleSwell(id);
+            return;
+          }
+
+          if (locked) return;
+
+          select(id);
+          play();
+          if (!sounds[id].isSwelling) toggleSwell(id);
+        }}
       >
-        <HugeiconsIcon className="size-4" icon={Sine02Icon} strokeWidth={2} />
+        <HugeiconsIcon className="size-4" icon={Sine02Icon} strokeWidth={1.5} />
       </TooltipTrigger>
       <TooltipContent>{isSwelling ? "Hold steady" : "Swell"}</TooltipContent>
     </Tooltip>
