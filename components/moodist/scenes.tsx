@@ -1,8 +1,6 @@
 "use client";
 
 import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
-import { MountainIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 
 import { signature, usePicked } from "./hero-panels";
 import { SoundIcon } from "./sound-icon";
@@ -105,12 +103,12 @@ export function Scenes() {
       id="scenes"
     >
       <div className="flex items-start gap-4">
-        <div aria-hidden="true" className="text-primary-ink shrink-0">
-          <HugeiconsIcon
-            className="size-8"
-            icon={MountainIcon}
-            strokeWidth={1.5}
-          />
+        {/* A Thiings render, 32px, the way every shelf head is drawn. A
+            village at night is a whole place in one object, which is what a
+            scene is; it is also Night village's own render, until the set
+            has one made for this shelf. */}
+        <div aria-hidden="true" className="shrink-0">
+          <SoundIcon id="night-village" size={32} />
         </div>
 
         <div>

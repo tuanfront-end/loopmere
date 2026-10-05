@@ -94,7 +94,12 @@ function Card({
   title: string;
 }) {
   return (
-    <div className="bg-card shadow-soft-lg rounded-md p-4" data-object>
+    // Concentric with the frame at both of its paddings: `md` inside its 14,
+    // `sm` inside the 20 it takes from `@xl`, where `md` sat 5px too round.
+    <div
+      className="bg-card shadow-soft-lg rounded-md p-4 @xl:rounded-sm"
+      data-object
+    >
       <h3 className="text-lg font-medium tracking-tight">{title}</h3>
       <p className="text-muted-foreground mt-0.5 text-sm">{caption}</p>
       {children}
