@@ -40,11 +40,11 @@ export type RoadmapItem = PlannedItem | ShippedItem;
 export const roadmap: Array<RoadmapItem> = [
   {
     blurb:
-      "Thunder rolls in every few minutes and birds call now and then, each on its own timing.",
-    id: "come-and-go",
-    issue: 3,
+      "Close the Lofi panel and the station plays on, in a small player that stays while you change your mix.",
+    id: "radio-plays-on",
+    issue: 14,
     status: "next",
-    title: "Sounds that come and go",
+    title: "Lofi radio that keeps playing",
   },
   {
     blurb:
@@ -61,6 +61,30 @@ export const roadmap: Array<RoadmapItem> = [
     issue: 5,
     status: "next",
     title: "Presets you can carry",
+  },
+  {
+    blurb:
+      "Thunder, an owl or wind chimes can sound now and then instead of on a loop, each on its own timing.",
+    id: "come-and-go",
+    issue: 3,
+    status: "later",
+    title: "Sounds that come and go",
+  },
+  {
+    blurb:
+      "Set each sound to the left or the right, so with headphones on the mix sounds like a place.",
+    id: "balance",
+    issue: 15,
+    status: "later",
+    title: "Place each sound left or right",
+  },
+  {
+    blurb:
+      "The three mixes on the first screen grow into a shelf of scenes, each one click to start.",
+    id: "scenes",
+    issue: 16,
+    status: "later",
+    title: "More ready-made scenes",
   },
   {
     blurb:
