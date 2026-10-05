@@ -49,22 +49,37 @@ export function SharedMix() {
           ? (parsed[PAN_KEY] as Record<string, unknown>)
           : {};
 
-      const labels = Object.fromEntries(
+      // A Map, not an object: the keys come from whoever wrote the link, and
+      // on a plain object `constructor` or `__proto__` find a prototype
+      // member. The first was saved into the mix as a sound; the second was
+      // rendered as a child and took the whole page down.
+      const labels = new Map(
         sounds.categories
           .flatMap((category) => category.sounds)
           .map((sound) => [sound.id, sound.label]),
       );
 
-      const found = Object.keys(parsed)
-        .filter((id) => labels[id])
-        .map((id) => ({
-          id,
-          label: labels[id],
-          // A hand-edited place is held to the rail rather than trusted.
-          pan: Math.max(-1, Math.min(1, Number(pan[id]) || 0)),
-          swell: swell.includes(id),
-          volume: Number(parsed[id]),
-        }));
+      const found = Object.keys(parsed).flatMap((id) => {
+        const label = labels.get(id);
+        const volume = Number(parsed[id]);
+
+        // A level the slider could not have set is a hand-edited link, and a
+        // stored 9 read back as 900% on the mix desk. Such a sound is left
+        // out rather than guessed at.
+        if (!label || !Number.isFinite(volume) || volume < 0 || volume > 1)
+          return [];
+
+        return [
+          {
+            id,
+            label,
+            // A hand-edited place is held to the rail rather than trusted.
+            pan: Math.max(-1, Math.min(1, Number(pan[id]) || 0)),
+            swell: swell.includes(id),
+            volume,
+          },
+        ];
+      });
 
       if (found.length) {
         setShared(found);
@@ -72,9 +87,24 @@ export function SharedMix() {
       }
     } catch {
       // A hand-edited link: nothing to offer, and nothing to explain either.
-    } finally {
-      history.pushState({}, "", window.location.href.split("?")[0]);
     }
+
+    // Replaced, not pushed: a pushed entry put the link back one press of
+    // Back away. Only this parameter goes; a campaign tag beside it stays, as
+    // the analytics wrapper promises.
+    //
+    // A task later, not now. Next patches `history` in an effect of its
+    // router, which is this component's ancestor, so its effects run after
+    // this one. A call made from here is the browser's own: the router keeps
+    // the old address, and its next commit writes it back.
+    const strip = setTimeout(() => {
+      const url = new URL(window.location.href);
+
+      url.searchParams.delete(SHARE_PARAM);
+      history.replaceState(null, "", url);
+    }, 0);
+
+    return () => clearTimeout(strip);
   }, []);
 
   return (
