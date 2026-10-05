@@ -8,6 +8,9 @@ export const transport: Category = {
     {
       id: 'train',
       label: 'Train',
+      // The file ends in 24.8s of digital silence after the train has gone,
+      // so every minute of Train was half a minute of nothing.
+      loop: [0, 36.3],
       src: getAssetPath('/sounds/transport/train.mp3'),
     },
     {
