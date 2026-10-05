@@ -20,6 +20,7 @@ import { playFavourites } from "./hero-panels";
 import { Logo } from "./logo";
 import { LevelSliders, MixDesk } from "./right-rail";
 import { SoundIcon } from "./sound-icon";
+import { SearchField, SearchResults } from "./sound-search";
 import { ThemeToggle } from "./theme-toggle";
 import { ToolsSheetBody } from "./toolbar";
 
@@ -231,7 +232,10 @@ function TabFace({ active, badge, icon, label }: TabFaceProps) {
     <>
       <span
         aria-hidden="true"
-        className={cn("relative transition-colors", active && "text-primary-ink")}
+        className={cn(
+          "relative transition-colors",
+          active && "text-primary-ink",
+        )}
       >
         <HugeiconsIcon className="size-6" icon={icon} strokeWidth={1.5} />
 
@@ -343,6 +347,8 @@ function MiniPlayer({
  */
 export function MobileDock() {
   const [sheet, setSheet] = useState<Sheet | null>(null);
+  const [query, setQuery] = useState("");
+  const searchField = useRef<HTMLInputElement>(null);
   const { hold, tucked, untuck } = useTucked();
 
   const favorites = useSoundStore(useShallow((state) => state.getFavorites()));
@@ -469,73 +475,103 @@ export function MobileDock() {
                   </DrawerDescription>
                 </DrawerHeader>
 
-                {/* Real anchors that shut the sheet on their way, not
+                {/* The rail's search, at the head of the sheet that stands in
+                    for the rail; its results take the shelves' place here too.
+                    A press on one adds the sound and leaves the sheet open,
+                    since a search is often the first of several. */}
+                <div className="flex flex-col gap-3" data-search>
+                  <SearchField
+                    inputRef={searchField}
+                    value={query}
+                    onChange={setQuery}
+                  />
+                  {query.trim() && (
+                    <SearchResults inputRef={searchField} query={query} />
+                  )}
+                </div>
+
+                {!query.trim() && (
+                  <>
+                    {/* Real anchors that shut the sheet on their way, not
                     `DrawerClose render={<a/>}`: that one is a button underneath,
                     and the fix Base UI suggests for it puts role="button" on the
                     link — a jump to a shelf announced as a press. The shelf in
                     view is marked the way the left rail marks it. */}
-                <div className="flex flex-col gap-1">
-                  {shelves.map((shelf) => (
-                    <a
-                      aria-current={active === shelf.id ? "true" : undefined}
-                      className={cn(
-                        drawerRow,
-                        active === shelf.id && "bg-muted hover:bg-accent",
-                      )}
-                      href={`#category-${shelf.id}`}
-                      key={shelf.id}
-                      onClick={jump}
-                    >
-                      <span aria-hidden="true" className="shrink-0">
-                        <SoundIcon id={shelf.id} size={24} />
-                      </span>
-                      {shelf.title}
-                      <span className="text-muted-foreground ml-auto text-xs tabular-nums">
-                        {shelf.count}
-                      </span>
-                    </a>
-                  ))}
-                </div>
+                    <div className="flex flex-col gap-1">
+                      {shelves.map((shelf) => (
+                        <a
+                          aria-current={
+                            active === shelf.id ? "true" : undefined
+                          }
+                          className={cn(
+                            drawerRow,
+                            active === shelf.id && "bg-muted hover:bg-accent",
+                          )}
+                          href={`#category-${shelf.id}`}
+                          key={shelf.id}
+                          onClick={jump}
+                        >
+                          <span aria-hidden="true" className="shrink-0">
+                            <SoundIcon id={shelf.id} size={24} />
+                          </span>
+                          {shelf.title}
+                          <span className="text-muted-foreground ml-auto text-xs tabular-nums">
+                            {shelf.count}
+                          </span>
+                        </a>
+                      ))}
+                    </div>
 
-                <div className="mx-2.5 mt-2 border-t pt-2">
-                  <div className="-mx-2.5 flex flex-col gap-1">
-                    <a
-                      aria-current={active === "favorites" ? "true" : undefined}
-                      className={cn(
-                        drawerRow,
-                        active === "favorites" && "bg-muted hover:bg-accent",
-                      )}
-                      href="#category-favorites"
-                      onClick={jump}
-                    >
-                      <span aria-hidden="true" className="shrink-0">
-                        <HugeiconsIcon icon={FavouriteIcon} strokeWidth={1.5} />
-                      </span>
-                      Favourites
-                      <span className="text-muted-foreground ml-auto text-xs tabular-nums">
-                        {favorites.length}
-                      </span>
-                    </a>
+                    <div className="mx-2.5 mt-2 border-t pt-2">
+                      <div className="-mx-2.5 flex flex-col gap-1">
+                        <a
+                          aria-current={
+                            active === "favorites" ? "true" : undefined
+                          }
+                          className={cn(
+                            drawerRow,
+                            active === "favorites" &&
+                              "bg-muted hover:bg-accent",
+                          )}
+                          href="#category-favorites"
+                          onClick={jump}
+                        >
+                          <span aria-hidden="true" className="shrink-0">
+                            <HugeiconsIcon
+                              icon={FavouriteIcon}
+                              strokeWidth={1.5}
+                            />
+                          </span>
+                          Favourites
+                          <span className="text-muted-foreground ml-auto text-xs tabular-nums">
+                            {favorites.length}
+                          </span>
+                        </a>
 
-                    {/* The floating button's other half: under `lg` there is
+                        {/* The floating button's other half: under `lg` there is
                         no Back to the top button left on the screen. */}
-                    <button
-                      className={cn(drawerRow, "text-muted-foreground")}
-                      onClick={() => {
-                        jump();
-                        window.scrollTo({ behavior: scrollBehavior(), top: 0 });
-                      }}
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="grid size-6 shrink-0 place-items-center"
-                      >
-                        <ArrowUpIcon className="size-4" />
-                      </span>
-                      Back to the top
-                    </button>
-                  </div>
-                </div>
+                        <button
+                          className={cn(drawerRow, "text-muted-foreground")}
+                          onClick={() => {
+                            jump();
+                            window.scrollTo({
+                              behavior: scrollBehavior(),
+                              top: 0,
+                            });
+                          }}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className="grid size-6 shrink-0 place-items-center"
+                          >
+                            <ArrowUpIcon className="size-4" />
+                          </span>
+                          Back to the top
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </DrawerContent>
             </Drawer>
 

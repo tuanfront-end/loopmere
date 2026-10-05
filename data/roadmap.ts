@@ -96,6 +96,14 @@ export const roadmap: Array<RoadmapItem> = [
   },
   {
     blurb:
+      "Type a name above the shelves and every sound it matches shows where it is and whether it plays.",
+    id: "sound-search",
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Find a sound by name",
+  },
+  {
+    blurb:
       "Paste a YouTube link into Lofi radio and it joins the stations, still there on your next visit.",
     id: "own-stations",
     shipped: "2026-10",
