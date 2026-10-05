@@ -4,9 +4,11 @@ import { ForwardIcon, PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
 import { ArrowsPointingOutIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { MinusSignIcon, MusicNote01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import YouTube, { type YouTubePlayer } from "react-youtube";
+
+import type { YouTubePlayer } from "react-youtube";
 
 import { Button } from "@/components/ui/button";
 import { PERCENT, Slider } from "@/components/ui/slider";
@@ -18,6 +20,13 @@ import { cn } from "@/lib/utils";
 import { useRadioStore } from "@/stores/radio";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
+
+/**
+ * The embed's code, fetched the first time a station is tuned. Nothing plays
+ * until somebody picks one, and imported up front it sat in the first load of
+ * every visit, most of which never open the radio.
+ */
+const YouTube = dynamic(() => import("react-youtube"), { ssr: false });
 
 const OPTS = {
   height: "100%",
@@ -83,6 +92,20 @@ export function RadioPlayer() {
   // Paused by the mix's own Pause, so the mix's Play brings it back; a pause
   // pressed on the radio itself stays paused.
   const pausedByMix = useRef(false);
+
+  // The embed is a new one each time the player appears, and each time it
+  // crosses `xl` between the rail and the page. The ref used to keep the one
+  // just destroyed, and the effects below spoke to it until the new one was
+  // ready. Cleared with it, they wait for `onReady` instead.
+  const shown = current !== null;
+
+  useEffect(() => {
+    if (!shown) return;
+
+    return () => {
+      player.current = null;
+    };
+  }, [shown, docked]);
 
   // The store's intent, carried to YouTube.
   useEffect(() => {
@@ -234,12 +257,15 @@ export function RadioPlayer() {
       </div>
 
       {/* Folded to no height rather than hidden, so the frame is still laid
-          out and the stream keeps going; 200px open, YouTube's floor. */}
+          out and the stream keeps going; 200px open, YouTube's floor.
+          `inert` while folded: the player's own controls stayed in the tab
+          order, and focus went into a frame nobody could see. */}
       <div
         className={cn(
           "overflow-hidden rounded-sm bg-black",
           minimised ? "h-0" : "h-[200px]",
         )}
+        inert={minimised}
       >
         <YouTube
           className="size-full"
