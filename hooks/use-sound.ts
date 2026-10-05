@@ -71,6 +71,7 @@ function swellAt(curve: SwellCurve | null, time: number) {
  * @param {[number, number]} [options.loopWindow] - The stretch of the file to play, in seconds.
  * @param {number} [options.pan=0] - Where it sits between the ears, -1 left to 1 right.
  * @param {boolean} [options.occasional=false] - Whether it rests between plays instead of looping.
+ * @param {Function} [options.onLoadError] - Told when the file could not be loaded; the next play tries afresh.
  * @param {Function} [options.onRest] - Told when a rest starts, with when it ends, and `null` when it does.
  * @param {boolean} [options.swell=false] - Whether its level rises and falls on a slow wave.
  * @param {number} [options.volume=0.5] - The initial volume of the sound, ranging from 0.0 to 1.0.
@@ -88,6 +89,7 @@ export function useSound(
     loopWindow?: [number, number];
     pan?: number;
     occasional?: boolean;
+    onLoadError?: () => void;
     onRest?: (until: number | null) => void;
     preload?: boolean;
     swell?: boolean;
@@ -113,6 +115,21 @@ export function useSound(
   // reading of the level is updated by a timer and lags behind the ramp.
   const swellLevel = useRef(0);
 
+  // A load that failed is not tried again by the same Howl: Howler emits
+  // `loaderror` and leaves it `loading`, so every later play only joined a
+  // queue that never ran, behind a spinner that never stopped. A failure
+  // retires the Howl instead, and the next play starts a fresh one.
+  const [attempt, setAttempt] = useState(0);
+  const onLoadError = useRef(options.onLoadError);
+
+  useEffect(() => {
+    onLoadError.current = options.onLoadError;
+  }, [options.onLoadError]);
+
+  // The window's sound, once it has been played, so a pause resumes that one
+  // rather than starting the sprite again from its top.
+  const windowId = useRef<number | null>(null);
+
   const { isBrowser } = useSSR();
   const sound = useMemo<Howl | null>(() => {
     let sound: Howl | null = null;
@@ -125,6 +142,14 @@ export function useSound(
         onload: () => {
           setIsLoading(src, false);
           setHasLoaded(true);
+        },
+        onloaderror: () => {
+          setIsLoading(src, false);
+          setHasLoaded(false);
+          // An id from the Howl being retired, which the next one never had.
+          windowId.current = null;
+          onLoadError.current?.();
+          setAttempt(attempt + 1);
         },
         preload: options.preload ?? false,
         // A window is a sprite, which Web Audio loops on its own bounds to
@@ -144,11 +169,37 @@ export function useSound(
     html5,
     options.preload,
     options.loopWindow,
+    attempt,
   ]);
 
-  // The window's sound, once it has been played, so a pause resumes that one
-  // rather than starting the sprite again from its top.
-  const windowId = useRef<number | null>(null);
+  // A Howl this card no longer holds is unloaded, or it stays registered with
+  // Howler for the life of the page: the Favourites shelf mounts a card for
+  // every heart and drops it with the heart, and a failed load retires one.
+  //
+  // A task later, and called off if the same Howl comes straight back. Strict
+  // Mode runs this cleanup and the effect again on mount, and an unloaded Howl
+  // is taken off Howler's list, where its auto-suspend looks for sounds still
+  // playing before it suspends the audio context under them.
+  const retiring = useRef<{
+    howl: Howl;
+    timer: ReturnType<typeof setTimeout>;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!sound) return;
+
+    if (retiring.current?.howl === sound) {
+      clearTimeout(retiring.current.timer);
+      retiring.current = null;
+    }
+
+    return () => {
+      retiring.current = {
+        howl: sound,
+        timer: setTimeout(() => sound.unload(), 0),
+      };
+    };
+  }, [sound]);
 
   // Media rather than a UI sound, so iOS plays it through the silent switch.
   // Set in an effect, not while the Howl is made: a memo is render, and render
