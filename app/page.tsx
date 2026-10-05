@@ -1,6 +1,7 @@
 import { App } from "@/components/moodist/app";
 import { Hero } from "@/components/moodist/hero";
 import { Roadmap } from "@/components/moodist/roadmap";
+import { Scenes } from "@/components/moodist/scenes";
 import { SiteFooter } from "@/components/moodist/site-footer";
 import { homeJsonLd, pageMeta, SITE_TITLE } from "@/lib/seo";
 
@@ -30,6 +31,7 @@ export default function Home() {
             children and the footer is this column's. */}
         <main className="flex flex-col gap-24 sm:gap-40 xl:gap-28" id="content">
           <Hero />
+          <Scenes />
           <App />
           <Roadmap />
         </main>
