@@ -444,9 +444,7 @@ export function RightRail() {
   const shortcuts = useSettingsStore((state) => state.shortcuts);
 
   return (
-    // The bottom padding grows by the radio's height while it sits over the
-    // rail's foot, so the last tools scroll clear of it.
-    <div className="no-scrollbar flex h-full flex-col gap-8 overflow-y-auto p-5 pb-[calc(1.25rem+var(--radio-cover,0px))]">
+    <div className="no-scrollbar flex h-full flex-col gap-8 overflow-y-auto p-5">
       <TheMix />
       <Levels />
       <Tools />
@@ -481,6 +479,10 @@ export function RightRail() {
               )),
         )}
       </div>
+
+      {/* The Lofi radio's player, portalled in from the page while a station
+          is on, under everything else the rail holds. */}
+      <div className="empty:hidden" id="radio-slot" />
     </div>
   );
 }

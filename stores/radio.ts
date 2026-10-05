@@ -19,7 +19,7 @@ interface RadioStore {
   addStation: (station: Station) => void;
   /** The station on the player, playing or not; null when it is closed. */
   current: Station | null;
-  /** Shrunk to a pill. YouTube does not let a hidden player play. */
+  /** The video folded away; the stream plays on. */
   minimised: boolean;
   /** Whether it is meant to be sounding, as opposed to what YouTube reports. */
   playing: boolean;
@@ -59,8 +59,7 @@ export const useRadioStore = create<RadioStore>()(
       },
 
       setMinimised(minimised) {
-        // Shrinking pauses; opening it again is a request to hear it.
-        set({ minimised, playing: !minimised });
+        set({ minimised });
       },
 
       setPlaying(playing) {

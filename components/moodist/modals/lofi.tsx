@@ -147,7 +147,7 @@ function StationRow({
   station: Station;
 }) {
   const isCurrent = useRadioStore((state) => state.current?.id === station.id);
-  const playing = useRadioStore((state) => state.playing && !state.minimised);
+  const playing = useRadioStore((state) => state.playing);
   const sounding = isCurrent && playing;
 
   return (
@@ -180,8 +180,7 @@ function StationRow({
           const radio = useRadioStore.getState();
 
           if (isCurrent) {
-            if (radio.minimised) radio.setMinimised(false);
-            else radio.setPlaying(!radio.playing);
+            radio.setPlaying(!radio.playing);
             return;
           }
 
