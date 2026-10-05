@@ -49,7 +49,7 @@ function SceneCard({ scene }: { scene: Scene }) {
           return;
         }
 
-        store.override(scene.sounds, scene.swell);
+        store.override(scene.sounds, { swell: scene.swell });
         store.play();
       }}
     >

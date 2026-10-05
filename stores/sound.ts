@@ -21,8 +21,20 @@ type SoundValue = {
    * still. The level set on the slider is the top of the wave.
    */
   isSwelling: boolean;
+  /** Where it sits between the ears: -1 all left, 0 centre, 1 all right. */
+  pan: number;
   volume: number;
 };
+
+/**
+ * What a mix carries besides its levels. Optional, because a preset saved or a
+ * link sent before either existed holds levels alone.
+ */
+export interface MixExtras {
+  /** Only the sounds off centre. */
+  pan?: Record<string, number>;
+  swell?: Array<string>;
+}
 
 interface SoundStore {
   getFavorites: () => Array<string>;
@@ -31,11 +43,12 @@ interface SoundStore {
   lock: () => void;
   locked: boolean;
   noSelected: () => boolean;
-  override: (sounds: Record<string, number>, swell?: Array<string>) => void;
+  override: (sounds: Record<string, number>, extras?: MixExtras) => void;
   pause: () => void;
   play: () => void;
   restoreHistory: () => void;
   select: (id: string) => void;
+  setPan: (id: string, pan: number) => void;
   setVolume: (id: string, volume: number) => void;
   shuffle: () => void;
   sounds: Record<string, SoundValue>;
@@ -58,6 +71,7 @@ function createInitialSounds() {
         isPaused: false,
         isSelected: false,
         isSwelling: false,
+        pan: 0,
         volume: 0.5,
       };
     });
@@ -67,7 +81,25 @@ function createInitialSounds() {
 }
 
 /**
- * Every sound out of the mix, unpaused, holding still and back at the default
+ * What a mix of `ids` carries besides its levels, read off the store: the
+ * sounds that swell, and where the ones off centre sit, to the hundredth.
+ */
+export function extrasOf(
+  sounds: Record<string, SoundValue>,
+  ids: Array<string>,
+): Required<MixExtras> {
+  return {
+    pan: Object.fromEntries(
+      ids
+        .filter((id) => sounds[id].pan !== 0)
+        .map((id) => [id, Number(sounds[id].pan.toFixed(2))]),
+    ),
+    swell: ids.filter((id) => sounds[id].isSwelling),
+  };
+}
+
+/**
+ * Every sound out of the mix, unpaused, holding still, centred and back at the default
  * level — as a new object with new entries. The three bulk actions used to
  * write these fields into the objects already in the store and hand `set` the
  * same record back, so anything subscribed to `state.sounds` as a whole never
@@ -83,6 +115,7 @@ function cleared(sounds: Record<string, SoundValue>) {
         isPaused: false,
         isSelected: false,
         isSwelling: false,
+        pan: 0,
         volume: 0.5,
       },
     ]),
@@ -116,7 +149,7 @@ export const useSoundStore = create<SoundStore>()(
         return keys.every((key) => !sounds[key].isSelected);
       },
 
-      override(newSounds, swell = []) {
+      override(newSounds, { pan = {}, swell = [] } = {}) {
         get().unselectAll();
 
         const current = get().sounds;
@@ -129,6 +162,7 @@ export const useSoundStore = create<SoundStore>()(
               isPaused: false,
               isSelected: true,
               isSwelling: swell.includes(id),
+              pan: pan[id] ?? 0,
               volume: newSounds[id],
             };
           }
@@ -170,6 +204,15 @@ export const useSoundStore = create<SoundStore>()(
               isSelected: true,
               volume: sound.volume > 0 ? sound.volume : 0.5,
             },
+          },
+        });
+      },
+
+      setPan(id, pan) {
+        set({
+          sounds: {
+            ...get().sounds,
+            [id]: { ...get().sounds[id], pan },
           },
         });
       },

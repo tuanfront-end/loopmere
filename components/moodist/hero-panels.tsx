@@ -11,7 +11,7 @@ import { SCENES } from "@/data/scenes";
 import { sounds } from "@/data/sounds";
 import { cn } from "@/lib/utils";
 import { count } from "@/lib/sounds";
-import { useSoundStore } from "@/stores/sound";
+import { extrasOf, useSoundStore } from "@/stores/sound";
 
 /* The middle ring of three concentric corners — the hero frame outside it,
    the rows and the button inside — so neither number here is free: the frame
@@ -194,8 +194,9 @@ export function playFavourites(ids: Array<string>) {
     Object.fromEntries(
       ids.map((id) => [id, sounds[id].volume > 0 ? sounds[id].volume : 0.5]),
     ),
-    // Each favourite comes back swelling or still, as it was left.
-    ids.filter((id) => sounds[id].isSwelling),
+    // Each favourite comes back swelling or still, and where it sat, as it
+    // was left.
+    extrasOf(sounds, ids),
   );
   play();
 }

@@ -155,8 +155,12 @@ export function Roadmap() {
       className="mx-auto w-full max-w-[1200px] px-6 sm:px-8"
       id="roadmap"
     >
-      <div className="@3xl:grid @3xl:grid-cols-2 @3xl:items-center @3xl:gap-x-12">
-        <div>
+      {/* Top-aligned, and the case stays in view: the frame beside it runs
+          much taller than the heading, which centred sat in a band of empty
+          air half way down, and scrolled away before the list it introduces
+          was read. Sticky only side by side; stacked it simply leads. */}
+      <div className="@3xl:grid @3xl:grid-cols-2 @3xl:items-start @3xl:gap-x-12">
+        <div className="@3xl:sticky @3xl:top-10">
           <p className="text-muted-foreground text-xs tracking-widest uppercase">
             Roadmap
           </p>
