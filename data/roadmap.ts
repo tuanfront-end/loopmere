@@ -80,19 +80,20 @@ export const roadmap: Array<RoadmapItem> = [
   },
   {
     blurb:
-      "The three mixes on the first screen grow into a shelf of scenes, each one click to start.",
-    id: "scenes",
-    issue: 16,
-    status: "later",
-    title: "More ready-made scenes",
-  },
-  {
-    blurb:
       "Add an audio file of your own. It stays in this browser, like every mix you build here.",
     id: "your-own-sounds",
     issue: 6,
     status: "later",
     title: "Your own sounds on a shelf",
+  },
+  {
+    blurb:
+      "Twelve places mixed for you, from a harbour at dawn to a tent in a storm, each one click to start.",
+    id: "scenes",
+    issue: 16,
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Scenes, ready to play",
   },
   {
     blurb:

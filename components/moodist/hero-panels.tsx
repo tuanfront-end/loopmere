@@ -7,6 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 import { SoundIcon } from "./sound-icon";
 
 import { Button } from "@/components/ui/button";
+import { SCENES } from "@/data/scenes";
 import { sounds } from "@/data/sounds";
 import { cn } from "@/lib/utils";
 import { count } from "@/lib/sounds";
@@ -40,30 +41,20 @@ const LABELS: Record<string, string> = Object.fromEntries(
  * photograph already said, and on an empty page — which is every first visit —
  * it said nothing at all. A door is worth more than a mirror.
  */
-const STARTERS: Array<{ label: string; sounds: Record<string, number> }> = [
-  {
-    label: "Rainy study",
-    sounds: { cafe: 0.25, keyboard: 0.3, "light-rain": 0.6 },
-  },
-  {
-    label: "Deep forest",
-    sounds: { campfire: 0.3, river: 0.4, "wind-in-trees": 0.5 },
-  },
-  {
-    label: "Night train",
-    sounds: { clock: 0.2, "inside-a-train": 0.55, "rain-on-window": 0.4 },
-  },
-];
+const STARTERS = SCENES.slice(0, 3).map((scene) => ({
+  label: scene.title,
+  sounds: scene.sounds,
+}));
 
 /** The ids a mix holds, in one order, so two mixes can be compared. */
-const signature = (ids: Array<string>) => [...ids].sort().join();
+export const signature = (ids: Array<string>) => [...ids].sort().join();
 
 /**
  * The mix that is on, as a signature — which both panels match against their
  * own, so each can tell when the thing it starts is the thing playing. A string
  * rather than an array: the selector runs on every store write.
  */
-function usePicked() {
+export function usePicked() {
   return useSoundStore((state) =>
     signature(
       Object.keys(state.sounds).filter((id) => state.sounds[id].isSelected),
@@ -104,7 +95,16 @@ export function HeroStarters() {
 
           Adding `px-2.5` to the labels as well was the first attempt and it
           moved them the other way, 10 past the rows' own text. */}
-      <p className="text-muted-foreground text-xs">Start here</p>
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="text-muted-foreground text-xs">Start here</p>
+        {/* The other nine, a section down. */}
+        <a
+          className="text-muted-foreground hover:text-foreground text-xs underline-offset-4 transition-colors hover:underline"
+          href="#scenes"
+        >
+          All {SCENES.length} scenes
+        </a>
+      </div>
 
       <p className="mt-1 text-lg font-medium tracking-tight">
         Three made earlier
