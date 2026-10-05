@@ -16,6 +16,11 @@ type SoundValue = {
    */
   isPaused: boolean;
   isSelected: boolean;
+  /**
+   * Its level rises and falls on a slow wave of its own instead of holding
+   * still. The level set on the slider is the top of the wave.
+   */
+  isSwelling: boolean;
   volume: number;
 };
 
@@ -26,7 +31,7 @@ interface SoundStore {
   lock: () => void;
   locked: boolean;
   noSelected: () => boolean;
-  override: (sounds: Record<string, number>) => void;
+  override: (sounds: Record<string, number>, swell?: Array<string>) => void;
   pause: () => void;
   play: () => void;
   restoreHistory: () => void;
@@ -36,6 +41,7 @@ interface SoundStore {
   sounds: Record<string, SoundValue>;
   toggleFavorite: (id: string) => void;
   togglePause: (id: string) => void;
+  toggleSwell: (id: string) => void;
   togglePlay: () => void;
   unlock: () => void;
   unselect: (id: string) => void;
@@ -51,6 +57,7 @@ function createInitialSounds() {
         isFavorite: false,
         isPaused: false,
         isSelected: false,
+        isSwelling: false,
         volume: 0.5,
       };
     });
@@ -60,17 +67,24 @@ function createInitialSounds() {
 }
 
 /**
- * Every sound out of the mix, unpaused and back at the default level — as a new
- * object with new entries. The three bulk actions used to write these fields
- * into the objects already in the store and hand `set` the same record back,
- * so anything subscribed to `state.sounds` as a whole never heard: after
- * "Build me a mix", Send this mix still shared the empty mix from before.
+ * Every sound out of the mix, unpaused, holding still and back at the default
+ * level — as a new object with new entries. The three bulk actions used to
+ * write these fields into the objects already in the store and hand `set` the
+ * same record back, so anything subscribed to `state.sounds` as a whole never
+ * heard: after "Build me a mix", Send this mix still shared the empty mix from
+ * before.
  */
 function cleared(sounds: Record<string, SoundValue>) {
   return Object.fromEntries(
     Object.entries(sounds).map(([id, sound]) => [
       id,
-      { ...sound, isPaused: false, isSelected: false, volume: 0.5 },
+      {
+        ...sound,
+        isPaused: false,
+        isSelected: false,
+        isSwelling: false,
+        volume: 0.5,
+      },
     ]),
   );
 }
@@ -102,7 +116,7 @@ export const useSoundStore = create<SoundStore>()(
         return keys.every((key) => !sounds[key].isSelected);
       },
 
-      override(newSounds) {
+      override(newSounds, swell = []) {
         get().unselectAll();
 
         const current = get().sounds;
@@ -114,6 +128,7 @@ export const useSoundStore = create<SoundStore>()(
               ...current[id],
               isPaused: false,
               isSelected: true,
+              isSwelling: swell.includes(id),
               volume: newSounds[id],
             };
           }
@@ -199,6 +214,18 @@ export const useSoundStore = create<SoundStore>()(
 
         set({
           sounds: { ...sounds, [id]: { ...sound, isPaused: !sound.isPaused } },
+        });
+      },
+
+      toggleSwell(id) {
+        const sounds = get().sounds;
+        const sound = sounds[id];
+
+        set({
+          sounds: {
+            ...sounds,
+            [id]: { ...sound, isSwelling: !sound.isSwelling },
+          },
         });
       },
 

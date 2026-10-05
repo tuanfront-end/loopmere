@@ -9,7 +9,7 @@ import { ToolPanel } from "../tool-panel";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SHARE_PARAM } from "@/constants/share";
+import { SHARE_PARAM, SWELL_KEY } from "@/constants/share";
 import { useCopy } from "@/hooks/use-copy";
 import { useSoundStore } from "@/stores/sound";
 
@@ -25,17 +25,17 @@ export function ShareLinkModal({ onClose, show }: ShareLinkModalProps) {
 
   useEffect(() => setIsMounted(true), []);
 
-  const mix = useMemo(
-    () =>
-      JSON.stringify(
-        Object.fromEntries(
-          Object.keys(sounds)
-            .filter((id) => sounds[id].isSelected)
-            .map((id) => [id, Number(sounds[id].volume.toFixed(2))]),
-        ),
+  const mix = useMemo(() => {
+    const ids = Object.keys(sounds).filter((id) => sounds[id].isSelected);
+    const swell = ids.filter((id) => sounds[id].isSwelling);
+
+    return JSON.stringify({
+      ...Object.fromEntries(
+        ids.map((id) => [id, Number(sounds[id].volume.toFixed(2))]),
       ),
-    [sounds],
-  );
+      ...(swell.length > 0 && { [SWELL_KEY]: swell }),
+    });
+  }, [sounds]);
 
   /**
    * The origin is only knowable on the client, so the first render leaves it

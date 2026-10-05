@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { ToolPanel } from "../tool-panel";
 
 import { Button } from "@/components/ui/button";
-import { SHARE_PARAM } from "@/constants/share";
+import { SHARE_PARAM, SWELL_KEY } from "@/constants/share";
 import { sounds } from "@/data/sounds";
 import { useCloseListener } from "@/hooks/use-close-listener";
 import { useSoundStore } from "@/stores/sound";
@@ -14,6 +14,7 @@ import { useSoundStore } from "@/stores/sound";
 interface SharedSound {
   id: string;
   label: string;
+  swell: boolean;
   volume: number;
 }
 
@@ -38,8 +39,10 @@ export function SharedMix() {
     try {
       const parsed = JSON.parse(decodeURIComponent(share)) as Record<
         string,
-        number
+        unknown
       >;
+
+      const swell = Array.isArray(parsed[SWELL_KEY]) ? parsed[SWELL_KEY] : [];
 
       const labels = Object.fromEntries(
         sounds.categories
@@ -52,6 +55,7 @@ export function SharedMix() {
         .map((id) => ({
           id,
           label: labels[id],
+          swell: swell.includes(id),
           volume: Number(parsed[id]),
         }));
 
@@ -95,7 +99,10 @@ export function SharedMix() {
         <Button
           className="flex-1"
           onClick={() => {
-            override(Object.fromEntries(shared.map((s) => [s.id, s.volume])));
+            override(
+              Object.fromEntries(shared.map((s) => [s.id, s.volume])),
+              shared.filter((s) => s.swell).map((s) => s.id),
+            );
             play();
             setIsOpen(false);
             toast.success(`Playing ${shared.length} sounds from the link.`);

@@ -194,6 +194,8 @@ export function playFavourites(ids: Array<string>) {
     Object.fromEntries(
       ids.map((id) => [id, sounds[id].volume > 0 ? sounds[id].volume : 0.5]),
     ),
+    // Each favourite comes back swelling or still, as it was left.
+    ids.filter((id) => sounds[id].isSwelling),
   );
   play();
 }
