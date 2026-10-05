@@ -12,6 +12,7 @@ import { VolumeSlider } from "./volume-slider";
 import { useSound } from "@/hooks/use-sound";
 import { cn } from "@/lib/utils";
 import { useLoadingStore } from "@/stores/loading";
+import { useRestStore } from "@/stores/rest";
 import { useSoundStore } from "@/stores/sound";
 
 import type { Sound as SoundType } from "@/data/types";
@@ -47,10 +48,26 @@ export const SoundCard = memo(function SoundCard({
   const volume = useSoundStore((state) => state.sounds[id].volume);
 
   const isSwelling = useSoundStore((state) => state.sounds[id].isSwelling);
+  const isOccasional = useSoundStore(
+    (state) => state.sounds[id].isOccasional,
+  );
+
+  // Rests are reported for the mix desk to show. The Favourites copy of a
+  // card never plays, so it never rests either.
+  const onRest = useCallback(
+    (until: number | null) => useRestStore.getState().set(id, until),
+    [id],
+  );
 
   const isLoading = useLoadingStore((state) => state.loaders[src]);
 
-  const sound = useSound(src, { loop: true, swell: isSwelling, volume });
+  const sound = useSound(src, {
+    loop: true,
+    occasional: isOccasional,
+    onRest,
+    swell: isSwelling,
+    volume,
+  });
 
   useEffect(() => {
     if (locked) return;

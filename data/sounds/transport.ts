@@ -6,6 +6,7 @@ export const transport: Category = {
   id: 'transport',
   sounds: [
     {
+      event: true,
       id: 'train',
       label: 'Train',
       src: getAssetPath('/sounds/transport/train.mp3'),

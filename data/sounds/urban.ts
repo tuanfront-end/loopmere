@@ -16,6 +16,7 @@ export const urban: Category = {
       src: getAssetPath('/sounds/urban/road.mp3'),
     },
     {
+      event: true,
       id: 'ambulance-siren',
       label: 'Ambulance Siren',
       src: getAssetPath('/sounds/urban/ambulance-siren.mp3'),
@@ -36,6 +37,7 @@ export const urban: Category = {
       src: getAssetPath('/sounds/urban/traffic.mp3'),
     },
     {
+      event: true,
       id: 'fireworks',
       label: 'Fireworks',
       src: getAssetPath('/sounds/urban/fireworks.mp3'),

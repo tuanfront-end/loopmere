@@ -26,11 +26,13 @@ export const things: Category = {
       src: getAssetPath('/sounds/things/clock.mp3'),
     },
     {
+      event: true,
       id: 'wind-chimes',
       label: 'Wind Chimes',
       src: getAssetPath('/sounds/things/wind-chimes.mp3'),
     },
     {
+      event: true,
       id: 'singing-bowl',
       label: 'Singing Bowl',
       src: getAssetPath('/sounds/things/singing-bowl.mp3'),
@@ -56,6 +58,7 @@ export const things: Category = {
       src: getAssetPath('/sounds/things/boiling-water.mp3'),
     },
     {
+      event: true,
       id: 'bubbles',
       label: 'Bubbles',
       src: getAssetPath('/sounds/things/bubbles.mp3'),

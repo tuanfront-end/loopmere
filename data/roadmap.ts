@@ -64,14 +64,6 @@ export const roadmap: Array<RoadmapItem> = [
   },
   {
     blurb:
-      "Thunder, an owl or wind chimes can sound now and then instead of on a loop, each on its own timing.",
-    id: "come-and-go",
-    issue: 3,
-    status: "later",
-    title: "Sounds that come and go",
-  },
-  {
-    blurb:
       "Set each sound to the left or the right, so with headphones on the mix sounds like a place.",
     id: "balance",
     issue: 15,
@@ -93,6 +85,15 @@ export const roadmap: Array<RoadmapItem> = [
     issue: 6,
     status: "later",
     title: "Your own sounds on a shelf",
+  },
+  {
+    blurb:
+      "Thunder, an owl or wind chimes can sound now and then instead of on a loop, each on its own timing.",
+    id: "come-and-go",
+    issue: 3,
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Sounds that come and go",
   },
   {
     blurb:
