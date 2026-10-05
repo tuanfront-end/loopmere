@@ -1,7 +1,7 @@
 "use client";
 
 import { PauseIcon, PlayIcon } from "@heroicons/react/16/solid";
-import { Location01Icon } from "@hugeicons/core-free-icons";
+import { MountainIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { signature, usePicked } from "./hero-panels";
@@ -36,7 +36,7 @@ function SceneCard({ scene }: { scene: Scene }) {
       // product object's, like the hero's panels.
       data-object
       className={cn(
-        "bg-card group/scene relative flex flex-col rounded-lg border p-4 text-left transition-[border-color,box-shadow] sm:p-5",
+        "bg-card group/scene relative flex items-center gap-3 rounded-lg border p-3 text-left transition-[border-color,box-shadow]",
         "hover:border-primary/60 hover:shadow-soft focus-visible:ring-ring/50 outline-none focus-visible:ring-3",
         active && "ring-primary ring-2 ring-inset",
       )}
@@ -53,39 +53,43 @@ function SceneCard({ scene }: { scene: Scene }) {
         store.play();
       }}
     >
-      <span aria-hidden="true" className="flex gap-1">
-        {ids.map((id) => (
-          <SoundIcon id={id} key={id} size={28} />
+      {/* A cover, the way a playlist has one: the scene's renders two by
+          two on a muted tile, so twelve cards read as twelve places at a
+          glance without a row of icons each. */}
+      <span
+        aria-hidden="true"
+        className="bg-muted grid size-12 shrink-0 grid-cols-2 place-items-center gap-0.5 rounded-sm p-1"
+      >
+        {ids.slice(0, 4).map((id) => (
+          <SoundIcon id={id} key={id} size={18} />
         ))}
       </span>
 
-      <span className="mt-4 text-base font-medium">{scene.title}</span>
-      <span className="text-muted-foreground mt-1 text-sm text-pretty">
-        {scene.blurb}
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-medium">
+          {scene.title}
+        </span>
+        <span className="text-muted-foreground mt-0.5 line-clamp-2 text-xs">
+          {scene.blurb}
+        </span>
       </span>
 
-      <span className="mt-auto flex items-center justify-between pt-4">
-        <span className="text-muted-foreground text-xs">
-          {ids.length} loops
-        </span>
-
-        {/* The card's own transport, drawn: brand when the scene is the mix,
-            a quiet chip until then, so a grid of twelve does not shout. */}
-        <span
-          aria-hidden="true"
-          className={cn(
-            "grid size-8 place-items-center rounded-sm transition-colors",
-            active
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground group-hover/scene:text-foreground",
-          )}
-        >
-          {sounding ? (
-            <PauseIcon className="size-3.5" />
-          ) : (
-            <PlayIcon className="size-3.5" />
-          )}
-        </span>
+      {/* The card's own transport, drawn: brand when the scene is the mix, a
+          quiet chip until then, so a grid of twelve does not shout. */}
+      <span
+        aria-hidden="true"
+        className={cn(
+          "grid size-8 shrink-0 place-items-center rounded-sm transition-colors",
+          active
+            ? "bg-primary text-primary-foreground"
+            : "bg-muted text-muted-foreground group-hover/scene:text-foreground",
+        )}
+      >
+        {sounding ? (
+          <PauseIcon className="size-3.5" />
+        ) : (
+          <PlayIcon className="size-3.5" />
+        )}
       </span>
     </button>
   );
@@ -108,7 +112,7 @@ export function Scenes() {
         <div aria-hidden="true" className="text-primary-ink shrink-0">
           <HugeiconsIcon
             className="size-8"
-            icon={Location01Icon}
+            icon={MountainIcon}
             strokeWidth={1.5}
           />
         </div>
@@ -123,9 +127,10 @@ export function Scenes() {
         </div>
       </div>
 
-      {/* The shelves' grid steps, on the same centre column, so a scene and
-          a loop line up when the page is read down. */}
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:mt-10 sm:gap-4 @xl:grid-cols-2 @3xl:grid-cols-3">
+      {/* Two across at most. A scene is a row, cover, name and play side by
+          side, and three to a 760px column cut "Harbour at dawn" down to
+          "Harbour at d…" with its line gone to two words. */}
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:mt-10 @xl:grid-cols-2">
         {SCENES.map((scene) => (
           <SceneCard key={scene.id} scene={scene} />
         ))}
