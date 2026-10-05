@@ -72,6 +72,14 @@ export const roadmap: Array<RoadmapItem> = [
   },
   {
     blurb:
+      "Paste a YouTube link into Lofi radio and it joins the stations, still there on your next visit.",
+    id: "own-stations",
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Your own radio stations",
+  },
+  {
+    blurb:
       "Drag the level on any card and that sound joins the mix, playing at the level you set.",
     id: "level-starts-sound",
     shipped: "2026-09",

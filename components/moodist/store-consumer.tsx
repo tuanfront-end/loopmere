@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 import { useNoteStore } from "@/stores/note";
 import { usePresetStore } from "@/stores/preset";
+import { useRadioStore } from "@/stores/radio";
 import { useSettingsStore } from "@/stores/settings";
 import { useSoundStore } from "@/stores/sound";
 import { useTodoStore } from "@/stores/todo";
@@ -31,6 +32,7 @@ export function StoreConsumer({ children }: { children: React.ReactNode }) {
     useSettingsStore.persist.rehydrate();
     useNoteStore.persist.rehydrate();
     usePresetStore.persist.rehydrate();
+    useRadioStore.persist.rehydrate();
     useTodoStore.persist.rehydrate();
   }, []);
 
