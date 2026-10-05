@@ -1109,21 +1109,26 @@ nên một track im lặng chạy vòng làm chỗ bám cho Media Session API.
 không thêm dependency nào, vì `@vite-pwa/astro` của bản gốc không có bản Next
 tương đương đáng cài.
 
-Service worker chia hai chiến lược: **cache-first cho `/sounds/`** vì loop là
+Service worker chia theo loại file: **cache-first cho `/sounds/`** vì loop là
 lý do người ta cài app này và một file mp3 đã nằm trên đĩa thì không bao giờ
-nên hỏi lại; **network-first cho phần còn lại** vì shell đổi mỗi lần deploy.
+nên hỏi lại; **cache-first cho `/_next/static/`** vì tên file đã mang hash;
+**network-first cho trang và phần còn lại** vì shell đổi mỗi lần deploy.
 Request `Range` trả 206 nên không cache được nguyên khối — worker bỏ qua
 chúng thay vì lưu một phần.
+
+Ba cache, mỗi cái một giới hạn: trang lưu **một bản theo path** (link chia sẻ
+mang mix trong query, từng đẻ ra một bản trang mỗi link), asset có trần 300
+mục, xoá cũ nhất trước. Bản v1 gom mọi GET vào một cache không bao giờ dọn,
+nên mỗi deploy chồng thêm một bộ chunk. Đổi chiến lược thì đổi tên cache ở
+đầu `public/sw.js`; `activate` xoá mọi tên không còn trong danh sách.
 
 Worker **không** tự `skipWaiting`. Bản mới chờ, `ServiceWorker` component mời
 reload bằng toast, và chỉ reload sau khi `controllerchange` báo worker mới đã
 tiếp quản. Một trang tự reload dưới tay người đang viết dở ghi chú là một
 trang vừa làm mất ghi chú đó.
 
-**Chưa kiểm được bằng tay.** Browser pane của Claude chặn đăng ký service
-worker — một worker rỗng cũng trả cùng lỗi `An unknown error occurred when
-fetching the script`, nên đó là giới hạn môi trường chứ không phải script.
-Cần mở bằng Chrome thật để xác nhận vòng install → waiting → reload.
+Vòng install → waiting → toast → reload đã chạy được trong browser pane
+(10/2026, khi đổi sang cache v2): v1 bị xoá, 81 loop đã lưu còn nguyên.
 
 ## Snackbar
 
@@ -1315,10 +1320,7 @@ session). eslint không nằm trong `npm run check`.
 hoặc sau một thao tác). Subset `vietnamese` của font thì giữ — lý do ở comment
 trong `layout.tsx`.
 
-**5. Service worker chưa kiểm được bằng tay** — § PWA nói vì sao. Cần mở bằng
-Chrome thật để xác nhận vòng install → waiting → reload.
-
-**6. `interact-check` không chạy hết được trang này nữa.** Bước `slide` của nó
+**5. `interact-check` không chạy hết được trang này nữa.** Bước `slide` của nó
 nhấn Home rồi End trên từng slider và không trả trạng thái lại; slider của card
 giờ đưa sound vào mix, nên sau chừng 25 card là 25 loop cùng tải và phát, và
 Chrome headless chậm dần (4s → 13s → 33s mỗi slider) tới khi một lệnh CDP quá
