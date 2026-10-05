@@ -13,6 +13,9 @@ export const urban: Category = {
     {
       id: 'road',
       label: 'Road',
+      // Faded in over half a second and out over 4.7, so the traffic dropped
+      // away for five seconds at every repeat. Steady noise hides the cut.
+      loop: [0.5, 97.7],
       src: getAssetPath('/sounds/urban/road.mp3'),
     },
     {

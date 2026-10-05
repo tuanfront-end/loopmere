@@ -6,11 +6,13 @@ import { v4 as uuid } from 'uuid';
 
 import { mergePersisted, uniqueById } from '@/lib/persist';
 
+import type { MixExtras } from '@/stores/sound';
+
 interface PresetStore {
   addPreset: (
     label: string,
     sounds: Record<string, number>,
-    swell: Array<string>,
+    extras: MixExtras,
   ) => void;
   changeName: (id: string, newName: string) => void;
   deletePreset: (id: string) => void;
@@ -18,6 +20,8 @@ interface PresetStore {
     id: string;
     label: string;
     sounds: Record<string, number>;
+    /** Where the sounds off centre sit. Absent on presets saved before it. */
+    pan?: Record<string, number>;
     /** The ids among `sounds` that swell. Absent on presets saved before it. */
     swell?: Array<string>;
   }>;
@@ -26,9 +30,12 @@ interface PresetStore {
 export const usePresetStore = create<PresetStore>()(
   persist(
     (set, get) => ({
-      addPreset(label, sounds, swell) {
+      addPreset(label, sounds, { pan, swell }) {
         set({
-          presets: [{ id: uuid(), label, sounds, swell }, ...get().presets],
+          presets: [
+            { id: uuid(), label, pan, sounds, swell },
+            ...get().presets,
+          ],
         });
       },
 

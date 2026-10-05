@@ -40,14 +40,6 @@ export type RoadmapItem = PlannedItem | ShippedItem;
 export const roadmap: Array<RoadmapItem> = [
   {
     blurb:
-      "Close the Lofi panel and the station plays on, in a small player that stays while you change your mix.",
-    id: "radio-plays-on",
-    issue: 14,
-    status: "next",
-    title: "Lofi radio that keeps playing",
-  },
-  {
-    blurb:
       "Clearing the mix and deleting a note come with Undo. Presets and checklist items get it too.",
     id: "undo-deletes",
     issue: 4,
@@ -61,22 +53,6 @@ export const roadmap: Array<RoadmapItem> = [
     issue: 5,
     status: "next",
     title: "Presets you can carry",
-  },
-  {
-    blurb:
-      "Set each sound to the left or the right, so with headphones on the mix sounds like a place.",
-    id: "balance",
-    issue: 15,
-    status: "later",
-    title: "Place each sound left or right",
-  },
-  {
-    blurb:
-      "The three mixes on the first screen grow into a shelf of scenes, each one click to start.",
-    id: "scenes",
-    issue: 16,
-    status: "later",
-    title: "More ready-made scenes",
   },
   {
     blurb:
@@ -94,6 +70,33 @@ export const roadmap: Array<RoadmapItem> = [
     shipped: "2026-10",
     status: "shipped",
     title: "Sounds that come and go",
+  },
+  {
+    blurb:
+      "Twelve places mixed for you, from a harbour at dawn to a tent in a storm, each one click to start.",
+    id: "scenes",
+    issue: 16,
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Scenes, ready to play",
+  },
+  {
+    blurb:
+      "Set each sound to the left or the right, so with headphones on the mix sounds like a place.",
+    id: "balance",
+    issue: 15,
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Place each sound left or right",
+  },
+  {
+    blurb:
+      "Close the Lofi panel and the station plays on, in a small player that stays while you change your mix.",
+    id: "radio-plays-on",
+    issue: 14,
+    shipped: "2026-10",
+    status: "shipped",
+    title: "Lofi radio that keeps playing",
   },
   {
     blurb:

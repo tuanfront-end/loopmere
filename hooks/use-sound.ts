@@ -1,15 +1,18 @@
-'use client';
+"use client";
 
-import { useMemo, useEffect, useCallback, useState, useRef } from 'react';
-import { Howl } from 'howler';
+import { useMemo, useEffect, useCallback, useState, useRef } from "react";
+import { Howl } from "howler";
 
-import { useLoadingStore } from '@/stores/loading';
-import { useSettingsStore } from '@/stores/settings';
-import { subscribe } from '@/lib/event';
-import { useSSR } from './use-ssr';
-import { FADE_OUT } from '@/constants/events';
+import { useLoadingStore } from "@/stores/loading";
+import { useSettingsStore } from "@/stores/settings";
+import { subscribe } from "@/lib/event";
+import { useSSR } from "./use-ssr";
+import { FADE_OUT } from "@/constants/events";
 
 const DEFAULT_FADE_DURATION = 250;
+
+/** The sprite a sound with a loop window plays. */
+const WINDOW = "window";
 
 /**
  * Swell rides the level on a cosine from the slider's level down to this share
@@ -65,6 +68,8 @@ function swellAt(curve: SwellCurve | null, time: number) {
  * @param {string} src - The source URL of the sound file.
  * @param {Object} [options] - Options for sound playback.
  * @param {boolean} [options.loop=false] - Whether the sound should loop.
+ * @param {[number, number]} [options.loopWindow] - The stretch of the file to play, in seconds.
+ * @param {number} [options.pan=0] - Where it sits between the ears, -1 left to 1 right.
  * @param {boolean} [options.occasional=false] - Whether it rests between plays instead of looping.
  * @param {Function} [options.onRest] - Told when a rest starts, with when it ends, and `null` when it does.
  * @param {boolean} [options.swell=false] - Whether its level rises and falls on a slow wave.
@@ -80,6 +85,8 @@ export function useSound(
   src: string,
   options: {
     loop?: boolean;
+    loopWindow?: [number, number];
+    pan?: number;
     occasional?: boolean;
     onRest?: (until: number | null) => void;
     preload?: boolean;
@@ -89,8 +96,8 @@ export function useSound(
   html5: boolean = false,
 ) {
   const [hasLoaded, setHasLoaded] = useState(false);
-  const isLoading = useLoadingStore(state => state.loaders[src]);
-  const setIsLoading = useLoadingStore(state => state.set);
+  const isLoading = useLoadingStore((state) => state.loaders[src]);
+  const setIsLoading = useLoadingStore((state) => state.set);
   const transitionToken = useRef(0);
   const fadeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const targetVolume = useRef(options.volume ?? 0.5);
@@ -111,6 +118,8 @@ export function useSound(
     let sound: Howl | null = null;
 
     if (isBrowser) {
+      const range = options.loopWindow;
+
       sound = new Howl({
         html5,
         onload: () => {
@@ -118,12 +127,28 @@ export function useSound(
           setHasLoaded(true);
         },
         preload: options.preload ?? false,
+        // A window is a sprite, which Web Audio loops on its own bounds to
+        // the sample: no timer decides where the seam falls.
+        sprite: range && {
+          [WINDOW]: [range[0] * 1000, (range[1] - range[0]) * 1000],
+        },
         src: src,
       });
     }
 
     return sound;
-  }, [src, isBrowser, setIsLoading, html5, options.preload]);
+  }, [
+    src,
+    isBrowser,
+    setIsLoading,
+    html5,
+    options.preload,
+    options.loopWindow,
+  ]);
+
+  // The window's sound, once it has been played, so a pause resumes that one
+  // rather than starting the sprite again from its top.
+  const windowId = useRef<number | null>(null);
 
   // Media rather than a UI sound, so iOS plays it through the silent switch.
   // Set in an effect, not while the Howl is made: a memo is render, and render
@@ -131,7 +156,7 @@ export function useSound(
   // only a tap can start.
   useEffect(() => {
     if (window.navigator.audioSession) {
-      window.navigator.audioSession.type = 'playback';
+      window.navigator.audioSession.type = "playback";
     }
   }, []);
 
@@ -140,6 +165,19 @@ export function useSound(
       sound.loop((options.loop ?? false) && !options.occasional);
     }
   }, [sound, options.loop, options.occasional]);
+
+  // A Web Audio stereo panner, set on the Howl so every play of it inherits
+  // the place. Left alone at centre: a sound never moved gets no panner node.
+  //
+  // Only once the file has loaded. A Howl queues a stereo call made before
+  // that, and the queue dropped it: a sound placed to one side came back
+  // centred after a reload.
+  useEffect(() => {
+    const pan = options.pan ?? 0;
+
+    if (!sound || !hasLoaded) return;
+    if ((sound.stereo() ?? 0) !== pan) sound.stereo(pan);
+  }, [sound, options.pan, hasLoaded]);
 
   /**
    * The level the Howl sits at is this sound's own times the global one, and
@@ -170,7 +208,8 @@ export function useSound(
       if (!sound || !curve || !isActive.current || isFadingOut.current) return;
 
       const segment = curve.period / SWELL_SEGMENTS;
-      const to = targetVolume.current * swellAt(curve, performance.now() + segment);
+      const to =
+        targetVolume.current * swellAt(curve, performance.now() + segment);
 
       sound.fade(swellLevel.current, to, segment);
       swellLevel.current = to;
@@ -214,7 +253,8 @@ export function useSound(
     // so switching it on is the sound beginning to recede rather than a jump.
     swellCurve.current = {
       period:
-        SWELL_PERIOD.min + Math.random() * (SWELL_PERIOD.max - SWELL_PERIOD.min),
+        SWELL_PERIOD.min +
+        Math.random() * (SWELL_PERIOD.max - SWELL_PERIOD.min),
       start: performance.now(),
     };
     swellLevel.current = targetVolume.current;
@@ -244,6 +284,20 @@ export function useSound(
     onRest.current = options.onRest;
   }, [options.onRest]);
 
+  // From the top, through the loop window where the sound has one: a plain
+  // `play()` would start the whole file, dead air and all.
+  const playAgain = useRef(() => {});
+
+  useEffect(() => {
+    playAgain.current = () => {
+      if (!sound) return;
+
+      if (options.loopWindow)
+        windowId.current = sound.play(windowId.current ?? WINDOW);
+      else sound.play();
+    };
+  }, [sound, options.loopWindow]);
+
   const endRest = useCallback(() => {
     if (restTimer.current) {
       clearTimeout(restTimer.current);
@@ -266,7 +320,7 @@ export function useSound(
       restTimer.current = setTimeout(() => {
         restTimer.current = null;
         onRest.current?.(null);
-        if (isActive.current && occasional.current) sound.play();
+        if (isActive.current && occasional.current) playAgain.current();
       }, length);
     };
 
@@ -283,7 +337,7 @@ export function useSound(
 
     if (!occasional.current && restTimer.current) {
       endRest();
-      if (sound && isActive.current && !sound.playing()) sound.play();
+      if (sound && isActive.current && !sound.playing()) playAgain.current();
     }
   }, [options.occasional, sound, endRest]);
 
@@ -309,13 +363,18 @@ export function useSound(
         }
 
         if (!sound.playing()) {
-          sound.play();
+          if (options.loopWindow)
+            windowId.current = sound.play(windowId.current ?? WINDOW);
+          else sound.play();
         }
 
         const currentVolume = sound.volume();
         const nextVolume =
           targetVolume.current *
-          swellAt(swellCurve.current, performance.now() + DEFAULT_FADE_DURATION);
+          swellAt(
+            swellCurve.current,
+            performance.now() + DEFAULT_FADE_DURATION,
+          );
 
         if (currentVolume !== nextVolume) {
           sound.fade(currentVolume, nextVolume, DEFAULT_FADE_DURATION);
@@ -328,7 +387,7 @@ export function useSound(
           swellTimer.current = setTimeout(stepSwell, DEFAULT_FADE_DURATION);
         }
 
-        if (typeof cb === 'function') sound.once('end', cb);
+        if (typeof cb === "function") sound.once("end", cb);
       }
     },
     [
@@ -340,6 +399,7 @@ export function useSound(
       clearFadeTimeout,
       clearSwellTimer,
       stepSwell,
+      options.loopWindow,
       endRest,
     ],
   );

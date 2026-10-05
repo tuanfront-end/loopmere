@@ -33,6 +33,7 @@ export const SoundCard = memo(function SoundCard({
   hidden,
   id,
   label,
+  loop: loopWindow,
   src,
 }: SoundCardProps) {
   const isPlaying = useSoundStore((state) => state.isPlaying);
@@ -48,6 +49,7 @@ export const SoundCard = memo(function SoundCard({
   const volume = useSoundStore((state) => state.sounds[id].volume);
 
   const isSwelling = useSoundStore((state) => state.sounds[id].isSwelling);
+  const pan = useSoundStore((state) => state.sounds[id].pan);
   const isOccasional = useSoundStore(
     (state) => state.sounds[id].isOccasional,
   );
@@ -63,6 +65,8 @@ export const SoundCard = memo(function SoundCard({
 
   const sound = useSound(src, {
     loop: true,
+    loopWindow,
+    pan,
     occasional: isOccasional,
     onRest,
     swell: isSwelling,

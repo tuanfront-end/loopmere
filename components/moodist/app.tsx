@@ -11,6 +11,7 @@ import { CategorySection } from "./category-section";
 import { MediaSession } from "./media-session";
 import { SharedMix } from "./modals/shared-mix";
 import { PlayControls } from "./play-controls";
+import { RadioPlayer } from "./radio-player";
 
 import { FADE_OUT } from "@/constants/events";
 import { categoryBlurbs } from "@/data/category-blurbs";
@@ -102,6 +103,7 @@ export function App() {
     <>
       <MediaSession />
       <SharedMix />
+      <RadioPlayer />
 
       {/* Both of these are the left rail's and the right rail's jobs from `xl`
           up, so below that width they are the only place those jobs are done

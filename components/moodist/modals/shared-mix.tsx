@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { ToolPanel } from "../tool-panel";
 
 import { Button } from "@/components/ui/button";
-import { SHARE_PARAM, SWELL_KEY } from "@/constants/share";
+import { PAN_KEY, SHARE_PARAM, SWELL_KEY } from "@/constants/share";
 import { sounds } from "@/data/sounds";
 import { useCloseListener } from "@/hooks/use-close-listener";
 import { useSoundStore } from "@/stores/sound";
@@ -14,6 +14,7 @@ import { useSoundStore } from "@/stores/sound";
 interface SharedSound {
   id: string;
   label: string;
+  pan: number;
   swell: boolean;
   volume: number;
 }
@@ -43,6 +44,10 @@ export function SharedMix() {
       >;
 
       const swell = Array.isArray(parsed[SWELL_KEY]) ? parsed[SWELL_KEY] : [];
+      const pan =
+        parsed[PAN_KEY] && typeof parsed[PAN_KEY] === "object"
+          ? (parsed[PAN_KEY] as Record<string, unknown>)
+          : {};
 
       const labels = Object.fromEntries(
         sounds.categories
@@ -55,6 +60,8 @@ export function SharedMix() {
         .map((id) => ({
           id,
           label: labels[id],
+          // A hand-edited place is held to the rail rather than trusted.
+          pan: Math.max(-1, Math.min(1, Number(pan[id]) || 0)),
           swell: swell.includes(id),
           volume: Number(parsed[id]),
         }));
@@ -101,7 +108,10 @@ export function SharedMix() {
           onClick={() => {
             override(
               Object.fromEntries(shared.map((s) => [s.id, s.volume])),
-              shared.filter((s) => s.swell).map((s) => s.id),
+              {
+                pan: Object.fromEntries(shared.map((s) => [s.id, s.pan])),
+                swell: shared.filter((s) => s.swell).map((s) => s.id),
+              },
             );
             play();
             setIsOpen(false);
