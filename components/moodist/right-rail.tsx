@@ -393,7 +393,9 @@ export function RightRail() {
   const shortcuts = useSettingsStore((state) => state.shortcuts);
 
   return (
-    <div className="no-scrollbar flex h-full flex-col gap-8 overflow-y-auto p-5">
+    // The bottom padding grows by the radio's height while it sits over the
+    // rail's foot, so the last tools scroll clear of it.
+    <div className="no-scrollbar flex h-full flex-col gap-8 overflow-y-auto p-5 pb-[calc(1.25rem+var(--radio-cover,0px))]">
       <TheMix />
       <Levels />
       <Tools />
