@@ -14,6 +14,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { PauseButton } from "./pause-button";
 import { SoundIcon } from "./sound-icon";
+import { SwellButton } from "./swell-button";
 import { TOOL_GROUPS, useTools } from "./tools-provider";
 
 import { Button } from "@/components/ui/button";
@@ -142,18 +143,29 @@ function MixRow({
         </Button>
       </div>
 
-      <Slider
-        format={PERCENT}
-        aria-label={`${labels[id]} level`}
-        className="mt-3"
-        max={1}
-        min={0}
-        step={0.01}
-        value={[volume]}
-        onValueChange={(next) =>
-          setVolume(id, Array.isArray(next) ? next[0] : next)
-        }
-      />
+      {/* Swell ends the level's row rather than joining the buttons above:
+          it moves this level, and a fourth button up there left a name like
+          "Rain on car roof" eighty pixels to be read in. */}
+      <div className="mt-3 flex items-center gap-2">
+        <Slider
+          format={PERCENT}
+          aria-label={`${labels[id]} level`}
+          className="min-w-0 flex-1"
+          max={1}
+          min={0}
+          step={0.01}
+          value={[volume]}
+          onValueChange={(next) =>
+            setVolume(id, Array.isArray(next) ? next[0] : next)
+          }
+        />
+
+        <SwellButton
+          className="-my-1 -mr-1 size-8 shrink-0"
+          id={id}
+          label={labels[id]}
+        />
+      </div>
     </li>
   );
 }

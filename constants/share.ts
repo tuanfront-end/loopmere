@@ -5,3 +5,10 @@
  * sending a listener's mix to the analytics.
  */
 export const SHARE_PARAM = "share";
+
+/**
+ * The sounds in a shared mix that swell, as a list under this key beside the
+ * levels. It is no sound's id, and Moodist reads only ids, so a Loopmere link
+ * still opens there; it just arrives holding still.
+ */
+export const SWELL_KEY = "swell";

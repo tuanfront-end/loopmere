@@ -45,9 +45,11 @@ export const SoundCard = memo(function SoundCard({
   // the Everything slider moving does not re-render every card on the page.
   const volume = useSoundStore((state) => state.sounds[id].volume);
 
+  const isSwelling = useSoundStore((state) => state.sounds[id].isSwelling);
+
   const isLoading = useLoadingStore((state) => state.loaders[src]);
 
-  const sound = useSound(src, { loop: true, volume });
+  const sound = useSound(src, { loop: true, swell: isSwelling, volume });
 
   useEffect(() => {
     if (locked) return;
