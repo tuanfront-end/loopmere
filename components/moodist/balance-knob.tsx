@@ -166,8 +166,21 @@ export function BalanceKnob({ className, id, label }: BalanceKnobProps) {
           place(moves[event.key]);
         }}
         onPointerDown={(event) => {
+          // The main button only: a right-click started a drag, and with the
+          // menu open its release never arrived.
+          if (event.button !== 0) return;
+
           event.currentTarget.setPointerCapture(event.pointerId);
           drag.current = { from: pan, x: event.clientX, y: event.clientY };
+        }}
+        // Every way a drag can end, not only a release over the page. One
+        // that ended any other way left the drag open, and a pointer merely
+        // passing over the dial afterwards turned it.
+        onLostPointerCapture={() => {
+          drag.current = null;
+        }}
+        onPointerCancel={() => {
+          drag.current = null;
         }}
         onPointerMove={(event) => {
           if (!drag.current) return;

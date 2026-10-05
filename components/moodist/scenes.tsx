@@ -21,15 +21,16 @@ function SceneCard({ scene }: { scene: Scene }) {
     // its own. The sound card's hover — the brand hairline and the cast —
     // and its state, the inset ring, so a scene that is on reads the way a
     // loop that is on does.
+    //
+    // A toggle, so the name holds still and `aria-pressed` carries the state,
+    // as on Swell. The name used to change with it — "Pause Night village" —
+    // and a screen reader read that out as "Pause Night village, pressed".
+    // Pressed is *sounding*, not merely loaded: a press on a scene that is the
+    // mix but paused plays it, and a toggle reading pressed before and after
+    // that press would say it had done nothing.
     <button
-      aria-label={
-        sounding
-          ? `Pause ${scene.title}`
-          : active
-            ? `Play ${scene.title} again`
-            : `Play ${scene.title}, a mix of ${ids.length} loops`
-      }
-      aria-pressed={active}
+      aria-label={scene.title}
+      aria-pressed={sounding}
       // A record from `data/scenes`, read in passing: its 14px lines are a
       // product object's, like the hero's panels.
       data-object
